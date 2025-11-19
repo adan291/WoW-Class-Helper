@@ -27,7 +27,7 @@ export const processInlineMarkdown = (text: string): string => {
 
   // Tooltips: [Ability]{Cooldown: X. ID: Y. Description: Z}
   const tooltipRegex = /\[([^\]]+)\]\{([^\}]+)\}/g;
-  processed = processed.replace(tooltipRegex, (match, ability, content) => {
+  processed = processed.replace(tooltipRegex, (_match, ability, content) => {
     const cooldownMatch = content.match(/Cooldown:\s*([^.]+)/i);
     const idMatch = content.match(/ID:\s*(\d+)/i);
     const descMatch = content.match(/Description:\s*(.+)$/i);

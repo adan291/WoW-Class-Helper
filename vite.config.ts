@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
       },
       build: {
         cssCodeSplit: true,
-        cssMinify: 'lightningcss',
+        cssMinify: 'esbuild',
       },
       test: {
         globals: true,

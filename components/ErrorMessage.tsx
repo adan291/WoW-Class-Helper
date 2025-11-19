@@ -13,7 +13,7 @@ interface ErrorMessageProps {
 /**
  * Get user-friendly error message based on error type
  */
-const getErrorSuggestion = (error: string, errorType?: string, isAdmin?: boolean): string => {
+const getErrorSuggestion = (error: string, _errorType?: string, isAdmin?: boolean): string => {
   if (error.includes('API') || error.includes('api')) {
     return 'Please check your API key configuration and try again.';
   }

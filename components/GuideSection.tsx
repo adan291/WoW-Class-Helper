@@ -1,7 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import LoadingSpinner from './LoadingSpinner.tsx';
-import { ErrorMessage } from './ErrorMessage.tsx';
+
 import { ContentFrameEnhanced } from './ContentFrameEnhanced.tsx';
 import { LoadingStateEnhanced } from './LoadingStateEnhanced.tsx';
 import { ErrorStateEnhanced } from './ErrorStateEnhanced.tsx';
@@ -20,7 +19,7 @@ interface GuideSectionProps {
 
 const GuideSection = ({ 
   title, 
-  icon, 
+  // icon, 
   isLoading, 
   content, 
   error,

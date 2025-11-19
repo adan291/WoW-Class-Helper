@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { WOW_CLASSES } from '../constants.ts';
 import type { WowClass } from '../types.ts';
-import ClassIcon from './ClassIcon.tsx';
 import { ClassCardEnhanced } from './ClassCardEnhanced.tsx';
 import '../styles/animations.css';
 

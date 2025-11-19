@@ -17,7 +17,7 @@ interface MobileOptimizedNavProps {
  */
 export const MobileOptimizedNav: React.FC<MobileOptimizedNavProps> = ({
   children,
-  classColor = '#FFD700',
+  // classColor = '#FFD700',
 }) => {
   const isMobile = useIsMobile();
 

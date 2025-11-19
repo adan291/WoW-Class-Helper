@@ -73,7 +73,7 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
   const [activeSpec, setActiveSpec] = useState<Specialization>(wowClass.specs[0]);
   // Default to "The War Within" to show current expansion content first
   const [selectedExpansion, setSelectedExpansion] = useState<string>('The War Within');
-  const [showAdminConfig, setShowAdminConfig] = useState(false);
+
   
   // Filter dungeons based on expansion and sort alphabetically by name
   const filteredDungeons = useMemo(() => {
@@ -184,19 +184,9 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
       console.error("Guide generation error:", err);
       
       let errorMessage = 'An unexpected error occurred while generating the guide.';
-      let errorType: 'api' | 'validation' | 'network' | 'unknown' = 'unknown';
-      
+
       if (err instanceof Error) {
         errorMessage = err.message;
-        
-        // Categorize error type for better UX
-        if (err.message.includes('API') || err.message.includes('api')) {
-          errorType = 'api';
-        } else if (err.message.includes('Invalid') || err.message.includes('invalid')) {
-          errorType = 'validation';
-        } else if (err.message.includes('network') || err.message.includes('fetch') || err.message.includes('timeout')) {
-          errorType = 'network';
-        }
       }
       
       setError(errorMessage);
