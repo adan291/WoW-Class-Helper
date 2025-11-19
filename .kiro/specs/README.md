@@ -6,7 +6,9 @@ This directory contains the complete specification for the WoW AI Class Helper p
 
 ## Documents
 
-### requirements.md
+### 📋 Specs Principales (Originales)
+
+#### requirements.md
 **Purpose**: Define what the application does and what users can do with it.
 
 **Contains**:
@@ -34,7 +36,7 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - AC7: Error Handling & Recovery
 - AC8: Responsive Design & Performance
 
-### design.md
+#### design.md
 **Purpose**: Explain how the application is built and ensure correct behavior.
 
 **Contains**:
@@ -69,6 +71,59 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - CP10: Responsive Design
 - CP11: Data Accuracy Validation
 - CP12: Content Source Attribution
+
+### 📊 Specs Mejorados (Noviembre 2025)
+
+#### requirements-improved.md ⭐ RECOMENDADO
+**Purpose**: Requisitos mejorados y estructurados con mayor detalle.
+
+**Mejoras**:
+- 8 Requisitos Funcionales (RF1-RF8) detallados
+- 4 Requisitos No Funcionales (RNF1-RNF4)
+- Matriz de trazabilidad RF → AC → CP
+- Criterios de éxito claros
+- Cambios futuros planificados
+
+**Use When**:
+- Necesitas especificación más detallada
+- Planificando nuevas fases
+- Documentando requisitos para stakeholders
+
+#### design-improved.md ⭐ RECOMENDADO
+**Purpose**: Diseño mejorado con propiedades de corrección detalladas.
+
+**Mejoras**:
+- Arquitectura de alto nivel con diagramas
+- 12 Correctness Properties (CP1-CP12) con:
+  - Invariantes matemáticas
+  - Implementación detallada
+  - Validación específica
+- Flujo de datos completo
+- Servicios y caché documentados
+- Manejo de errores estratégico
+- Performance y seguridad
+
+**Use When**:
+- Implementando características complejas
+- Validando propiedades de corrección
+- Optimizando rendimiento
+
+#### tasks-improved.md ⭐ RECOMENDADO
+**Purpose**: Plan de tareas mejorado y organizado.
+
+**Mejoras**:
+- 12 tareas organizadas en 4 grupos
+- Duración estimada por tarea
+- Matriz de dependencias
+- Criterios de aceptación claros
+- Tareas opcionales identificadas
+- Cronograma realista (5-8 horas)
+
+**Use When**:
+- Planificando sprints
+- Asignando trabajo
+- Estimando duración
+- Priorizando tareas
 
 ## Coverage Matrix
 
@@ -116,27 +171,38 @@ This directory contains the complete specification for the WoW AI Class Helper p
 
 ## Quick Reference
 
+### 🚀 Para Empezar Rápido
+1. Lee `requirements-improved.md` para entender qué se debe hacer
+2. Lee `design-improved.md` para entender cómo se debe hacer
+3. Usa `tasks-improved.md` para saber qué implementar
+
 ### For Feature Planning
-1. Read requirements.md → Acceptance Criteria section
-2. Identify which AC your feature addresses
-3. Check related CPs in design.md
+1. Read requirements-improved.md → Requisitos Funcionales (RF)
+2. Identify which RF your feature addresses
+3. Check related CPs in design-improved.md
 
 ### For Implementation
-1. Read design.md → Relevant Correctness Property
-2. Review implementation strategy
+1. Read design-improved.md → Relevant Correctness Property
+2. Review implementation strategy with code examples
 3. Check test cases
 4. Follow project-standards.md for code style
 
 ### For Testing
-1. Read design.md → Verification section for each CP
+1. Read design-improved.md → Verification section for each CP
 2. Implement test cases listed
-3. Verify against acceptance criteria in requirements.md
+3. Verify against acceptance criteria in requirements-improved.md
 
 ### For Debugging
 1. Identify which CP is failing
-2. Read design.md → Implementation section
+2. Read design-improved.md → Implementation section
 3. Check error handling strategy
 4. Review test cases for similar scenarios
+
+### 📚 Documentación Complementaria
+- **PROJECT_ANALYSIS.md** - Análisis completo del proyecto (raíz)
+- **IMPLEMENTATION_STATUS_UPDATED.md** - Estado actual (raíz)
+- **OPTIMIZATION_RECOMMENDATIONS.md** - Mejoras futuras (raíz)
+- **FINAL_REVIEW_AND_RECOMMENDATIONS.md** - Revisión final (raíz)
 
 ## Data Structures
 

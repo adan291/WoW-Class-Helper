@@ -1,28 +1,107 @@
 
 import { GoogleGenAI } from "@google/genai";
 import type { WowClass, Specialization } from '../types.ts';
+import { validateSourceUrls, validateApiResponse } from './validationService.ts';
 
 // Per coding guidelines, `process.env.API_KEY` is assumed to be available.
 // The GoogleGenAI instance is initialized directly without fallbacks.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const generateContentWithGemini = async (prompt: string, sourceUrls?: string): Promise<string> => {
-    try {
-        let finalPrompt = prompt;
-        if (sourceUrls && sourceUrls.trim() !== '') {
-            const urls = sourceUrls.split('\n').filter(url => url.trim() !== '').map(url => `- ${url.trim()}`).join('\n');
-            finalPrompt = `IMPORTANT: Your primary task is to act as an expert World of Warcraft guide writer. You MUST use the information from the following web pages to construct your answer. If the information from these sources conflicts with your base knowledge, you MUST prioritize the information from the provided URLs. At the end of your response, you MUST cite the URLs you used under a "Sources:" heading.\n\nProvided URLs:\n${urls}\n\n---\n\nOriginal Request:\n${prompt}`;
-        }
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 1000;
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: finalPrompt,
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        throw new Error("Failed to generate content from AI. Please check the console for more details.");
+/**
+ * Implements exponential backoff for retries
+ */
+const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Generates content with retry logic and comprehensive error handling
+ */
+const generateContentWithGemini = async (
+  prompt: string,
+  sourceUrls?: string,
+  retryCount = 0
+): Promise<string> => {
+  try {
+    // Validate API key
+    if (!process.env.API_KEY) {
+      throw new Error('API key not configured. Please set GEMINI_API_KEY environment variable.');
     }
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+      throw new Error('Invalid prompt provided to API');
+    }
+
+    let finalPrompt = prompt;
+
+    // Validate and process source URLs
+    if (sourceUrls && sourceUrls.trim() !== '') {
+      const validation = validateSourceUrls(sourceUrls);
+
+      if (!validation.valid) {
+        const errorMsg = validation.errors.join('\n');
+        throw new Error(`Invalid source URLs:\n${errorMsg}`);
+      }
+
+      if (validation.urls.length > 0) {
+        const urls = validation.urls.map(url => `- ${url}`).join('\n');
+        finalPrompt = `IMPORTANT: Your primary task is to act as an expert World of Warcraft guide writer. You MUST use the information from the following web pages to construct your answer. If the information from these sources conflicts with your base knowledge, you MUST prioritize the information from the provided URLs. At the end of your response, you MUST cite the URLs you used under a "Sources:" heading.\n\nProvided URLs:\n${urls}\n\n---\n\nOriginal Request:\n${prompt}`;
+      }
+    }
+
+    // Validate prompt length
+    if (finalPrompt.length > 30000) {
+      throw new Error('Prompt is too long. Please reduce the content size.');
+    }
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: finalPrompt,
+    });
+
+    // Validate response
+    if (!validateApiResponse(response?.text)) {
+      throw new Error('Empty response from API');
+    }
+
+    return response.text;
+  } catch (error) {
+    console.error(`Error calling Gemini API (attempt ${retryCount + 1}/${MAX_RETRIES}):`, error);
+
+    // Determine if error is retryable
+    const isRetryable =
+      error instanceof Error &&
+      (error.message.includes('timeout') ||
+        error.message.includes('network') ||
+        error.message.includes('temporarily') ||
+        error.message.includes('503') ||
+        error.message.includes('429'));
+
+    if (isRetryable && retryCount < MAX_RETRIES) {
+      const waitTime = RETRY_DELAY_MS * Math.pow(2, retryCount);
+      console.log(`Retrying in ${waitTime}ms...`);
+      await delay(waitTime);
+      return generateContentWithGemini(prompt, sourceUrls, retryCount + 1);
+    }
+
+    // Provide specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes('API key')) {
+        throw new Error('API configuration error. Please check your GEMINI_API_KEY environment variable.');
+      }
+      if (error.message.includes('URL')) {
+        throw new Error(`URL validation error: ${error.message}`);
+      }
+      if (error.message.includes('Invalid prompt')) {
+        throw new Error('The request could not be processed. Please try again.');
+      }
+      throw error;
+    }
+
+    throw new Error('Failed to generate content from AI. Please try again later.');
+  }
 };
 
 export const getOverview = (wowClass: WowClass, sourceUrls?: string): Promise<string> => {

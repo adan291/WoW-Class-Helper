@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { WowClass, Specialization, UserRole, Dungeon } from '../types.ts';
 import { DUNGEONS, EXPANSIONS } from '../constants.ts';
 import * as geminiService from '../services/geminiService.ts';
+import { cacheService } from '../services/cacheService.ts';
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 import { SpecIcon } from './SpecIcon.tsx';
@@ -108,6 +109,27 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
     setIsLoading(true);
     setError(null);
     try {
+      // Validate inputs
+      if (!wowClass || !wowClass.id) {
+        throw new Error('Invalid class selected');
+      }
+      if (!activeSpec || !activeSpec.id) {
+        throw new Error('Invalid specialization selected');
+      }
+      if (activeTab === 'dungeons' && (!selectedDungeon || !selectedDungeon.name)) {
+        throw new Error('Invalid dungeon selected');
+      }
+
+      // Check cache first (only if no custom URLs override)
+      if (!urlsOverride) {
+        const cachedContent = cacheService.get<string>(memoizedContentKey);
+        if (cachedContent) {
+          setContent(cachedContent);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       let newContent = '';
       switch (activeTab) {
         case 'overview':
@@ -126,21 +148,46 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
           newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride);
           break;
         default:
-          break;
+          throw new Error(`Unknown tab: ${activeTab}`);
       }
+
+      // Validate content
+      if (!newContent || typeof newContent !== 'string') {
+        throw new Error('Invalid content received from API');
+      }
+
+      // Cache the content (1 hour TTL)
+      cacheService.set(memoizedContentKey, newContent);
+
       setContent(newContent);
     } catch (err) {
       console.error("Guide generation error:", err);
-      setError(
-        err instanceof Error 
-          ? `Error: ${err.message}. Please try again. If you are using custom Admin Source URLs, please verify they are correct and accessible.` 
-          : 'An unexpected error occurred while generating the guide. Please try again.'
-      );
+      
+      let errorMessage = 'An unexpected error occurred while generating the guide.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Provide specific guidance for common errors
+        if (err.message.includes('API')) {
+          errorMessage += ' Please check your API key configuration.';
+        }
+        if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMessage += ' Please check your internet connection.';
+        }
+      }
+      
+      // Add admin-specific guidance
+      if (userRole === 'admin' && sourceUrls) {
+        errorMessage += ' If you are using custom Admin Source URLs, please verify they are correct and accessible.';
+      }
+      
+      setError(errorMessage);
       setContent('');
     } finally {
       setIsLoading(false);
     }
-  }, [activeTab, wowClass, activeSpec, selectedDungeon]);
+  }, [activeTab, wowClass, activeSpec, selectedDungeon, userRole, sourceUrls, memoizedContentKey]);
 
   useEffect(() => {
     fetchContent();
