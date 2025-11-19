@@ -147,10 +147,14 @@ Específicamente para la integración con Gemini API:
 
 ```
 .kiro/
+├── QUICK_START.md                     # ⭐ Comienza aquí (5 min)
 ├── README.md                          # Guía de configuración
+├── settings/
+│   ├── hooks.json                    # Configuración de hooks
+│   └── mcp.json                      # Configuración MCP
 ├── specs/
-│   ├── wow-class-helper.md           # Requisitos
-│   └── wow-class-helper-design.md    # Diseño
+│   ├── wow-class-helper.md           # Requisitos (8 AC)
+│   └── wow-class-helper-design.md    # Diseño (10 CP)
 ├── steering/
 │   ├── project-standards.md          # Estándares del proyecto
 │   ├── gemini-api-guidelines.md      # Guía de Gemini API
@@ -166,10 +170,17 @@ Específicamente para la integración con Gemini API:
 
 ## 🚀 Cómo Usar
 
+### Para Comenzar Rápidamente
+```
+Lee: .kiro/QUICK_START.md (5 minutos)
+Luego: Sigue los pasos en orden
+```
+
 ### Para Desarrolladores
 1. Lee `.kiro/specs/wow-class-helper.md` para entender los requisitos
 2. Revisa `.kiro/steering/project-standards.md` para convenciones
 3. Consulta `.kiro/specs/wow-class-helper-design.md` para arquitectura
+4. Abre `.kiro/QUICK_START.md` para referencia rápida
 
 ### Para Agregar Características
 1. Actualiza specs si los requisitos cambian
@@ -235,10 +246,11 @@ Específicamente para la integración con Gemini API:
 
 ## 🎯 Próximos Pasos
 
-1. **Revisar Specs**: Lee los documentos de especificación para entender completamente el proyecto
-2. **Configurar Hooks**: Abre "Open Kiro Hook UI" en la paleta de comandos para activar hooks
-3. **Comenzar Desarrollo**: Sigue los estándares del proyecto al escribir código
-4. **Validar Cambios**: Los hooks validarán automáticamente tu código
+1. **Inicio Rápido**: Lee `.kiro/QUICK_START.md` (5 minutos)
+2. **Revisar Specs**: Lee los documentos de especificación para entender completamente el proyecto
+3. **Configurar Hooks**: Abre "Open Kiro Hook UI" en la paleta de comandos para activar hooks
+4. **Comenzar Desarrollo**: Sigue los estándares del proyecto al escribir código
+5. **Validar Cambios**: Los hooks validarán automáticamente tu código
 
 ## 📞 Referencia Rápida
 

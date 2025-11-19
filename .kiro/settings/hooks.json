@@ -1,0 +1,40 @@
+{
+  "hooks": [
+    {
+      "id": "lint-on-save",
+      "name": "Lint on File Save",
+      "description": "Automatically check TypeScript/TSX files for errors when saved",
+      "trigger": "onFileSave",
+      "filePattern": "**/*.{ts,tsx}",
+      "action": "message",
+      "message": "Check this file for TypeScript and linting errors using getDiagnostics"
+    },
+    {
+      "id": "validate-gemini-service",
+      "name": "Validate Gemini Service",
+      "description": "Validate Gemini service maintains proper error handling and API patterns",
+      "trigger": "onFileSave",
+      "filePattern": "services/geminiService.ts",
+      "action": "message",
+      "message": "Validate that this file has proper try-catch blocks, follows naming conventions (get*), handles sourceUrls parameter, and includes required prompt sections"
+    },
+    {
+      "id": "validate-constants",
+      "name": "Validate Constants Data",
+      "description": "Validate game data consistency in constants.ts",
+      "trigger": "onFileSave",
+      "filePattern": "constants.ts",
+      "action": "message",
+      "message": "Validate that all WOW_CLASSES have valid IDs, each class has specs, all specs have valid roles, all dungeons have valid expansions, no duplicates exist, and color values are valid hex codes"
+    },
+    {
+      "id": "validate-types",
+      "name": "Validate Type Definitions",
+      "description": "Check type definition consistency across the codebase",
+      "trigger": "onFileSave",
+      "filePattern": "types.ts",
+      "action": "message",
+      "message": "Verify that all exported types in types.ts are used in at least one file, check for circular dependencies, validate naming conventions (PascalCase), and identify unused type definitions"
+    }
+  ]
+}
