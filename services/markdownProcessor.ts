@@ -85,6 +85,39 @@ export const processInlineMarkdown = (text: string): string => {
  * @param text - Raw markdown text
  * @returns Object with __html property for dangerouslySetInnerHTML
  */
+/**
+ * Parse table alignment from separator row
+ * Supports: :--- (left), :---: (center), ---: (right), --- (default left)
+ * @param separatorLine - The separator line from markdown table
+ * @returns Array of alignment values ('left', 'center', 'right')
+ */
+const parseTableAlignments = (separatorLine: string): string[] => {
+  const cells = separatorLine.split('|').slice(1, -1).map(cell => cell.trim());
+  return cells.map(cell => {
+    const hasLeft = cell.startsWith(':');
+    const hasRight = cell.endsWith(':');
+    if (hasLeft && hasRight) return 'center';
+    if (hasRight) return 'right';
+    return 'left';
+  });
+};
+
+/**
+ * Get Tailwind text alignment class
+ * @param alignment - Alignment value ('left', 'center', 'right')
+ * @returns Tailwind class string
+ */
+const getAlignmentClass = (alignment: string): string => {
+  switch (alignment) {
+    case 'center':
+      return 'text-center';
+    case 'right':
+      return 'text-right';
+    default:
+      return 'text-left';
+  }
+};
+
 export const formatContent = (text: string): ProcessedMarkdown => {
   const lines = text.split('\n');
   let html = '';
@@ -92,6 +125,7 @@ export const formatContent = (text: string): ProcessedMarkdown => {
   let inCodeBlock = false;
   let inTable = false;
   let inBlockquote = false;
+  let tableAlignments: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -124,11 +158,15 @@ export const formatContent = (text: string): ProcessedMarkdown => {
       }
       // Remove leading > symbols and spaces (support nested blockquotes)
       let blockquoteContent = line;
+      let nestLevel = 0;
       while (blockquoteContent.startsWith('>')) {
         blockquoteContent = blockquoteContent.substring(1).replace(/^\s/, '');
+        nestLevel++;
       }
       const content = processInlineMarkdown(blockquoteContent);
-      html += `<p class="my-2">${content}</p>`;
+      // Add nested blockquote styling based on nesting level
+      const nestingClass = nestLevel > 1 ? 'ml-4 border-l-2 border-gray-600 pl-3' : '';
+      html += `<p class="my-2 ${nestingClass}">${content}</p>`;
     } else {
       if (inBlockquote) {
         html += '</blockquote>';
@@ -150,16 +188,24 @@ export const formatContent = (text: string): ProcessedMarkdown => {
         const isHeader = i + 1 < lines.length && lines[i + 1].includes('---') && lines[i + 1].includes('|');
         const cellTag = isHeader ? 'th' : 'td';
         
+        // Parse alignments from separator row if this is header
+        if (isHeader && tableAlignments.length === 0) {
+          tableAlignments = parseTableAlignments(lines[i + 1]);
+        }
+        
         html += '<tr>';
-        cells.forEach(cell => {
+        cells.forEach((cell, index) => {
           const cellContent = processInlineMarkdown(cell);
-          html += `<${cellTag} class="border border-gray-600 px-4 py-2 ${isHeader ? 'bg-gray-800 font-bold text-[var(--class-color)]' : 'text-gray-300'}">${cellContent}</${cellTag}>`;
+          const alignment = tableAlignments[index] || 'left';
+          const alignClass = getAlignmentClass(alignment);
+          html += `<${cellTag} class="border border-gray-600 px-4 py-2 ${alignClass} ${isHeader ? 'bg-gray-800 font-bold text-[var(--class-color)]' : 'text-gray-300'}">${cellContent}</${cellTag}>`;
         });
         html += '</tr>';
       } else {
         if (inTable) {
           html += '</table></div>';
           inTable = false;
+          tableAlignments = [];
         }
 
         // Skip table separator lines (lines with dashes and pipes)

@@ -67,4 +67,47 @@ describe('ErrorMessage', () => {
     const { container } = render(<ErrorMessage error="Test error" showDetails={false} />);
     expect(container.textContent).not.toContain('Show details');
   });
+
+  it('should provide API error suggestions', () => {
+    const { container } = render(
+      <ErrorMessage error="API key not configured" errorType="api" />
+    );
+    expect(container.textContent).toContain('API key');
+  });
+
+  it('should provide network error suggestions', () => {
+    const { container } = render(
+      <ErrorMessage error="Network timeout occurred" errorType="network" />
+    );
+    expect(container.textContent).toContain('internet connection');
+  });
+
+  it('should provide validation error suggestions', () => {
+    const { container } = render(
+      <ErrorMessage error="Invalid selection" errorType="validation" />
+    );
+    expect(container.textContent).toContain('verify');
+  });
+
+  it('should display appropriate icon for error type', () => {
+    const { container: apiContainer } = render(
+      <ErrorMessage error="API error" errorType="api" />
+    );
+    expect(apiContainer.querySelector('svg')).toBeTruthy();
+  });
+
+  it('should handle long error messages', () => {
+    const longError = 'A'.repeat(500);
+    const { container } = render(<ErrorMessage error={longError} />);
+    expect(container.textContent).toContain('A'.repeat(100));
+  });
+
+  it('should be accessible with proper ARIA labels', () => {
+    const { container } = render(
+      <ErrorMessage error="Test error" context="Error Context" />
+    );
+    const heading = container.querySelector('h3');
+    expect(heading).toBeTruthy();
+    expect(heading?.textContent).toContain('Error Context');
+  });
 });

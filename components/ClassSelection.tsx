@@ -1,8 +1,10 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { WOW_CLASSES } from '../constants.ts';
 import type { WowClass } from '../types.ts';
 import ClassIcon from './ClassIcon.tsx';
+import { ClassCardEnhanced } from './ClassCardEnhanced.tsx';
+import '../styles/animations.css';
 
 interface ClassSelectionProps {
   onSelectClass: (wowClass: WowClass) => void;
@@ -24,15 +26,17 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
     }
   }, []);
 
-  const toggleFavorite = (e: React.MouseEvent, classId: string) => {
+  const toggleFavorite = useCallback((e: React.MouseEvent, classId: string) => {
     e.stopPropagation();
-    const newFavorites = favorites.includes(classId)
-      ? favorites.filter(id => id !== classId)
-      : [...favorites, classId];
-    
-    setFavorites(newFavorites);
-    localStorage.setItem('wow_class_helper_favorites', JSON.stringify(newFavorites));
-  };
+    setFavorites(prevFavorites => {
+      const newFavorites = prevFavorites.includes(classId)
+        ? prevFavorites.filter(id => id !== classId)
+        : [...prevFavorites, classId];
+      
+      localStorage.setItem('wow_class_helper_favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  }, []);
 
   const filteredClasses = useMemo(() => {
     return WOW_CLASSES.filter(wowClass => {
@@ -47,6 +51,11 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
       return a.name.localeCompare(b.name);
     });
   }, [searchTerm, roleFilter, favorites]);
+
+  const handleClearFilters = useCallback(() => {
+    setSearchTerm('');
+    setRoleFilter('All');
+  }, []);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -92,18 +101,18 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
         <div className="text-center py-12">
           <p className="text-gray-400 text-lg">No classes found matching your criteria.</p>
           <button 
-            onClick={() => {setSearchTerm(''); setRoleFilter('All');}}
+            onClick={handleClearFilters}
             className="mt-4 text-yellow-500 hover:text-yellow-400 underline"
           >
             Clear Filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 md:gap-6 w-full max-w-7xl px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 w-full max-w-7xl px-4">
           {filteredClasses.map((wowClass) => (
-            <ClassIcon 
-              key={wowClass.id} 
-              wowClass={wowClass} 
+            <ClassCardEnhanced
+              key={wowClass.id}
+              wowClass={wowClass}
               onClick={() => onSelectClass(wowClass)}
               isFavorite={favorites.includes(wowClass.id)}
               onToggleFavorite={(e) => toggleFavorite(e, wowClass.id)}
@@ -115,4 +124,4 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
   );
 };
 
-export default ClassSelection;
+export default React.memo(ClassSelection);

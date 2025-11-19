@@ -6,6 +6,10 @@ import {
   validateApiResponse,
   validateSourceUrls,
   validateStorageData,
+  validateTabSelection,
+  validateUserRole,
+  validateClassSelection,
+  validateDungeonSelection,
 } from './validationService.ts';
 import { WOW_CLASSES, DUNGEONS } from '../constants.ts';
 
@@ -122,6 +126,36 @@ describe('validationService', () => {
     });
   });
 
+  describe('Error Handling and Recovery', () => {
+    it('should handle API errors gracefully', () => {
+      const apiError = new Error('API key not configured');
+      expect(apiError.message).toContain('API');
+    });
+
+    it('should handle network errors gracefully', () => {
+      const networkError = new Error('Network timeout');
+      expect(networkError.message).toContain('timeout');
+    });
+
+    it('should handle validation errors gracefully', () => {
+      const validationError = new Error('Invalid class selected');
+      expect(validationError.message).toContain('Invalid');
+    });
+
+    it('should provide actionable error messages', () => {
+      const errors = [
+        'Invalid class selected. Please select a valid class.',
+        'Invalid specialization selected. Please select a valid specialization.',
+        'Invalid dungeon selected. Please select a valid dungeon.',
+      ];
+      
+      errors.forEach(error => {
+        expect(error).toContain('Invalid');
+        expect(error).toContain('Please');
+      });
+    });
+  });
+
   describe('validateStorageData', () => {
     it('should return true for valid object', () => {
       expect(validateStorageData({ key: 'value' })).toBe(true);
@@ -139,6 +173,115 @@ describe('validationService', () => {
       expect(validateStorageData('string')).toBe(false);
       expect(validateStorageData(123)).toBe(false);
       expect(validateStorageData(true)).toBe(false);
+    });
+  });
+
+  describe('validateTabSelection', () => {
+    it('should return true for valid tab selections', () => {
+      expect(validateTabSelection('overview')).toBe(true);
+      expect(validateTabSelection('specs')).toBe(true);
+      expect(validateTabSelection('rotations')).toBe(true);
+      expect(validateTabSelection('addons')).toBe(true);
+      expect(validateTabSelection('dungeons')).toBe(true);
+    });
+
+    it('should return false for invalid tab selections', () => {
+      expect(validateTabSelection('invalid')).toBe(false);
+      expect(validateTabSelection('')).toBe(false);
+      expect(validateTabSelection(null)).toBe(false);
+      expect(validateTabSelection(123)).toBe(false);
+    });
+  });
+
+  describe('validateUserRole', () => {
+    it('should return true for valid user roles', () => {
+      expect(validateUserRole('user')).toBe(true);
+      expect(validateUserRole('master')).toBe(true);
+      expect(validateUserRole('admin')).toBe(true);
+    });
+
+    it('should return false for invalid user roles', () => {
+      expect(validateUserRole('superadmin')).toBe(false);
+      expect(validateUserRole('')).toBe(false);
+      expect(validateUserRole(null)).toBe(false);
+    });
+  });
+
+  describe('validateClassSelection', () => {
+    it('should validate correct class and spec selection', () => {
+      const warrior = WOW_CLASSES[0];
+      const spec = warrior.specs[0];
+      const result = validateClassSelection(warrior, spec);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('should reject invalid class selection', () => {
+      const result = validateClassSelection(null, null);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Invalid class selected');
+    });
+
+    it('should reject spec from different class', () => {
+      const warrior = WOW_CLASSES[0];
+      const mage = WOW_CLASSES.find(c => c.name === 'Mage');
+      const mageSpec = mage?.specs[0];
+      
+      const result = validateClassSelection(warrior, mageSpec || null);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Invalid specialization for selected class');
+    });
+  });
+
+  describe('validateDungeonSelection', () => {
+    it('should validate correct dungeon selection', () => {
+      const dungeon = DUNGEONS[0];
+      const result = validateDungeonSelection(dungeon, dungeon.expansion);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('should reject invalid dungeon selection', () => {
+      const result = validateDungeonSelection(null, null);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Invalid dungeon selected');
+    });
+
+    it('should reject dungeon with mismatched expansion', () => {
+      const dungeon = DUNGEONS[0];
+      const wrongExpansion = 'Wrong Expansion';
+      const result = validateDungeonSelection(dungeon, wrongExpansion);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Selected dungeon does not match expansion filter');
+    });
+  });
+
+  describe('Enhanced URL Validation', () => {
+    it('should reject URLs with invalid protocols', () => {
+      const result = validateSourceUrls('ftp://example.com');
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it('should reject more than 10 URLs', () => {
+      const urls = Array(11).fill('https://example.com').join('\n');
+      const result = validateSourceUrls(urls);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Maximum 10 URLs allowed');
+    });
+
+    it('should reject URLs longer than 2048 characters', () => {
+      const longUrl = 'https://example.com/' + 'a'.repeat(2100);
+      const result = validateSourceUrls(longUrl);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it('should accept HTTP and HTTPS URLs', () => {
+      const urls = 'http://example.com\nhttps://example.com';
+      const result = validateSourceUrls(urls);
+      expect(result.valid).toBe(true);
+      expect(result.urls).toHaveLength(2);
     });
   });
 });

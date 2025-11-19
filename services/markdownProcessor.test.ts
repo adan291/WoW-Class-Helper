@@ -274,5 +274,83 @@ This is a paragraph with **bold** and *italic*.
       expect(result.__html).toContain('Level 2');
       expect(result.__html).toContain('Level 3');
     });
+
+    it('should support table column alignment (left, center, right)', () => {
+      const markdown = `| Left | Center | Right |
+| :--- | :---: | ---: |
+| L1 | C1 | R1 |
+| L2 | C2 | R2 |`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toContain('text-left');
+      expect(result.__html).toContain('text-center');
+      expect(result.__html).toContain('text-right');
+      expect(result.__html).toContain('L1');
+      expect(result.__html).toContain('C1');
+      expect(result.__html).toContain('R1');
+    });
+
+    it('should handle malformed tables without crashing', () => {
+      const markdown = `| Header 1 | Header 2
+| --- | --- |
+| Cell 1 | Cell 2 |`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toBeDefined();
+      expect(typeof result.__html).toBe('string');
+      expect(result.__html).not.toMatch(/<script/i);
+    });
+
+    it('should handle tables with complex content', () => {
+      const markdown = `| Ability | Cooldown | Description |
+| --- | --- | --- |
+| **Fireball** | 5 sec | A *powerful* spell |
+| Frostbolt | 3 sec | Freezes enemies |`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toContain('<table');
+      expect(result.__html).toContain('Fireball');
+      expect(result.__html).toContain('<strong');
+      expect(result.__html).toContain('<em');
+    });
+
+    it('should render blockquotes with proper styling', () => {
+      const markdown = `> This is a blockquote
+> with multiple lines`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toContain('<blockquote');
+      expect(result.__html).toContain('border-l-4');
+      expect(result.__html).toContain('border-[var(--class-color)]');
+      expect(result.__html).toContain('This is a blockquote');
+      expect(result.__html).toContain('with multiple lines');
+    });
+
+    it('should handle deeply nested blockquotes', () => {
+      const markdown = `> Level 1
+> > Level 2
+> > > Level 3
+> > > > Level 4`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toContain('Level 1');
+      expect(result.__html).toContain('Level 2');
+      expect(result.__html).toContain('Level 3');
+      expect(result.__html).toContain('Level 4');
+      // Verify nested styling is applied
+      expect(result.__html).toContain('ml-4');
+      expect(result.__html).toContain('border-l-2');
+    });
+
+    it('should handle blockquotes with inline formatting', () => {
+      const markdown = `> This is **bold** and *italic* in a blockquote`;
+      
+      const result = formatContent(markdown);
+      expect(result.__html).toContain('<blockquote');
+      expect(result.__html).toContain('<strong');
+      expect(result.__html).toContain('<em');
+      expect(result.__html).toContain('bold');
+      expect(result.__html).toContain('italic');
+    });
   });
 });

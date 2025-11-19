@@ -19,6 +19,13 @@ export default defineConfig(({ mode }) => {
           '@': path.resolve(__dirname, '.'),
         }
       },
+      css: {
+        postcss: './postcss.config.js',
+      },
+      build: {
+        cssCodeSplit: true,
+        cssMinify: 'lightningcss',
+      },
       test: {
         globals: true,
         environment: 'jsdom',
