@@ -37,13 +37,14 @@ export const getSpecGuide = (wowClass: WowClass, spec: Specialization, sourceUrl
     *   List the optimal secondary stats (e.g., Haste > Mastery > Critical Strike > Versatility) for this specialization.
     *   Provide a clear explanation of *why* each stat is important and how it interacts with the spec's kit.
 
-2.  **Core Talents (Mythic+):**
-    *   Explain the "must-have" talents for a standard Mythic+ dungeon build.
-    *   Highlight any key choice nodes and when to take which option.
+2.  **Mythic+ Talent Build:**
+    *   **Dedicate this section specifically to Mythic+ content.**
+    *   Explain the core philosophy of the Mythic+ build (e.g., focus on AoE, utility, or priority damage).
+    *   List the "must-have" talents.
+    *   Highlight key choice nodes and explain when to take which option for dungeons.
 
-3.  **Example Talent Builds:**
-    *   Provide 2-3 example talent builds for different content types (e.g., "Standard Mythic+", "Single-Target Raid", "PvP").
-    *   For each build, briefly explain its focus and playstyle adjustments.
+3.  **Alternative Talent Builds:**
+    *   Provide 1-2 brief example builds for other content types (e.g., "Single-Target Raid", "PvP").
 
 4.  **Advanced Tips:**
     *   **Nuanced Mechanics:** Explain any complex interactions or hidden mechanics that average players might miss.
@@ -53,11 +54,22 @@ export const getSpecGuide = (wowClass: WowClass, spec: Specialization, sourceUrl
 };
 
 export const getRotationGuide = (wowClass: WowClass, spec: Specialization, sourceUrls?: string): Promise<string> => {
-    const prompt = `Generate a detailed rotation and ability priority guide for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown. Include:
+    const prompt = `Generate a detailed rotation and ability priority guide for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown.
+
+CRITICAL FORMATTING INSTRUCTION:
+When listing specific class abilities, major offensive cooldowns, or defensive cooldowns, you MUST format them exactly like this:
+\`[Ability Name]{Cooldown: X sec. ID: SpellID}\`
+Example: \`[Mortal Strike]{Cooldown: 6 sec. ID: 12294}\`
+Example: \`[Heroic Leap]{Cooldown: 45 sec. ID: 6544}\`
+*   **Cooldown:** Provide the base cooldown.
+*   **ID:** Provide the main Spell ID for the ability (best estimate for current patch).
+*   Do NOT put the description inside the curly braces. Put the description *after* the braces.
+
+Include the following sections:
 
 1.  **Single-Target Rotation:**
     *   A strict priority list of abilities to use against a single enemy.
-    *   **Explanation:** For each line in the priority list, explain *why* it is placed there (e.g., "generates resources", "maintains buff").
+    *   **Explanation:** For each line in the priority list, explain *why* it is placed there.
     *   **Common Traps:** Mention any rotational traps (e.g., overcapping resources, clipping dots).
 
 2.  **Multi-Target (AoE) Rotation:**
@@ -65,7 +77,8 @@ export const getRotationGuide = (wowClass: WowClass, spec: Specialization, sourc
     *   Explain when to switch from single-target to AoE abilities.
     
 3.  **Cooldown Usage:**
-    *   Briefly explain how to integrate major offensive cooldowns into the rotation for maximum burst.`;
+    *   Briefly explain how to integrate major offensive cooldowns into the rotation for maximum burst.
+    *   Use the \`[Ability Name]{Cooldown: X sec. ID: SpellID}\` format for all cooldowns mentioned.`;
     return generateContentWithGemini(prompt, sourceUrls);
 };
 
@@ -78,8 +91,10 @@ export const getAddons = (wowClass: WowClass, sourceUrls?: string): Promise<stri
     return generateContentWithGemini(prompt, sourceUrls);
 };
 
-export const getDungeonTips = (wowClass: WowClass, spec: Specialization, sourceUrls?: string): Promise<string> => {
-    const prompt = `For a ${spec.name} ${wowClass.name}, provide specific, expert-level tips for at least two popular Mythic+ dungeons from the current season in World of Warcraft. For each dungeon, focus on:
+export const getDungeonTips = (wowClass: WowClass, spec: Specialization, dungeonName?: string, sourceUrls?: string): Promise<string> => {
+    let targetDungeon = dungeonName || "two popular Mythic+ dungeons from the current season";
+    
+    const prompt = `For a ${spec.name} ${wowClass.name}, provide specific, expert-level tips for ${targetDungeon} in World of Warcraft. Focus on:
 1.  **Key Utility Usage:** Where can this spec's unique utility (e.g., stuns, interrupts, crowd control, buffs) make a huge impact on specific, named trash packs or bosses?
 2.  **Defensive Cooldowns:** On which specific, named boss abilities or dangerous trash pulls should major defensive cooldowns be used?
 3.  **Boss & Trash Strategy:** Any overall strategic advice for this spec to maximize its performance against specific boss mechanics or difficult trash pulls in that dungeon.

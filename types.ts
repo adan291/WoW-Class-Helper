@@ -12,4 +12,9 @@ export interface WowClass {
   specs: Specialization[];
 }
 
+export interface Dungeon {
+  name: string;
+  expansion: string;
+}
+
 export type UserRole = 'user' | 'master' | 'admin';
