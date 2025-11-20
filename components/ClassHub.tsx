@@ -74,6 +74,7 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
   const [activeSpec, setActiveSpec] = useState<Specialization>(wowClass.specs[0]);
   const [selectedExpansion, setSelectedExpansion] = useState<string>('The War Within');
   const [selectedDungeon, setSelectedDungeon] = useState<Dungeon | null>(null);
+  const [guideExpansion, setGuideExpansion] = useState<string>('The War Within');
 
   // Filter dungeons based on expansion and sort alphabetically by name
   const filteredDungeons = useMemo(() => {
@@ -109,12 +110,13 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
 
   const memoizedContentKey = useMemo(() => {
     if (activeTab === 'dungeons') {
-        return `${activeTab}-${activeSpec.id}-${selectedDungeon.name}`;
+        return `${activeTab}-${activeSpec.id}-${selectedDungeon.name}-${selectedExpansion}`;
     }
-    return activeTab === 'specs' || activeTab === 'rotations'
-      ? `${activeTab}-${activeSpec.id}`
-      : activeTab;
-  }, [activeTab, activeSpec, selectedDungeon]);
+    if (activeTab === 'specs' || activeTab === 'rotations') {
+      return `${activeTab}-${activeSpec.id}-${guideExpansion}`;
+    }
+    return `${activeTab}-${guideExpansion}`;
+  }, [activeTab, activeSpec, selectedDungeon, selectedExpansion, guideExpansion]);
 
   // Memoize tab definitions to prevent unnecessary re-renders
   const tabDefinitions = useMemo(() => TAB_DEFINITIONS, []);
@@ -180,20 +182,20 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
       
       switch (activeTab) {
         case 'overview':
-          newContent = await geminiService.getOverview(wowClass, urlsOverride, customUrls);
+          newContent = await geminiService.getOverview(wowClass, urlsOverride, customUrls, guideExpansion);
           break;
         case 'specs':
-          newContent = await geminiService.getSpecGuide(wowClass, activeSpec, urlsOverride, customUrls);
+          newContent = await geminiService.getSpecGuide(wowClass, activeSpec, urlsOverride, customUrls, guideExpansion);
           break;
         case 'rotations':
-          newContent = await geminiService.getRotationGuide(wowClass, activeSpec, urlsOverride, customUrls);
+          newContent = await geminiService.getRotationGuide(wowClass, activeSpec, urlsOverride, customUrls, guideExpansion);
           break;
         case 'addons':
-          newContent = await geminiService.getAddons(wowClass, urlsOverride, customUrls);
+          newContent = await geminiService.getAddons(wowClass, urlsOverride, customUrls, guideExpansion);
           break;
         case 'dungeons':
           if (!selectedDungeon) throw new Error('No dungeon selected');
-          newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride, customUrls);
+          newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride, customUrls, selectedExpansion);
           break;
         default:
           throw new Error(`Unknown tab: ${activeTab}`);
@@ -299,6 +301,23 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
                 </div>
               </div>
             )}
+
+           {/* Expansion Filter for Guides */}
+           {(activeTab === 'overview' || activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'addons') && (
+             <div className="flex items-center ml-auto">
+               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 whitespace-nowrap">Expansion:</span>
+               <select
+                 value={guideExpansion}
+                 onChange={(e) => setGuideExpansion(e.target.value)}
+                 className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-[var(--class-color)] focus:border-[var(--class-color)] block w-full md:w-auto p-2.5"
+                 style={{ borderColor: wowClass.color }}
+               >
+                 {EXPANSIONS.map(exp => (
+                   <option key={exp} value={exp}>{exp}</option>
+                 ))}
+               </select>
+             </div>
+           )}
            
            {/* Dungeon Selector */}
            {activeTab === 'dungeons' && (
