@@ -2,6 +2,10 @@
 import { GoogleGenAI } from "@google/genai";
 import type { WowClass, Specialization } from '../types.ts';
 import { validateSourceUrls, validateApiResponse } from './validationService.ts';
+import {
+  validateAndPrepareGuideRequest,
+  type GeminiReadyContext,
+} from './classOrchestratorService.ts';
 
 // Per coding guidelines, `process.env.API_KEY` is assumed to be available.
 // The GoogleGenAI instance is initialized directly without fallbacks.
@@ -17,6 +21,7 @@ const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(r
 
 /**
  * Generates content with retry logic and comprehensive error handling
+ * Integrates curator validation to ensure data accuracy
  */
 const generateContentWithGemini = async (
   prompt: string,
@@ -104,13 +109,98 @@ const generateContentWithGemini = async (
   }
 };
 
-export const getOverview = (wowClass: WowClass, sourceUrls?: string): Promise<string> => {
-    const prompt = `Provide a detailed and engaging overview for the ${wowClass.name} class in World of Warcraft for the latest expansion. Include its core identity, playstyle, strengths, weaknesses, and a summary of the most significant changes in the most recent major patch. Format the response using markdown.`;
-    return generateContentWithGemini(prompt, sourceUrls);
+/**
+ * Validates class data before generating content
+ * Ensures data integrity and prevents hallucinations
+ */
+const validateClassDataBeforeGeneration = (
+  classId: string,
+  specId?: string,
+  dungeonName?: string,
+  customSourceUrls?: string[]
+): { isValid: boolean; context: GeminiReadyContext | null; error?: string } => {
+  try {
+    const validation = validateAndPrepareGuideRequest(
+      classId,
+      specId,
+      dungeonName,
+      customSourceUrls
+    );
+
+    if (!validation.isValid) {
+      const errorDetails = validation.errors.join('; ');
+      console.warn(`Data validation failed: ${errorDetails}`);
+      return {
+        isValid: false,
+        context: null,
+        error: `Data validation failed: ${errorDetails}`,
+      };
+    }
+
+    if (validation.context && validation.context.dataQuality < 80) {
+      console.warn(`Data quality below threshold: ${validation.context.dataQuality}%`);
+    }
+
+    return {
+      isValid: true,
+      context: validation.context,
+    };
+  } catch (error) {
+    console.error('Error during data validation:', error);
+    return {
+      isValid: false,
+      context: null,
+      error: 'Failed to validate class data',
+    };
+  }
 };
 
-export const getSpecGuide = (wowClass: WowClass, spec: Specialization, sourceUrls?: string): Promise<string> => {
-    const prompt = `Generate a comprehensive, expert-level guide focusing on the build, stats, and advanced strategies for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown. Include the following detailed sections:
+export const getOverview = async (
+  wowClass: WowClass,
+  sourceUrls?: string,
+  customSourceUrls?: string[]
+): Promise<string> => {
+  // Validate class data before generation
+  const validation = validateClassDataBeforeGeneration(
+    wowClass.id,
+    undefined,
+    undefined,
+    customSourceUrls
+  );
+
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Class data validation failed');
+  }
+
+  // Use verified sources from curator if available
+  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+
+  const prompt = `Provide a detailed and engaging overview for the ${wowClass.name} class in World of Warcraft for the latest expansion. Include its core identity, playstyle, strengths, weaknesses, and a summary of the most significant changes in the most recent major patch. Format the response using markdown.`;
+  return generateContentWithGemini(prompt, finalSourceUrls);
+};
+
+export const getSpecGuide = async (
+  wowClass: WowClass,
+  spec: Specialization,
+  sourceUrls?: string,
+  customSourceUrls?: string[]
+): Promise<string> => {
+  // Validate class and spec data before generation
+  const validation = validateClassDataBeforeGeneration(
+    wowClass.id,
+    spec.id,
+    undefined,
+    customSourceUrls
+  );
+
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Specialization data validation failed');
+  }
+
+  // Use verified sources from curator if available
+  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+
+  const prompt = `Generate a comprehensive, expert-level guide focusing on the build, stats, and advanced strategies for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown. Include the following detailed sections:
 
 1.  **Stat Priority:**
     *   List the optimal secondary stats (e.g., Haste > Mastery > Critical Strike > Versatility) for this specialization.
@@ -130,11 +220,31 @@ export const getSpecGuide = (wowClass: WowClass, spec: Specialization, sourceUrl
     *   **Nuanced Mechanics:** Explain any complex interactions or hidden mechanics that average players might miss.
     *   **Common Mistakes:** Detail specific errors players often make with this spec (rotational or positional) and how to avoid them.
     *   **Pro-Tips:** specific tricks to maximize throughput or survivability in high-difficulty content.`;
-    return generateContentWithGemini(prompt, sourceUrls);
+  return generateContentWithGemini(prompt, finalSourceUrls);
 };
 
-export const getRotationGuide = (wowClass: WowClass, spec: Specialization, sourceUrls?: string): Promise<string> => {
-    const prompt = `Generate a detailed rotation and ability priority guide for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown.
+export const getRotationGuide = async (
+  wowClass: WowClass,
+  spec: Specialization,
+  sourceUrls?: string,
+  customSourceUrls?: string[]
+): Promise<string> => {
+  // Validate class and spec data before generation
+  const validation = validateClassDataBeforeGeneration(
+    wowClass.id,
+    spec.id,
+    undefined,
+    customSourceUrls
+  );
+
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Rotation guide data validation failed');
+  }
+
+  // Use verified sources from curator if available
+  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+
+  const prompt = `Generate a detailed rotation and ability priority guide for the ${spec.name} ${wowClass.name} specialization in World of Warcraft's latest expansion. Format the response using markdown.
 
 CRITICAL FORMATTING INSTRUCTION:
 When listing specific class abilities, major offensive cooldowns, or defensive cooldowns, you MUST format them exactly like this:
@@ -166,22 +276,62 @@ Include the following sections:
         *   "Use on high incoming magic damage."
         *   "Save for Boss X's specific ability."
     *   Include Spell IDs for all defensives.`;
-    return generateContentWithGemini(prompt, sourceUrls);
+  return generateContentWithGemini(prompt, finalSourceUrls);
 };
 
-export const getAddons = (wowClass: WowClass, sourceUrls?: string): Promise<string> => {
-    const prompt = `List the most essential addons and WeakAuras for a ${wowClass.name} player in World of Warcraft's latest expansion. Format the response using markdown.
+export const getAddons = async (
+  wowClass: WowClass,
+  sourceUrls?: string,
+  customSourceUrls?: string[]
+): Promise<string> => {
+  // Validate class data before generation
+  const validation = validateClassDataBeforeGeneration(
+    wowClass.id,
+    undefined,
+    undefined,
+    customSourceUrls
+  );
+
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Addons guide data validation failed');
+  }
+
+  // Use verified sources from curator if available
+  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+
+  const prompt = `List the most essential addons and WeakAuras for a ${wowClass.name} player in World of Warcraft's latest expansion. Format the response using markdown.
 - **Addons:** Categorize them into "General Must-Haves" (like DBM, Details!) and "${wowClass.name} Specific". Briefly explain why each is useful.
 - **WeakAuras:** 
   - Describe the key things a ${wowClass.name} must track, including major offensive cooldowns, defensive cooldowns, procs, and resource levels. 
   - Provide specific examples of WeakAura search terms for wago.io to find popular, comprehensive packs (e.g., "Afenar Warrior", "Luxthos Shaman").`;
-    return generateContentWithGemini(prompt, sourceUrls);
+  return generateContentWithGemini(prompt, finalSourceUrls);
 };
 
-export const getDungeonTips = (wowClass: WowClass, spec: Specialization, dungeonName?: string, sourceUrls?: string): Promise<string> => {
-    let targetDungeon = dungeonName || "two popular Mythic+ dungeons from the current season";
-    
-    const prompt = `For a ${spec.name} ${wowClass.name}, provide specific, expert-level tips for ${targetDungeon} in World of Warcraft.
+export const getDungeonTips = async (
+  wowClass: WowClass,
+  spec: Specialization,
+  dungeonName?: string,
+  sourceUrls?: string,
+  customSourceUrls?: string[]
+): Promise<string> => {
+  // Validate class, spec, and dungeon data before generation
+  const validation = validateClassDataBeforeGeneration(
+    wowClass.id,
+    spec.id,
+    dungeonName,
+    customSourceUrls
+  );
+
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Dungeon tips data validation failed');
+  }
+
+  // Use verified sources from curator if available
+  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+
+  let targetDungeon = dungeonName || "two popular Mythic+ dungeons from the current season";
+  
+  const prompt = `For a ${spec.name} ${wowClass.name}, provide specific, expert-level tips for ${targetDungeon} in World of Warcraft.
     
     Structure the response as follows:
     
@@ -196,5 +346,5 @@ export const getDungeonTips = (wowClass: WowClass, spec: Specialization, dungeon
             *   "Position yourself at X to bait Y mechanic."
     
     Format the response in markdown. Use the \`[Ability Name]{Cooldown: X sec. ID: Y}\` format if referencing specific class spells.`;
-    return generateContentWithGemini(prompt, sourceUrls);
+  return generateContentWithGemini(prompt, finalSourceUrls);
 };

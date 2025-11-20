@@ -11,8 +11,11 @@ interface GuideSectionProps {
   title: string;
   icon?: React.ReactNode;
   isLoading: boolean;
+  isValidating?: boolean;
   content: string;
   error: string | null;
+  validationErrors?: string[];
+  dataQuality?: number;
   onRetry?: () => void;
   userRole?: 'user' | 'master' | 'admin';
 }
@@ -20,9 +23,12 @@ interface GuideSectionProps {
 const GuideSection = ({ 
   title, 
   // icon, 
-  isLoading, 
+  isLoading,
+  isValidating = false,
   content, 
   error,
+  validationErrors = [],
+  dataQuality = 100,
   onRetry,
   userRole = 'user'
 }: GuideSectionProps) => {
@@ -61,6 +67,45 @@ const GuideSection = ({
             </>
           )}
         </button>
+      )}
+
+      {isValidating && (
+        <div className="flex items-center gap-2 text-blue-400 mb-4">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+          <span className="text-sm">Validating data...</span>
+        </div>
+      )}
+
+      {validationErrors.length > 0 && (
+        <div className="bg-red-900/20 border border-red-500 p-4 rounded-lg mb-4">
+          <p className="text-red-400 font-semibold mb-2">Data Validation Errors:</p>
+          <ul className="text-red-300 text-sm space-y-1">
+            {validationErrors.map((err, i) => (
+              <li key={i}>• {err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!isValidating && dataQuality < 90 && dataQuality > 0 && !error && (
+        <div className="bg-yellow-900/20 border border-yellow-500 p-3 rounded-lg mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-yellow-400 text-sm font-semibold">Data Quality:</span>
+            <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all ${
+                  dataQuality >= 90
+                    ? 'bg-green-500'
+                    : dataQuality >= 80
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
+                }`}
+                style={{ width: `${dataQuality}%` }}
+              ></div>
+            </div>
+            <span className="text-yellow-300 text-sm font-semibold">{dataQuality.toFixed(1)}%</span>
+          </div>
+        </div>
       )}
 
       {isLoading && (

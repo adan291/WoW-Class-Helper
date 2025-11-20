@@ -4,6 +4,7 @@ import type { WowClass, Specialization, UserRole, Dungeon } from '../types.ts';
 import { DUNGEONS, EXPANSIONS } from '../constants.ts';
 import * as geminiService from '../services/geminiService.ts';
 import { cacheService } from '../services/cacheService.ts';
+import { validateAndPrepareGuideRequest } from '../services/classOrchestratorService.ts';
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 import { SpecIcon } from './SpecIcon.tsx';
@@ -98,7 +99,10 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
 
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isValidating, setIsValidating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [dataQuality, setDataQuality] = useState<number>(100);
   const [sourceUrls, setSourceUrls] = useState('');
 
   const memoizedContentKey = useMemo(() => {
@@ -115,7 +119,9 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
 
   const fetchContent = useCallback(async (urlsOverride?: string) => {
     setIsLoading(true);
+    setIsValidating(true);
     setError(null);
+    setValidationErrors([]);
     try {
       // Validate inputs with comprehensive checks
       if (!wowClass || !wowClass.id) {
@@ -134,6 +140,27 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
         throw new Error(`Invalid tab selected: ${activeTab}`);
       }
 
+      // Validate data with curator system
+      const validation = validateAndPrepareGuideRequest(
+        wowClass.id,
+        activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'dungeons' ? activeSpec.id : undefined,
+        activeTab === 'dungeons' ? selectedDungeon.name : undefined
+      );
+
+      if (!validation.isValid) {
+        setValidationErrors(validation.errors);
+        throw new Error(`Data validation failed: ${validation.errors.join('; ')}`);
+      }
+
+      if (validation.context) {
+        setDataQuality(validation.context.dataQuality);
+        if (validation.context.dataQuality < 80) {
+          console.warn(`Data quality below threshold: ${validation.context.dataQuality}%`);
+        }
+      }
+
+      setIsValidating(false);
+
       // Check cache first (only if no custom URLs override)
       // This implements lazy loading by preventing unnecessary API calls
       if (!urlsOverride) {
@@ -147,21 +174,23 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
 
       // Lazy load content only when needed
       let newContent = '';
+      const customUrls = urlsOverride ? [urlsOverride] : undefined;
+      
       switch (activeTab) {
         case 'overview':
-          newContent = await geminiService.getOverview(wowClass, urlsOverride);
+          newContent = await geminiService.getOverview(wowClass, urlsOverride, customUrls);
           break;
         case 'specs':
-          newContent = await geminiService.getSpecGuide(wowClass, activeSpec, urlsOverride);
+          newContent = await geminiService.getSpecGuide(wowClass, activeSpec, urlsOverride, customUrls);
           break;
         case 'rotations':
-          newContent = await geminiService.getRotationGuide(wowClass, activeSpec, urlsOverride);
+          newContent = await geminiService.getRotationGuide(wowClass, activeSpec, urlsOverride, customUrls);
           break;
         case 'addons':
-          newContent = await geminiService.getAddons(wowClass, urlsOverride);
+          newContent = await geminiService.getAddons(wowClass, urlsOverride, customUrls);
           break;
         case 'dungeons':
-          newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride);
+          newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride, customUrls);
           break;
         default:
           throw new Error(`Unknown tab: ${activeTab}`);
@@ -193,6 +222,7 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
       setContent('');
     } finally {
       setIsLoading(false);
+      setIsValidating(false);
     }
   }, [activeTab, wowClass, activeSpec, selectedDungeon, userRole, sourceUrls, memoizedContentKey]);
 
@@ -310,8 +340,11 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
           title={getTabTitle()}
           icon={getTabIcon()}
           isLoading={isLoading}
+          isValidating={isValidating}
           content={content}
           error={error}
+          validationErrors={validationErrors}
+          dataQuality={dataQuality}
           onRetry={useCallback(() => fetchContent(), [fetchContent])}
           userRole={userRole}
         />
