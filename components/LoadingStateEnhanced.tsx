@@ -22,9 +22,9 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
     <div className="flex flex-col items-center justify-center py-20 gap-6">
       {/* Animated spinner */}
       <div className="relative w-16 h-16">
-        {/* Outer ring */}
+        {/* Outer ring - rotating clockwise */}
         <div
-          className="absolute inset-0 rounded-full border-4 border-transparent spin"
+          className="absolute inset-0 rounded-full border-4 border-transparent"
           style={{
             borderTopColor: classColor,
             borderRightColor: classColor,
@@ -32,7 +32,7 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
           }}
         />
 
-        {/* Middle ring */}
+        {/* Middle ring - rotating counter-clockwise */}
         <div
           className="absolute inset-2 rounded-full border-4 border-transparent"
           style={{
@@ -42,7 +42,7 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
           }}
         />
 
-        {/* Inner glow */}
+        {/* Inner glow - pulsing */}
         <div
           className="absolute inset-4 rounded-full"
           style={{
@@ -51,23 +51,35 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
           }}
         />
 
-        {/* Center dot */}
+        {/* Center dot - glowing */}
         <div
           className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full transform -translate-x-1/2 -translate-y-1/2"
           style={{
             background: classColor,
-            boxShadow: `0 0 10px ${classColor}`,
+            boxShadow: `0 0 10px ${classColor}, 0 0 20px ${classColor}80`,
+            animation: 'pulse 1.5s ease-in-out infinite',
           }}
         />
       </div>
 
-      {/* Loading text */}
+      {/* Loading text with animated dots */}
       <div className="text-center">
         <p
-          className="text-lg font-bold mb-2 transition-all duration-300"
+          className="text-lg font-bold mb-2 transition-all duration-300 h-7 flex items-center justify-center"
           style={{ color: classColor }}
         >
-          {message}
+          <span className="inline-block">
+            {message.replace('...', '')}
+            <span className="inline-block w-6 text-left">
+              <span
+                style={{
+                  animation: 'dots 1.5s steps(4, end) infinite',
+                }}
+              >
+                .
+              </span>
+            </span>
+          </span>
         </p>
         <div className="flex gap-1 justify-center">
           {[0, 1, 2].map((i) => (
