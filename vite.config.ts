@@ -23,8 +23,20 @@ export default defineConfig(({ mode }) => {
         postcss: './postcss.config.js',
       },
       build: {
+        target: 'ES2022',
+        minify: 'esbuild',
         cssCodeSplit: true,
         cssMinify: 'esbuild',
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'vendor': ['react', 'react-dom'],
+              'gemini': ['@google/genai'],
+            }
+          }
+        },
+        reportCompressedSize: false,
+        chunkSizeWarningLimit: 500,
       },
       test: {
         globals: true,

@@ -123,4 +123,4 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
   );
 };
 
-export default React.memo(ClassSelection);
+export default ClassSelection;

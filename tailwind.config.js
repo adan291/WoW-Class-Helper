@@ -25,12 +25,13 @@ export default {
         'wow-evoker': '#33937F',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'glow-pulse': 'glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'shimmer': 'shimmer 2s infinite',
         'lift': 'lift 0.3s ease-out',
+        'fade-in': 'fade-in 0.3s ease-in-out',
       },
       keyframes: {
         'glow-pulse': {
@@ -44,6 +45,10 @@ export default {
         'lift': {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-4px)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
       },
     },

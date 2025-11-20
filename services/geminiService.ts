@@ -13,11 +13,23 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
+const PROMPT_MAX_LENGTH = 30000;
+const RESPONSE_MAX_LENGTH = 100000;
 
 /**
  * Implements exponential backoff for retries
  */
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Checks if an error is retryable based on error message
+ */
+const isRetryableError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return msg.includes('timeout') || msg.includes('network') || 
+         msg.includes('temporarily') || msg.includes('503') || msg.includes('429');
+};
 
 /**
  * Generates content with retry logic and comprehensive error handling
@@ -57,7 +69,7 @@ const generateContentWithGemini = async (
     }
 
     // Validate prompt length
-    if (finalPrompt.length > 30000) {
+    if (finalPrompt.length > PROMPT_MAX_LENGTH) {
       throw new Error('Prompt is too long. Please reduce the content size.');
     }
 
@@ -75,16 +87,7 @@ const generateContentWithGemini = async (
   } catch (error) {
     console.error(`Error calling Gemini API (attempt ${retryCount + 1}/${MAX_RETRIES}):`, error);
 
-    // Determine if error is retryable
-    const isRetryable =
-      error instanceof Error &&
-      (error.message.includes('timeout') ||
-        error.message.includes('network') ||
-        error.message.includes('temporarily') ||
-        error.message.includes('503') ||
-        error.message.includes('429'));
-
-    if (isRetryable && retryCount < MAX_RETRIES) {
+    if (isRetryableError(error) && retryCount < MAX_RETRIES) {
       const waitTime = RETRY_DELAY_MS * Math.pow(2, retryCount);
       console.log(`Retrying in ${waitTime}ms...`);
       await delay(waitTime);

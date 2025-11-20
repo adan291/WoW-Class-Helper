@@ -72,10 +72,9 @@ const TAB_DEFINITIONS: TabDefinition[] = [
 const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [activeSpec, setActiveSpec] = useState<Specialization>(wowClass.specs[0]);
-  // Default to "The War Within" to show current expansion content first
   const [selectedExpansion, setSelectedExpansion] = useState<string>('The War Within');
+  const [selectedDungeon, setSelectedDungeon] = useState<Dungeon | null>(null);
 
-  
   // Filter dungeons based on expansion and sort alphabetically by name
   const filteredDungeons = useMemo(() => {
     const dungeons = selectedExpansion === 'All' 
@@ -84,18 +83,21 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
     return dungeons.sort((a, b) => a.name.localeCompare(b.name));
   }, [selectedExpansion]);
 
-  const [selectedDungeon, setSelectedDungeon] = useState<Dungeon>(filteredDungeons[0] || DUNGEONS[0]);
-  
-  // Update selected dungeon when filter changes or dungeons load
+  // Initialize selected dungeon on first render
   useEffect(() => {
-    if (filteredDungeons.length > 0) {
-        // If the currently selected dungeon is not in the new list, select the first one
-        const exists = filteredDungeons.find(d => d.name === selectedDungeon.name);
-        if (!exists) {
-            setSelectedDungeon(filteredDungeons[0]);
-        }
+    if (!selectedDungeon && filteredDungeons.length > 0) {
+      setSelectedDungeon(filteredDungeons[0]);
     }
-  }, [filteredDungeons, selectedDungeon]);
+  }, []);
+  // Update selected dungeon when expansion filter changes
+  useEffect(() => {
+    if (filteredDungeons.length > 0 && selectedDungeon) {
+      const exists = filteredDungeons.find(d => d.name === selectedDungeon.name);
+      if (!exists) {
+        setSelectedDungeon(filteredDungeons[0]);
+      }
+    }
+  }, [filteredDungeons]);
 
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -130,7 +132,7 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
       if (!activeSpec || !activeSpec.id) {
         throw new Error('Invalid specialization selected. Please select a valid specialization.');
       }
-      if (activeTab === 'dungeons' && (!selectedDungeon || !selectedDungeon.name)) {
+      if (activeTab === 'dungeons' && !selectedDungeon) {
         throw new Error('Invalid dungeon selected. Please select a valid dungeon.');
       }
 
@@ -190,6 +192,7 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
           newContent = await geminiService.getAddons(wowClass, urlsOverride, customUrls);
           break;
         case 'dungeons':
+          if (!selectedDungeon) throw new Error('No dungeon selected');
           newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride, customUrls);
           break;
         default:
@@ -316,7 +319,8 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
                 </div>
 
                 {/* Dungeon Select */}
-                <div className="flex items-center">
+                {selectedDungeon && (
+                  <div className="flex items-center">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 whitespace-nowrap">Dungeon:</span>
                     <select 
                       value={selectedDungeon.name}
@@ -331,7 +335,8 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
                         <option key={d.name} value={d.name}>{d.name}</option>
                       ))}
                     </select>
-                </div>
+                  </div>
+                )}
              </div>
            )}
         </div>

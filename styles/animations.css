@@ -286,19 +286,8 @@
 
 /* ============================================
    SMOOTH TRANSITIONS
+   (Defined in globals.css as utilities)
    ============================================ */
-
-.smooth-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.smooth-transition-fast {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.smooth-transition-slow {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
 /* ============================================
    ACCESSIBILITY - REDUCE MOTION
