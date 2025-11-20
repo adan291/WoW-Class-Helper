@@ -13,6 +13,8 @@ import {
   getMockAddons,
   getMockDungeonTips,
 } from './mockGuideService.ts';
+import { statsService } from './statsService.ts';
+import { toastService } from './toastService.ts';
 
 // Per coding guidelines, `process.env.API_KEY` is assumed to be available.
 // The GoogleGenAI instance is initialized directly without fallbacks.
@@ -36,6 +38,20 @@ const isRetryableError = (error: unknown): boolean => {
   const msg = error.message.toLowerCase();
   return msg.includes('timeout') || msg.includes('network') || 
          msg.includes('temporarily') || msg.includes('503') || msg.includes('429');
+};
+
+/**
+ * Callback for retry progress updates
+ */
+export type RetryProgressCallback = (retryCount: number, waitTime: number) => void;
+
+let retryProgressCallback: RetryProgressCallback | null = null;
+
+/**
+ * Set callback for retry progress updates
+ */
+export const setRetryProgressCallback = (callback: RetryProgressCallback | null) => {
+  retryProgressCallback = callback;
 };
 
 /**
@@ -90,6 +106,9 @@ const generateContentWithGemini = async (
       throw new Error('Empty response from API');
     }
 
+    // Track successful API call
+    statsService.recordApiSuccess();
+    toastService.success('✨ Guide generated successfully!');
     return response.text;
   } catch (error) {
     console.error(`Error calling Gemini API (attempt ${retryCount + 1}/${MAX_RETRIES}):`, error);
@@ -97,7 +116,23 @@ const generateContentWithGemini = async (
     if (isRetryableError(error) && retryCount < MAX_RETRIES) {
       const waitTime = RETRY_DELAY_MS * Math.pow(2, retryCount);
       console.log(`Retrying in ${waitTime}ms...`);
-      await delay(waitTime);
+      
+      // Report retry progress
+      if (retryProgressCallback) {
+        retryProgressCallback(retryCount + 1, Math.ceil(waitTime / 1000));
+      }
+      
+      // Wait with progress updates
+      const startTime = Date.now();
+      while (Date.now() - startTime < waitTime) {
+        const elapsed = Math.ceil((Date.now() - startTime) / 1000);
+        const remaining = Math.ceil(waitTime / 1000) - elapsed;
+        if (retryProgressCallback && remaining > 0) {
+          retryProgressCallback(retryCount + 1, remaining);
+        }
+        await delay(100);
+      }
+      
       return generateContentWithGemini(prompt, sourceUrls, retryCount + 1);
     }
 
@@ -115,8 +150,13 @@ const generateContentWithGemini = async (
       // Return mock data on API overload or unavailability
       if (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE')) {
         console.warn('API unavailable, using mock data');
+        statsService.recordApiFailure();
+        statsService.recordMockUsage();
+        toastService.warning('⚠️ API unavailable - showing demo content');
         return `${prompt}\n\n---\n\n**[DEMO MODE]** This is demonstration content. The API is currently unavailable. Please try again in a few moments.`;
       }
+      statsService.recordApiFailure();
+      toastService.error(`❌ ${error.message}`);
       throw error;
     }
 
@@ -199,6 +239,8 @@ export const getOverview = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for overview');
+    statsService.recordMockUsage();
+    toastService.info('📚 Using cached overview');
     return getMockOverview(wowClass, expansion);
   }
 };
@@ -252,6 +294,8 @@ export const getSpecGuide = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for spec guide');
+    statsService.recordMockUsage();
+    toastService.info('📚 Using cached spec guide');
     return getMockSpecGuide(wowClass, spec, expansion);
   }
 };
@@ -317,6 +361,8 @@ Include the following sections:
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for rotation guide');
+    statsService.recordMockUsage();
+    toastService.info('📚 Using cached rotation guide');
     return getMockRotationGuide(wowClass, spec, expansion);
   }
 };
@@ -354,6 +400,8 @@ export const getAddons = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for addons guide');
+    statsService.recordMockUsage();
+    toastService.info('📚 Using cached addons guide');
     return getMockAddons(wowClass, expansion);
   }
 };
@@ -405,6 +453,8 @@ export const getDungeonTips = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for dungeon tips');
+    statsService.recordMockUsage();
+    toastService.info('📚 Using cached dungeon tips');
     return getMockDungeonTips(wowClass, spec, dungeonName, expansion);
   }
 };

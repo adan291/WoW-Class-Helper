@@ -3,8 +3,11 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { WowClass, Specialization, UserRole, Dungeon } from '../types.ts';
 import { DUNGEONS, EXPANSIONS } from '../constants.ts';
 import * as geminiService from '../services/geminiService.ts';
-import { cacheService } from '../services/cacheService.ts';
+import { setRetryProgressCallback } from '../services/geminiService.ts';
+import { cacheService, type CacheMetadata } from '../services/cacheService.ts';
 import { validateAndPrepareGuideRequest } from '../services/classOrchestratorService.ts';
+import { statsService } from '../services/statsService.ts';
+import { fallbackService } from '../services/fallbackService.ts';
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 import { SpecIcon } from './SpecIcon.tsx';
@@ -107,6 +110,8 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [dataQuality, setDataQuality] = useState<number>(100);
   const [sourceUrls, setSourceUrls] = useState('');
+  const [retryCount, setRetryCount] = useState<number>(0);
+  const [retryTimer, setRetryTimer] = useState<number>(0);
 
   const memoizedContentKey = useMemo(() => {
     if (activeTab === 'dungeons') {
@@ -238,6 +243,18 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
   useEffect(() => {
     setActiveSpec(wowClass.specs[0]);
   }, [wowClass]);
+
+  // Setup retry progress callback
+  useEffect(() => {
+    setRetryProgressCallback((retryCount, waitTime) => {
+      setRetryCount(retryCount);
+      setRetryTimer(waitTime);
+    });
+
+    return () => {
+      setRetryProgressCallback(null);
+    };
+  }, []);
   
   const handleRegenerateWithSources = useCallback(() => {
     fetchContent(sourceUrls);
@@ -371,6 +388,8 @@ const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
           dataQuality={dataQuality}
           onRetry={useCallback(() => fetchContent(), [fetchContent])}
           userRole={userRole}
+          retryCount={retryCount}
+          retryTimer={retryTimer}
         />
       </div>
     </div>

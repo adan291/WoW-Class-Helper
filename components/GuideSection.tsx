@@ -18,6 +18,8 @@ interface GuideSectionProps {
   dataQuality?: number;
   onRetry?: () => void;
   userRole?: 'user' | 'master' | 'admin';
+  retryCount?: number;
+  retryTimer?: number;
 }
 
 const GuideSection = ({ 
@@ -30,7 +32,9 @@ const GuideSection = ({
   validationErrors = [],
   dataQuality = 100,
   onRetry,
-  userRole = 'user'
+  userRole = 'user',
+  retryCount = 0,
+  retryTimer = 0,
 }: GuideSectionProps) => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -53,9 +57,16 @@ const GuideSection = ({
       {!isLoading && !error && content && (
         <>
           {content.includes('[DEMO MODE]') && (
-            <div className="absolute top-6 left-6 z-10 flex items-center px-3 py-1.5 bg-blue-900/50 border border-blue-500 text-blue-300 rounded-md text-xs font-medium backdrop-blur-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>
+            <div className="absolute top-6 left-6 z-10 flex items-center gap-2 px-3 py-1.5 bg-blue-900/50 border border-blue-500 text-blue-300 rounded-md text-xs font-medium backdrop-blur-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>
               Demo Mode - API Unavailable
+              <button
+                onClick={onRetry}
+                disabled={isLoading}
+                className="ml-2 px-2 py-0.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-xs font-semibold transition-colors"
+              >
+                Retry
+              </button>
             </div>
           )}
           <button
@@ -120,6 +131,8 @@ const GuideSection = ({
         <LoadingStateEnhanced
           classColor="var(--class-color, #FFD700)"
           message="Generating guide..."
+          retryCount={retryCount}
+          retryTimer={retryTimer}
         />
       )}
 

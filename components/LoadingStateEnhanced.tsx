@@ -4,6 +4,8 @@ import '../styles/animations.css';
 interface LoadingStateEnhancedProps {
   classColor?: string;
   message?: string;
+  retryCount?: number;
+  retryTimer?: number;
 }
 
 /**
@@ -17,6 +19,8 @@ interface LoadingStateEnhancedProps {
 export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
   classColor = '#FFD700',
   message = 'Generating guide...',
+  retryCount = 0,
+  retryTimer = 0,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-6">
@@ -69,7 +73,7 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
           style={{ color: classColor }}
         >
           <span className="inline-block">
-            {message.replace('...', '')}
+            {retryCount > 0 ? `Retrying... ${retryCount}/3` : message.replace('...', '')}
             <span className="inline-block w-6 text-left">
               <span
                 style={{
@@ -81,6 +85,11 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
             </span>
           </span>
         </p>
+        {retryCount > 0 && retryTimer > 0 && (
+          <p className="text-sm text-gray-400 mt-2">
+            Next attempt in {retryTimer}s
+          </p>
+        )}
         <div className="flex gap-1 justify-center">
           {[0, 1, 2].map((i) => (
             <div

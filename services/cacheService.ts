@@ -3,6 +3,13 @@
  * Implements 1-hour TTL for cached entries
  */
 
+export interface CacheMetadata {
+  key: string;
+  timestamp: number;
+  ttl: number;
+  size: number;
+}
+
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -111,6 +118,37 @@ class CacheService {
       size: this.cache.size,
       keys: Array.from(this.cache.keys()),
     };
+  }
+
+  /**
+   * Gets metadata for a cached entry
+   */
+  getMetadata(key: string): CacheMetadata | null {
+    const entry = this.cache.get(key) as CacheEntry<unknown> | undefined;
+    if (!entry) return null;
+
+    return {
+      key,
+      timestamp: entry.timestamp,
+      ttl: CACHE_TTL_MS,
+      size: JSON.stringify(entry.data).length,
+    };
+  }
+
+  /**
+   * Gets all cache metadata
+   */
+  getAllMetadata(): CacheMetadata[] {
+    const metadata: CacheMetadata[] = [];
+    this.cache.forEach((entry, key) => {
+      metadata.push({
+        key,
+        timestamp: entry.timestamp,
+        ttl: CACHE_TTL_MS,
+        size: JSON.stringify(entry.data).length,
+      });
+    });
+    return metadata;
   }
 }
 

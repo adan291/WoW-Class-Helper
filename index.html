@@ -2,11 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="AI-powered World of Warcraft class guides and strategies" />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#FFD700" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="WoW Helper" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="WoW AI Class Helper" />
+    <meta name="msapplication-TileColor" content="#111827" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
     <title>WoW AI Class Helper</title>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23111827' width='180' height='180'/><text x='90' y='135' font-size='80' font-weight='bold' text-anchor='middle' fill='%23FFD700' font-family='Arial'>⚔️</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
@@ -14,5 +23,20 @@
   <body class="bg-gray-900 text-gray-100">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    <script>
+      // Register service worker for PWA functionality
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(
+            (registration) => {
+              console.log('Service Worker registered:', registration);
+            },
+            (error) => {
+              console.warn('Service Worker registration failed:', error);
+            }
+          );
+        });
+      }
+    </script>
   </body>
 </html>

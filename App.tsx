@@ -1,15 +1,27 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { WowClass, UserRole } from './types.ts';
 import ClassSelection from './components/ClassSelection.tsx';
 import ClassHub from './components/ClassHub.tsx';
 import { WowIcon } from './components/icons/WowIcon.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
+import { ToastContainer } from './components/ToastContainer.tsx';
+import { FallbackStatusBar } from './components/FallbackStatusBar.tsx';
+import { AppProviders } from './contexts/AppProviders.tsx';
+import { useAuth } from './contexts/AuthContext.tsx';
+import { mockDataPreloader } from './services/mockDataPreloader.ts';
 import './styles/animations.css';
 
-const App = () => {
+const AppContent = () => {
   const [selectedClass, setSelectedClass] = useState<WowClass | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('user');
+  const { userRole, setUserRole } = useAuth();
+
+  // Preload mock data on app startup
+  useEffect(() => {
+    mockDataPreloader.preloadAllData().catch(error => {
+      console.error('Failed to preload mock data:', error);
+    });
+  }, []);
 
   const handleSelectClass = (wowClass: WowClass) => {
     setSelectedClass(wowClass);
@@ -21,6 +33,7 @@ const App = () => {
 
   return (
     <ErrorBoundary>
+      <FallbackStatusBar />
       <div className="min-h-screen bg-gray-900 text-gray-200 bg-cover bg-center bg-fixed" style={{backgroundImage: "url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1920&auto=format&fit=crop')"}}>
         <div className="min-h-screen bg-gray-900 bg-opacity-80 backdrop-blur-sm">
           <header className="py-4 px-6 flex items-center justify-between border-b-2 shadow-lg bg-gray-900 bg-opacity-50 smooth-transition" style={{borderColor: '#FFD700'}}>
@@ -65,7 +78,16 @@ const App = () => {
           </main>
         </div>
       </div>
+      <ToastContainer />
     </ErrorBoundary>
+  );
+};
+
+const App = () => {
+  return (
+    <AppProviders>
+      <AppContent />
+    </AppProviders>
   );
 };
 
