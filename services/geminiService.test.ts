@@ -24,12 +24,15 @@ describe('geminiService', () => {
   describe('generateGuide', () => {
     it('should generate guide for a class', async () => {
       const mockContext: GeminiReadyContext = {
+        classId: 'warrior',
         className: 'Warrior',
+        specId: 'arms',
         specName: 'Arms',
         dungeonName: undefined,
         isValid: true,
-        errors: [],
         verifiedSourceUrls: [],
+        dataQuality: 100,
+        warnings: [],
       };
 
       // Mock successful response
@@ -42,12 +45,15 @@ describe('geminiService', () => {
 
     it('should handle API errors gracefully', async () => {
       const mockContext: GeminiReadyContext = {
+        classId: 'warrior',
         className: 'Warrior',
+        specId: 'arms',
         specName: 'Arms',
         dungeonName: undefined,
         isValid: true,
-        errors: [],
         verifiedSourceUrls: [],
+        dataQuality: 100,
+        warnings: [],
       };
 
       vi.spyOn(geminiService, 'generateGuide').mockRejectedValue(
@@ -59,12 +65,15 @@ describe('geminiService', () => {
 
     it('should include source URLs when provided', async () => {
       const mockContext: GeminiReadyContext = {
+        classId: 'warrior',
         className: 'Warrior',
+        specId: 'arms',
         specName: 'Arms',
         dungeonName: undefined,
         isValid: true,
-        errors: [],
         verifiedSourceUrls: ['https://example.com', 'https://test.com'],
+        dataQuality: 100,
+        warnings: [],
       };
 
       const mockResponse = 'Guide with sources';
@@ -76,12 +85,15 @@ describe('geminiService', () => {
 
     it('should generate guide with dungeon context', async () => {
       const mockContext: GeminiReadyContext = {
+        classId: 'warrior',
         className: 'Warrior',
+        specId: 'arms',
         specName: 'Arms',
         dungeonName: 'Shadowmoon Burial Ground',
         isValid: true,
-        errors: [],
         verifiedSourceUrls: [],
+        dataQuality: 100,
+        warnings: [],
       };
 
       const mockResponse = 'Dungeon guide for Arms Warrior';
@@ -93,12 +105,15 @@ describe('geminiService', () => {
 
     it('should handle missing optional fields', async () => {
       const mockContext: GeminiReadyContext = {
+        classId: 'warrior',
         className: 'Warrior',
+        specId: undefined,
         specName: undefined,
         dungeonName: undefined,
         isValid: true,
-        errors: [],
         verifiedSourceUrls: [],
+        dataQuality: 100,
+        warnings: [],
       };
 
       const mockResponse = 'General Warrior guide';

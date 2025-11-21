@@ -11,8 +11,6 @@ import {
   validateSearchQuery,
   validateAdminConfig,
   validateClass,
-  validateSpecialization,
-  validateDungeon,
   validateApiResponse,
   validateSourceUrls,
   validateTabSelection,

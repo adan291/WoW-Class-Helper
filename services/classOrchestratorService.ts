@@ -6,7 +6,7 @@
  */
 
 import { WOW_CLASSES } from '../constants.ts';
-import { validateClass, validateSpecialization, validateDungeon } from './validationService.ts';
+import { validateClass, validateSpecialization } from './validationService.ts';
 
 export interface GeminiReadyContext {
   classId: string;

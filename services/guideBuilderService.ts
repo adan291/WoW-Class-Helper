@@ -43,7 +43,6 @@ interface GuideTemplate {
 
 export class GuideBuilderService {
   private readonly GUIDES_KEY = 'wow_class_helper_custom_guides';
-  private readonly TEMPLATES_KEY = 'wow_class_helper_guide_templates';
 
   private readonly TEMPLATES: GuideTemplate[] = [
     {

@@ -1,7 +1,7 @@
-import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, beforeEach, afterEach, vi, expect } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import SearchBar from './SearchBar';
+import SearchBar from './SearchBar.tsx';
 
 describe('SearchBar Component', () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -111,14 +111,12 @@ describe('SearchBar Component', () => {
   it('should debounce search input', async () => {
     const onSelectResult = vi.fn();
     render(<SearchBar onSelectResult={onSelectResult} />);
-    const input = screen.getByPlaceholderText(/search classes/i);
+    const input = screen.getByPlaceholderText(/search classes/i) as HTMLInputElement;
 
-    await user.type(input, 'w', { delay: 50 });
-    await user.type(input, 'a', { delay: 50 });
-    await user.type(input, 'r', { delay: 50 });
+    await user.type(input, 'war');
 
     await waitFor(() => {
-      expect(input).toHaveValue('war');
+      expect(input.value).toBe('war');
     });
   });
 });
