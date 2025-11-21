@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as geminiService from './geminiService.ts';
+import type { GeminiReadyContext } from './classOrchestratorService.ts';
 
 // Mock the GoogleGenAI module
 vi.mock('@google/genai', () => ({
@@ -20,165 +21,90 @@ describe('geminiService', () => {
     delete process.env.API_KEY;
   });
 
-  describe('getOverview', () => {
-    it('should generate overview for a class', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
+  describe('generateGuide', () => {
+    it('should generate guide for a class', async () => {
+      const mockContext: GeminiReadyContext = {
+        className: 'Warrior',
+        specName: 'Arms',
+        dungeonName: undefined,
+        isValid: true,
+        errors: [],
+        verifiedSourceUrls: [],
       };
 
       // Mock successful response
-      const mockResponse = 'Warrior overview content';
-      vi.spyOn(geminiService, 'getOverview').mockResolvedValue(mockResponse);
+      const mockResponse = 'Warrior Arms guide content';
+      vi.spyOn(geminiService, 'generateGuide').mockResolvedValue(mockResponse);
 
-      const result = await geminiService.getOverview(mockClass);
+      const result = await geminiService.generateGuide(mockContext);
       expect(result).toBe(mockResponse);
     });
 
     it('should handle API errors gracefully', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
+      const mockContext: GeminiReadyContext = {
+        className: 'Warrior',
+        specName: 'Arms',
+        dungeonName: undefined,
+        isValid: true,
+        errors: [],
+        verifiedSourceUrls: [],
       };
 
-      vi.spyOn(geminiService, 'getOverview').mockRejectedValue(
+      vi.spyOn(geminiService, 'generateGuide').mockRejectedValue(
         new Error('API Error')
       );
 
-      await expect(geminiService.getOverview(mockClass)).rejects.toThrow('API Error');
-    });
-  });
-
-  describe('getSpecGuide', () => {
-    it('should generate spec guide with proper formatting', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
-      };
-
-      const mockSpec = {
-        id: 'arms',
-        name: 'Arms',
-        role: 'Damage' as const,
-      };
-
-      const mockResponse = 'Arms Warrior guide content';
-      vi.spyOn(geminiService, 'getSpecGuide').mockResolvedValue(mockResponse);
-
-      const result = await geminiService.getSpecGuide(mockClass, mockSpec);
-      expect(result).toBe(mockResponse);
+      await expect(geminiService.generateGuide(mockContext)).rejects.toThrow('API Error');
     });
 
     it('should include source URLs when provided', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
+      const mockContext: GeminiReadyContext = {
+        className: 'Warrior',
+        specName: 'Arms',
+        dungeonName: undefined,
+        isValid: true,
+        errors: [],
+        verifiedSourceUrls: ['https://example.com', 'https://test.com'],
       };
 
-      const mockSpec = {
-        id: 'arms',
-        name: 'Arms',
-        role: 'Damage' as const,
-      };
-
-      const sourceUrls = 'https://example.com\nhttps://test.com';
       const mockResponse = 'Guide with sources';
+      vi.spyOn(geminiService, 'generateGuide').mockResolvedValue(mockResponse);
 
-      vi.spyOn(geminiService, 'getSpecGuide').mockResolvedValue(mockResponse);
-
-      const result = await geminiService.getSpecGuide(mockClass, mockSpec, sourceUrls);
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('getRotationGuide', () => {
-    it('should generate rotation guide with ability formatting', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
-      };
-
-      const mockSpec = {
-        id: 'arms',
-        name: 'Arms',
-        role: 'Damage' as const,
-      };
-
-      const mockResponse = '[Mortal Strike]{Cooldown: 6 sec. ID: 12294. Description: A vicious strike.}';
-      vi.spyOn(geminiService, 'getRotationGuide').mockResolvedValue(mockResponse);
-
-      const result = await geminiService.getRotationGuide(mockClass, mockSpec);
-      expect(result).toContain('[Mortal Strike]');
-    });
-  });
-
-  describe('getAddons', () => {
-    it('should generate addon recommendations', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
-      };
-
-      const mockResponse = 'Addon recommendations for Warrior';
-      vi.spyOn(geminiService, 'getAddons').mockResolvedValue(mockResponse);
-
-      const result = await geminiService.getAddons(mockClass);
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('getDungeonTips', () => {
-    it('should generate dungeon-specific tips', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
-      };
-
-      const mockSpec = {
-        id: 'arms',
-        name: 'Arms',
-        role: 'Damage' as const,
-      };
-
-      const mockResponse = 'Dungeon tips for Arms Warrior';
-      vi.spyOn(geminiService, 'getDungeonTips').mockResolvedValue(mockResponse);
-
-      const result = await geminiService.getDungeonTips(mockClass, mockSpec, 'Shadowmoon Burial Ground');
+      const result = await geminiService.generateGuide(mockContext);
       expect(result).toBe(mockResponse);
     });
 
-    it('should handle missing dungeon name', async () => {
-      const mockClass = {
-        id: 'warrior',
-        name: 'Warrior',
-        color: '#C79C6E',
-        specs: [],
+    it('should generate guide with dungeon context', async () => {
+      const mockContext: GeminiReadyContext = {
+        className: 'Warrior',
+        specName: 'Arms',
+        dungeonName: 'Shadowmoon Burial Ground',
+        isValid: true,
+        errors: [],
+        verifiedSourceUrls: [],
       };
 
-      const mockSpec = {
-        id: 'arms',
-        name: 'Arms',
-        role: 'Damage' as const,
+      const mockResponse = 'Dungeon guide for Arms Warrior';
+      vi.spyOn(geminiService, 'generateGuide').mockResolvedValue(mockResponse);
+
+      const result = await geminiService.generateGuide(mockContext);
+      expect(result).toBe(mockResponse);
+    });
+
+    it('should handle missing optional fields', async () => {
+      const mockContext: GeminiReadyContext = {
+        className: 'Warrior',
+        specName: undefined,
+        dungeonName: undefined,
+        isValid: true,
+        errors: [],
+        verifiedSourceUrls: [],
       };
 
-      const mockResponse = 'General dungeon tips';
-      vi.spyOn(geminiService, 'getDungeonTips').mockResolvedValue(mockResponse);
+      const mockResponse = 'General Warrior guide';
+      vi.spyOn(geminiService, 'generateGuide').mockResolvedValue(mockResponse);
 
-      const result = await geminiService.getDungeonTips(mockClass, mockSpec);
+      const result = await geminiService.generateGuide(mockContext);
       expect(result).toBe(mockResponse);
     });
   });

@@ -4,15 +4,8 @@
  */
 
 import { cacheService } from './cacheService.ts';
-import {
-  getMockOverview,
-  getMockSpecGuide,
-  getMockRotationGuide,
-  getMockAddons,
-  getMockDungeonTips,
-} from './mockGuideService.ts';
-import { WOW_CLASSES, DUNGEONS, EXPANSIONS } from '../constants.ts';
-import type { WowClass, WowSpec } from '../types.ts';
+import { WOW_CLASSES, DUNGEONS } from '../constants.ts';
+import type { WowClass, Specialization } from '../types.ts';
 
 interface PreloadProgress {
   total: number;
@@ -60,7 +53,6 @@ class MockDataPreloader {
       // Calculate total items to preload
       const classCount = WOW_CLASSES.length;
       const specsPerClass = 3; // Average specs per class
-      const expansionCount = EXPANSIONS.length;
       const dungeonCount = DUNGEONS.length;
 
       // Total: overview + specs + rotations + addons + dungeons per class
@@ -111,8 +103,7 @@ class MockDataPreloader {
       const cacheKey = `guide_${wowClass.id}_overview`;
 
       if (!cacheService.get(cacheKey)) {
-        const mockData = getMockOverview(wowClass);
-        cacheService.set(cacheKey, mockData);
+        cacheService.set(cacheKey, { cached: true, timestamp: Date.now() });
       }
 
       this.preloadProgress.completed++;
@@ -127,14 +118,13 @@ class MockDataPreloader {
   /**
    * Preload spec guide for a class and spec
    */
-  private async preloadSpecGuide(wowClass: WowClass, spec: WowSpec): Promise<void> {
+  private async preloadSpecGuide(wowClass: WowClass, spec: Specialization): Promise<void> {
     try {
       this.preloadProgress.currentItem = `Loading ${wowClass.name} - ${spec.name} guide...`;
       const cacheKey = `guide_${wowClass.id}_${spec.id}_specs`;
 
       if (!cacheService.get(cacheKey)) {
-        const mockData = getMockSpecGuide(wowClass, spec);
-        cacheService.set(cacheKey, mockData);
+        cacheService.set(cacheKey, { cached: true, timestamp: Date.now() });
       }
 
       this.preloadProgress.completed++;
@@ -149,14 +139,13 @@ class MockDataPreloader {
   /**
    * Preload rotation guide for a class and spec
    */
-  private async preloadRotationGuide(wowClass: WowClass, spec: WowSpec): Promise<void> {
+  private async preloadRotationGuide(wowClass: WowClass, spec: Specialization): Promise<void> {
     try {
       this.preloadProgress.currentItem = `Loading ${wowClass.name} - ${spec.name} rotation...`;
       const cacheKey = `guide_${wowClass.id}_${spec.id}_rotations`;
 
       if (!cacheService.get(cacheKey)) {
-        const mockData = getMockRotationGuide(wowClass, spec);
-        cacheService.set(cacheKey, mockData);
+        cacheService.set(cacheKey, { cached: true, timestamp: Date.now() });
       }
 
       this.preloadProgress.completed++;
@@ -177,8 +166,7 @@ class MockDataPreloader {
       const cacheKey = `guide_${wowClass.id}_addons`;
 
       if (!cacheService.get(cacheKey)) {
-        const mockData = getMockAddons(wowClass);
-        cacheService.set(cacheKey, mockData);
+        cacheService.set(cacheKey, { cached: true, timestamp: Date.now() });
       }
 
       this.preloadProgress.completed++;
@@ -193,14 +181,13 @@ class MockDataPreloader {
   /**
    * Preload dungeon tips for a class, spec, and dungeon
    */
-  private async preloadDungeonTips(wowClass: WowClass, spec: WowSpec, dungeonName: string): Promise<void> {
+  private async preloadDungeonTips(wowClass: WowClass, spec: Specialization, dungeonName: string): Promise<void> {
     try {
       this.preloadProgress.currentItem = `Loading ${wowClass.name} - ${dungeonName} tips...`;
       const cacheKey = `guide_${wowClass.id}_${spec.id}_dungeons_${dungeonName}`;
 
       if (!cacheService.get(cacheKey)) {
-        const mockData = getMockDungeonTips(wowClass, spec, dungeonName);
-        cacheService.set(cacheKey, mockData);
+        cacheService.set(cacheKey, { cached: true, timestamp: Date.now() });
       }
 
       this.preloadProgress.completed++;

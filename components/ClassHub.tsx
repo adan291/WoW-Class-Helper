@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { WowClass, Specialization, UserRole, Dungeon } from '../types.ts';
 import { DUNGEONS, EXPANSIONS } from '../constants.ts';
@@ -8,11 +7,6 @@ import { cacheService } from '../services/cacheService.ts';
 import { validateAndPrepareGuideRequest } from '../services/classOrchestratorService.ts';
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
-import { SpecIcon } from './SpecIcon.tsx';
-import { SpecCardEnhanced } from './SpecCardEnhanced.tsx';
-import { TabNavigationEnhanced } from './TabNavigationEnhanced.tsx';
-import { HeroSectionEnhanced } from './HeroSectionEnhanced.tsx';
-import { AdminPanelEnhanced } from './AdminPanelEnhanced.tsx';
 import '../styles/animations.css';
 
 interface ClassHubProps {
@@ -23,372 +17,185 @@ interface ClassHubProps {
 
 type TabId = 'overview' | 'specs' | 'rotations' | 'addons' | 'dungeons';
 
-interface TabDefinition {
-  id: TabId;
-  label: string;
-  icon: React.ReactNode;
-}
-
-// SVG Icons for Tabs
-const BookIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path d="M11.25 4.533A9.707 9.707 9.707 0 006 3.75a9.753 9.753 0 00-3.25.557.75.75 0 00-.5.716v14.477a.75.75 0 00.5.716 9.75 9.75 0 013.25.557 9.75 9.75 0 013.25-.557.75.75 0 01.75.75v.75c0 .414.336.75.75.75h.75a.75.75 0 00.75-.75V4.533zM12.75 4.533v14.477a.75.75 0 00.75-.75v-.75a.75.75 0 01.75-.75h.75a.75.75 0 01.75.75v.75a.75.75 0 00.5.716 9.75 9.75 0 003.25.557 9.75 9.75 0 003.25-.557.75.75 0 00.5-.716V4.282a.75.75 0 00-.5-.716 9.753 9.753 0 00-3.25-.557 9.707 9.707 0 00-5.25.783z" />
-  </svg>
-);
-
-const SwordIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path fillRule="evenodd" d="M10.66 15.68a.75.75 0 00-1.272.712l2.828 5.05a.75.75 0 001.348-.244l-2.904-5.518zM13.334 16.05a.75.75 0 00.648-1.304l-4.357-2.18a.75.75 0 00-1.005.292l-1.136 2.03a.75.75 0 00.475 1.09l5.375 1.072zM13.824 11.883a.75.75 0 001.004.291l2.455-1.374a.75.75 0 00.291-1.005l-1.374-2.454a.75.75 0 00-1.004-.291l-2.455 1.374a.75.75 0 00-.291 1.005l1.374 2.454z" clipRule="evenodd" />
-    <path d="M9.773 9.17l1.514-2.704a2.25 2.25 0 013.012-.872l2.455 1.374a2.25 2.25 0 01.872 3.012l-1.514 2.704a.75.75 0 00-.128.77l2.904 5.519a2.25 2.25 0 01-2.645 3.15l-5.05-2.828a2.25 2.25 0 01-1.044-1.564l-1.072-5.375a.75.75 0 00-.494-.59L4.052 10.25a2.25 2.25 0 01.872-3.012l2.455-1.374a2.25 2.25 0 013.012.872l.55.984a.75.75 0 001.062.132l.55-.31a.75.75 0 00.132-1.062l-2.913-5.202z" />
-  </svg>
-);
-
-const TargetIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clipRule="evenodd" />
-    <path d="M10.5 7.5a3 3 0 100 6 3 3 0 000-6z" />
-  </svg>
-);
-
-const PuzzleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path fillRule="evenodd" d="M11.03 3.97a.75.75 0 010 1.06 5.25 5.25 0 001.674 3.905.75.75 0 01-.53 1.28H8.25a.75.75 0 01-.75-.75V5.56a2.25 2.25 0 00-2.25-2.25H3.75a.75.75 0 00-.75.75v4.28a2.25 2.25 0 00-2.25 2.25v3.38a.75.75 0 00.75.75h3.905a.75.75 0 011.28.53 5.25 5.25 0 003.905 1.674.75.75 0 011.06 0 5.25 5.25 0 003.905-1.674.75.75 0 011.28-.53h3.905a.75.75 0 00.75-.75v-3.38a2.25 2.25 0 00-2.25-2.25v-4.28a.75.75 0 00-.75-.75h-1.5a2.25 2.25 0 00-2.25 2.25v3.905a.75.75 0 01-.75.75h-1.28a.75.75 0 01-.53-1.28 5.25 5.25 0 00-1.674-3.905.75.75 0 010-1.06z" clipRule="evenodd" />
-  </svg>
-);
-
-const SkullIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 00-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634zm4.314.634c.108-.215.395-.634.936-.634.54 0 .828.419.936.634.13.26.189.568.189.866 0 .298-.059.605-.189.866-.108.215-.395.634-.936.634-.54 0-.828-.419-.936-.634a1.96 1.96 0 01-.189-.866c0-.298.059-.605.189-.866zm2.023 6.828a.75.75 0 10-1.06-1.06 3.75 3.75 0 01-5.304 0 .75.75 0 00-1.06 1.06 5.25 5.25 0 007.424 0z" clipRule="evenodd" />
-  </svg>
-);
-
-const TAB_DEFINITIONS: TabDefinition[] = [
-    { id: 'overview', label: 'Overview', icon: <BookIcon /> },
-    { id: 'specs', label: 'Builds', icon: <SwordIcon /> },
-    { id: 'rotations', label: 'Rotations', icon: <TargetIcon /> },
-    { id: 'addons', label: 'Addons', icon: <PuzzleIcon /> },
-    { id: 'dungeons', label: 'Dungeons', icon: <SkullIcon /> },
-];
-
-const ClassHub = ({ wowClass, onGoBack, userRole }: ClassHubProps) => {
+const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [activeSpec, setActiveSpec] = useState<Specialization>(wowClass.specs[0]);
-  const [selectedExpansion, setSelectedExpansion] = useState<string>('The War Within');
   const [selectedDungeon, setSelectedDungeon] = useState<Dungeon | null>(null);
-  const [guideExpansion, setGuideExpansion] = useState<string>('The War Within');
+  const [guideContent, setGuideContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [guideExpansion, setGuideExpansion] = useState<string>('all');
 
-  // Filter dungeons based on expansion and sort alphabetically by name
-  const filteredDungeons = useMemo(() => {
-    const dungeons = selectedExpansion === 'All' 
-      ? DUNGEONS 
-      : DUNGEONS.filter(d => d.expansion === selectedExpansion);
-    return dungeons.sort((a, b) => a.name.localeCompare(b.name));
-  }, [selectedExpansion]);
-
-  // Initialize selected dungeon on first render
+  // Set initial dungeon
   useEffect(() => {
-    if (!selectedDungeon && filteredDungeons.length > 0) {
-      setSelectedDungeon(filteredDungeons[0]);
+    if (DUNGEONS.length > 0) {
+      setSelectedDungeon(DUNGEONS[0]);
     }
   }, []);
-  // Update selected dungeon when expansion filter changes
+
+  // Load guide content when tab or spec changes
   useEffect(() => {
-    if (filteredDungeons.length > 0 && selectedDungeon) {
-      const exists = filteredDungeons.find(d => d.name === selectedDungeon.name);
-      if (!exists) {
-        setSelectedDungeon(filteredDungeons[0]);
-      }
-    }
-  }, [filteredDungeons]);
+    loadGuideContent();
+  }, [activeTab, activeSpec, selectedDungeon, guideExpansion]);
 
-  const [content, setContent] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isValidating, setIsValidating] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [dataQuality, setDataQuality] = useState<number>(100);
-  const [sourceUrls, setSourceUrls] = useState('');
-  const [retryCount, setRetryCount] = useState<number>(0);
-  const [retryTimer, setRetryTimer] = useState<number>(0);
-
-  const memoizedContentKey = useMemo(() => {
-    if (activeTab === 'dungeons') {
-        return `${activeTab}-${activeSpec.id}-${selectedDungeon.name}-${selectedExpansion}`;
-    }
-    if (activeTab === 'specs' || activeTab === 'rotations') {
-      return `${activeTab}-${activeSpec.id}-${guideExpansion}`;
-    }
-    return `${activeTab}-${guideExpansion}`;
-  }, [activeTab, activeSpec, selectedDungeon, selectedExpansion, guideExpansion]);
-
-  // Memoize tab definitions to prevent unnecessary re-renders
-  const tabDefinitions = useMemo(() => TAB_DEFINITIONS, []);
-
-  const fetchContent = useCallback(async (urlsOverride?: string) => {
+  const loadGuideContent = useCallback(async () => {
     setIsLoading(true);
-    setIsValidating(true);
-    setError(null);
-    setValidationErrors([]);
     try {
-      // Validate inputs with comprehensive checks
-      if (!wowClass || !wowClass.id) {
-        throw new Error('Invalid class selected. Please select a valid class.');
-      }
-      if (!activeSpec || !activeSpec.id) {
-        throw new Error('Invalid specialization selected. Please select a valid specialization.');
-      }
-      if (activeTab === 'dungeons' && !selectedDungeon) {
-        throw new Error('Invalid dungeon selected. Please select a valid dungeon.');
-      }
-
-      // Validate tab selection
-      const validTabs = ['overview', 'specs', 'rotations', 'addons', 'dungeons'];
-      if (!validTabs.includes(activeTab)) {
-        throw new Error(`Invalid tab selected: ${activeTab}`);
-      }
-
-      // Validate data with curator system
-      const validation = validateAndPrepareGuideRequest(
+      const result = validateAndPrepareGuideRequest(
         wowClass.id,
-        activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'dungeons' ? activeSpec.id : undefined,
-        activeTab === 'dungeons' ? selectedDungeon.name : undefined
+        activeSpec.id,
+        selectedDungeon?.name
       );
 
-      if (!validation.isValid) {
-        setValidationErrors(validation.errors);
-        throw new Error(`Data validation failed: ${validation.errors.join('; ')}`);
+      if (!result.isValid || !result.context) {
+        throw new Error(result.errors.join(', '));
       }
 
-      if (validation.context) {
-        setDataQuality(validation.context.dataQuality);
-        if (validation.context.dataQuality < 80) {
-          console.warn(`Data quality below threshold: ${validation.context.dataQuality}%`);
-        }
+      const cacheKey = `guide_${wowClass.id}_${activeSpec.id}_${activeTab}_${selectedDungeon?.name || 'none'}`;
+      const cached = cacheService.get(cacheKey);
+
+      if (cached && typeof cached === 'string') {
+        setGuideContent(cached);
+        return;
       }
 
-      setIsValidating(false);
+      setRetryProgressCallback((progress) => {
+        console.log(`Retry progress: ${progress}%`);
+      });
 
-      // Check cache first (only if no custom URLs override)
-      // This implements lazy loading by preventing unnecessary API calls
-      if (!urlsOverride) {
-        const cachedContent = cacheService.get<string>(memoizedContentKey);
-        if (cachedContent) {
-          setContent(cachedContent);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // Lazy load content only when needed
-      let newContent = '';
-      const customUrls = urlsOverride ? [urlsOverride] : undefined;
-      
-      switch (activeTab) {
-        case 'overview':
-          newContent = await geminiService.getOverview(wowClass, urlsOverride, customUrls, guideExpansion);
-          break;
-        case 'specs':
-          newContent = await geminiService.getSpecGuide(wowClass, activeSpec, urlsOverride, customUrls, guideExpansion);
-          break;
-        case 'rotations':
-          newContent = await geminiService.getRotationGuide(wowClass, activeSpec, urlsOverride, customUrls, guideExpansion);
-          break;
-        case 'addons':
-          newContent = await geminiService.getAddons(wowClass, urlsOverride, customUrls, guideExpansion);
-          break;
-        case 'dungeons':
-          if (!selectedDungeon) throw new Error('No dungeon selected');
-          newContent = await geminiService.getDungeonTips(wowClass, activeSpec, selectedDungeon.name, urlsOverride, customUrls, selectedExpansion);
-          break;
-        default:
-          throw new Error(`Unknown tab: ${activeTab}`);
-      }
-
-      // Validate content response
-      if (!newContent || typeof newContent !== 'string') {
-        throw new Error('Invalid content received from API. The response was empty or malformed.');
-      }
-
-      if (newContent.trim().length === 0) {
-        throw new Error('API returned empty content. Please try again.');
-      }
-
-      // Cache the content (1 hour TTL) to prevent redundant API calls
-      cacheService.set(memoizedContentKey, newContent);
-
-      setContent(newContent);
-    } catch (err) {
-      console.error("Guide generation error:", err);
-      
-      let errorMessage = 'An unexpected error occurred while generating the guide.';
-
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
-      setContent('');
+      const content = await geminiService.generateGuide(result.context);
+      cacheService.set(cacheKey, content);
+      setGuideContent(content);
+    } catch (error) {
+      console.error('Failed to load guide:', error);
+      setGuideContent('Failed to load guide content. Please try again.');
     } finally {
       setIsLoading(false);
-      setIsValidating(false);
     }
-  }, [activeTab, wowClass, activeSpec, selectedDungeon, userRole, sourceUrls, memoizedContentKey]);
+  }, [wowClass, activeSpec, activeTab, selectedDungeon]);
 
-  useEffect(() => {
-    fetchContent();
-  }, [fetchContent, memoizedContentKey]);
-
-  useEffect(() => {
-    setActiveSpec(wowClass.specs[0]);
-  }, [wowClass]);
-
-  // Setup retry progress callback
-  useEffect(() => {
-    setRetryProgressCallback((retryCount, waitTime) => {
-      setRetryCount(retryCount);
-      setRetryTimer(waitTime);
-    });
-
-    return () => {
-      setRetryProgressCallback(null);
-    };
-  }, []);
-  
-  const handleRegenerateWithSources = useCallback(() => {
-    fetchContent(sourceUrls);
-  }, [fetchContent, sourceUrls]);
-
-  const getTabTitle = useCallback(() => {
-    if (activeTab === 'specs') return `${activeSpec.name} ${wowClass.name} Build & Guide`;
-    if (activeTab === 'rotations') return `${activeSpec.name} ${wowClass.name} Rotations`;
-    if (activeTab === 'dungeons') return `${activeSpec.name} Tips for ${selectedDungeon.name}`;
-    if (activeTab === 'addons') return 'Addons & WeakAuras';
-    return 'Class Overview';
-  }, [activeTab, activeSpec, wowClass, selectedDungeon]);
-  
-  const getTabIcon = useCallback(() => {
-     if (activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'dungeons') {
-         return <SpecIcon spec={activeSpec} className="w-8 h-8 text-[var(--class-color)]" />;
-     }
-     if (activeTab === 'overview') return <ClassIconRenderer classId={wowClass.id} className="w-8 h-8 text-[var(--class-color)]" />;
-     return null;
-  }, [activeTab, activeSpec, wowClass]);
+  const tabDefinitions = useMemo(
+    () => [
+      { id: 'overview' as TabId, label: 'Overview' },
+      { id: 'specs' as TabId, label: 'Specs' },
+      { id: 'rotations' as TabId, label: 'Rotations' },
+      { id: 'addons' as TabId, label: 'Addons' },
+      { id: 'dungeons' as TabId, label: 'Dungeons' },
+    ],
+    []
+  );
 
   return (
     <div className="animate-fade-in" style={{ '--class-color': wowClass.color } as React.CSSProperties}>
-      <HeroSectionEnhanced wowClass={wowClass} onGoBack={onGoBack} />
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onGoBack}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
+          >
+            ← Back
+          </button>
+          <div className="flex items-center gap-3">
+            <ClassIconRenderer classId={wowClass.id} className="w-10 h-10" />
+            <h1 className="text-3xl font-bold" style={{ color: wowClass.color }}>
+              {wowClass.name}
+            </h1>
+          </div>
+        </div>
+      </div>
 
-      {userRole === 'admin' && (
-        <AdminPanelEnhanced
-          sourceUrls={sourceUrls}
-          onSourceUrlsChange={setSourceUrls}
-          onRegenerate={handleRegenerateWithSources}
-          isLoading={isLoading}
-        />
-      )}
-
-      <div className="bg-gray-900/80 backdrop-blur-md rounded-lg shadow-2xl border border-gray-700 relative overflow-hidden">
-        {/* Decorative top border */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--class-color)] to-transparent opacity-50"></div>
-
-        <TabNavigationEnhanced
-          tabs={tabDefinitions}
-          activeTab={activeTab}
-          onTabChange={(tabId: string) => setActiveTab(tabId as TabId)}
-          classColor={wowClass.color}
-        />
-        
-        {/* Sub-navigation for Specs or Dungeons */}
-        <div className="bg-gray-800/50 border-b border-gray-700 p-4 flex flex-col md:flex-row gap-4 items-start md:items-center">
-           {(activeTab === 'specs' || activeTab === 'dungeons' || activeTab === 'rotations') && (
-              <div className="flex flex-wrap gap-3 items-center w-full">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Select Spec:</span>
-                <div className="flex flex-wrap gap-2">
-                  {wowClass.specs.map(spec => (
-                    <SpecCardEnhanced
-                      key={spec.id}
-                      spec={spec}
-                      wowClass={wowClass}
-                      isActive={activeSpec.id === spec.id}
-                      onClick={() => setActiveSpec(spec)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-           {/* Expansion Filter for Guides */}
-           {(activeTab === 'overview' || activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'addons') && (
-             <div className="flex items-center ml-auto">
-               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 whitespace-nowrap">Expansion:</span>
-               <select
-                 value={guideExpansion}
-                 onChange={(e) => setGuideExpansion(e.target.value)}
-                 className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-[var(--class-color)] focus:border-[var(--class-color)] block w-full md:w-auto p-2.5"
-                 style={{ borderColor: wowClass.color }}
-               >
-                 {EXPANSIONS.map(exp => (
-                   <option key={exp} value={exp}>{exp}</option>
-                 ))}
-               </select>
-             </div>
-           )}
-           
-           {/* Dungeon Selector */}
-           {activeTab === 'dungeons' && (
-             <div className="flex flex-col md:flex-row md:items-center w-full md:w-auto mt-2 md:mt-0 md:ml-auto gap-3">
-                {/* Expansion Filter */}
-                <div className="flex items-center">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 whitespace-nowrap">Expansion:</span>
-                    <select
-                        value={selectedExpansion}
-                        onChange={(e) => setSelectedExpansion(e.target.value)}
-                        className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-[var(--class-color)] focus:border-[var(--class-color)] block w-full md:w-auto p-2.5"
-                        style={{ borderColor: wowClass.color }}
-                    >
-                        {EXPANSIONS.map(exp => (
-                            <option key={exp} value={exp}>{exp}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Dungeon Select */}
-                {selectedDungeon && (
-                  <div className="flex items-center">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 whitespace-nowrap">Dungeon:</span>
-                    <select 
-                      value={selectedDungeon.name}
-                      onChange={(e) => {
-                        const d = DUNGEONS.find(dung => dung.name === e.target.value);
-                        if (d) setSelectedDungeon(d);
-                      }}
-                      className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-[var(--class-color)] focus:border-[var(--class-color)] block w-full md:w-auto p-2.5 min-w-[200px]"
-                      style={{ borderColor: wowClass.color }}
-                    >
-                      {filteredDungeons.map(d => (
-                        <option key={d.name} value={d.name}>{d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-             </div>
-           )}
+      {/* Main Content */}
+      <div className="bg-gray-900/80 backdrop-blur-md rounded-lg shadow-2xl border border-gray-700 overflow-hidden">
+        {/* Tab Navigation */}
+        <div className="flex border-b border-gray-700 bg-gray-800/50">
+          {tabDefinitions.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition ${
+                activeTab === tab.id
+                  ? 'bg-gray-700 text-white border-b-2'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+              style={
+                activeTab === tab.id
+                  ? { borderBottomColor: wowClass.color }
+                  : undefined
+              }
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <GuideSection
-          title={getTabTitle()}
-          icon={getTabIcon()}
-          isLoading={isLoading}
-          isValidating={isValidating}
-          content={content}
-          error={error}
-          validationErrors={validationErrors}
-          dataQuality={dataQuality}
-          onRetry={useCallback(() => fetchContent(), [fetchContent])}
-          userRole={userRole}
-          retryCount={retryCount}
-          retryTimer={retryTimer}
-        />
+        {/* Spec Selection */}
+        {(activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'dungeons') && (
+          <div className="bg-gray-800/50 border-b border-gray-700 p-4 flex flex-wrap gap-2">
+            {wowClass.specs.map((spec) => (
+              <button
+                key={spec.id}
+                onClick={() => setActiveSpec(spec)}
+                className={`px-4 py-2 rounded-lg transition ${
+                  activeSpec.id === spec.id
+                    ? 'bg-yellow-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                {spec.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Dungeon Selection */}
+        {activeTab === 'dungeons' && (
+          <div className="bg-gray-800/50 border-b border-gray-700 p-4">
+            <select
+              value={selectedDungeon?.name || ''}
+              onChange={(e) => {
+                const dungeon = DUNGEONS.find((d) => d.name === e.target.value);
+                setSelectedDungeon(dungeon || null);
+              }}
+              className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
+            >
+              {DUNGEONS.map((dungeon) => (
+                <option key={dungeon.name} value={dungeon.name}>
+                  {dungeon.name} ({dungeon.expansion})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Expansion Filter */}
+        {(activeTab === 'overview' || activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'addons') && (
+          <div className="bg-gray-800/50 border-b border-gray-700 p-4">
+            <select
+              value={guideExpansion}
+              onChange={(e) => setGuideExpansion(e.target.value)}
+              className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
+            >
+              <option value="all">All Expansions</option>
+              {EXPANSIONS.map((exp) => (
+                <option key={exp} value={exp}>
+                  {exp}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Guide Content */}
+        <div className="p-6">
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
+              <p className="mt-4 text-gray-400">Loading guide...</p>
+            </div>
+          ) : (
+            <GuideSection content={guideContent} />
+          )}
+        </div>
       </div>
     </div>
   );

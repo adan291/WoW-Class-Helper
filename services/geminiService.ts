@@ -1,34 +1,18 @@
-
-import { GoogleGenAI } from "@google/genai";
-import type { WowClass, Specialization } from '../types.ts';
+import { GoogleGenAI } from '@google/genai';
+import type { GeminiReadyContext } from './classOrchestratorService.ts';
 import { validateSourceUrls, validateApiResponse } from './validationService.ts';
-import {
-  validateAndPrepareGuideRequest,
-  type GeminiReadyContext,
-} from './classOrchestratorService.ts';
-import {
-  getMockOverview,
-  getMockSpecGuide,
-  getMockRotationGuide,
-  getMockAddons,
-  getMockDungeonTips,
-} from './mockGuideService.ts';
 import { toastService } from './toastService.ts';
-import { errorService, type AppError } from './errorService.ts';
 
-// Per coding guidelines, `process.env.API_KEY` is assumed to be available.
-// The GoogleGenAI instance is initialized directly without fallbacks.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
 const PROMPT_MAX_LENGTH = 30000;
-const RESPONSE_MAX_LENGTH = 100000;
 
 /**
  * Implements exponential backoff for retries
  */
-const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Checks if an error is retryable based on error message
@@ -36,8 +20,13 @@ const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(r
 const isRetryableError = (error: unknown): boolean => {
   if (!(error instanceof Error)) return false;
   const msg = error.message.toLowerCase();
-  return msg.includes('timeout') || msg.includes('network') || 
-         msg.includes('temporarily') || msg.includes('503') || msg.includes('429');
+  return (
+    msg.includes('timeout') ||
+    msg.includes('network') ||
+    msg.includes('temporarily') ||
+    msg.includes('503') ||
+    msg.includes('429')
+  );
 };
 
 /**
@@ -56,7 +45,6 @@ export const setRetryProgressCallback = (callback: RetryProgressCallback | null)
 
 /**
  * Generates content with retry logic and comprehensive error handling
- * Integrates curator validation to ensure data accuracy
  */
 const generateContentWithGemini = async (
   prompt: string,
@@ -80,13 +68,13 @@ const generateContentWithGemini = async (
     if (sourceUrls && sourceUrls.trim() !== '') {
       const validation = validateSourceUrls(sourceUrls);
 
-      if (!validation.valid) {
-        const errorMsg = validation.errors.join('\n');
+      if (validation && typeof validation === 'object' && 'valid' in validation && !validation.valid) {
+        const errorMsg = (validation as any).errors?.join('\n') || 'Invalid URLs';
         throw new Error(`Invalid source URLs:\n${errorMsg}`);
       }
 
-      if (validation.urls.length > 0) {
-        const urls = validation.urls.map(url => `- ${url}`).join('\n');
+      if (validation && typeof validation === 'object' && 'urls' in validation && (validation as any).urls?.length > 0) {
+        const urls = (validation as any).urls.map((url: string) => `- ${url}`).join('\n');
         finalPrompt = `IMPORTANT: Your primary task is to act as an expert World of Warcraft guide writer. You MUST use the information from the following web pages to construct your answer. If the information from these sources conflicts with your base knowledge, you MUST prioritize the information from the provided URLs. At the end of your response, you MUST cite the URLs you used under a "Sources:" heading.\n\nProvided URLs:\n${urls}\n\n---\n\nOriginal Request:\n${prompt}`;
       }
     }
@@ -101,338 +89,76 @@ const generateContentWithGemini = async (
       contents: finalPrompt,
     });
 
-    // Validate response
-    if (!validateApiResponse(response?.text)) {
-      throw new Error('Empty response from API');
+    const content = response.candidates?.[0]?.content?.parts?.[0];
+
+    if (!content || !('text' in content)) {
+      throw new Error('Invalid response format from API');
     }
 
-    toastService.success('✨ Guide generated successfully!');
-    return response.text;
+    const text = content.text || '';
+
+    // Validate response
+    const validation = validateApiResponse(text);
+    if (validation && typeof validation === 'object' && 'valid' in validation && !(validation as any).valid) {
+      console.warn('API response validation warnings:', (validation as any).warnings);
+    }
+
+    return text;
   } catch (error) {
-    // Handle retryable errors
-    if (isRetryableError(error) && retryCount < MAX_RETRIES) {
-      const waitTime = RETRY_DELAY_MS * Math.pow(2, retryCount);
-      
-      // Report retry progress
+    if (retryCount < MAX_RETRIES && isRetryableError(error)) {
+      const waitTime = Math.pow(2, retryCount) * RETRY_DELAY_MS;
+
       if (retryProgressCallback) {
-        retryProgressCallback(retryCount + 1, Math.ceil(waitTime / 1000));
+        retryProgressCallback(retryCount + 1, waitTime);
       }
-      
-      // Wait with progress updates
-      const startTime = Date.now();
-      while (Date.now() - startTime < waitTime) {
-        const elapsed = Math.ceil((Date.now() - startTime) / 1000);
-        const remaining = Math.ceil(waitTime / 1000) - elapsed;
-        if (retryProgressCallback && remaining > 0) {
-          retryProgressCallback(retryCount + 1, remaining);
-        }
-        await delay(100);
-      }
-      
+
+      await delay(waitTime);
       return generateContentWithGemini(prompt, sourceUrls, retryCount + 1);
     }
 
-    // Handle API unavailability with fallback
-    if (error instanceof Error && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE'))) {
-      errorService.logError(error, { action: 'generateContent', severity: 'warning' });
-      toastService.warning('⚠️ API unavailable - showing demo content');
-      return `${prompt}\n\n---\n\n**[DEMO MODE]** This is demonstration content. The API is currently unavailable. Please try again in a few moments.`;
-    }
-
-    // Log and handle error
-    const appError = errorService.handleApiError(error, { action: 'generateContent' });
-    const userMessage = errorService.getUserMessage(appError);
-    toastService.error(`❌ ${userMessage}`);
-    throw appError;
+    throw error;
   }
 };
 
 /**
- * Validates class data before generating content
- * Ensures data integrity and prevents hallucinations
+ * Main guide generation function
  */
-const validateClassDataBeforeGeneration = (
-  classId: string,
-  specId?: string,
-  dungeonName?: string,
-  customSourceUrls?: string[]
-): { isValid: boolean; context: GeminiReadyContext | null; error?: string } => {
+export const generateGuide = async (context: GeminiReadyContext): Promise<string> => {
   try {
-    const validation = validateAndPrepareGuideRequest(
-      classId,
-      specId,
-      dungeonName,
-      customSourceUrls
-    );
-
-    if (!validation.isValid) {
-      const errorDetails = validation.errors.join('; ');
-      console.warn(`Data validation failed: ${errorDetails}`);
-      return {
-        isValid: false,
-        context: null,
-        error: `Data validation failed: ${errorDetails}`,
-      };
-    }
-
-    if (validation.context && validation.context.dataQuality < 80) {
-      console.warn(`Data quality below threshold: ${validation.context.dataQuality}%`);
-    }
-
-    return {
-      isValid: true,
-      context: validation.context,
-    };
+    const prompt = buildPrompt(context);
+    const sourceUrlsStr = context.verifiedSourceUrls?.length > 0 ? context.verifiedSourceUrls.join('\n') : undefined;
+    const content = await generateContentWithGemini(prompt, sourceUrlsStr);
+    return content;
   } catch (error) {
-    console.error('Error during data validation:', error);
-    return {
-      isValid: false,
-      context: null,
-      error: 'Failed to validate class data',
-    };
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Guide generation failed:', message);
+    toastService.error(`Failed to generate guide: ${message}`);
+    throw error;
   }
 };
 
-export const getOverview = async (
-  wowClass: WowClass,
-  sourceUrls?: string,
-  customSourceUrls?: string[],
-  expansion?: string
-): Promise<string> => {
-  // Validate class data before generation
-  const validation = validateClassDataBeforeGeneration(
-    wowClass.id,
-    undefined,
-    undefined,
-    customSourceUrls
-  );
+/**
+ * Builds the prompt for guide generation
+ */
+function buildPrompt(context: GeminiReadyContext): string {
+  const { className, specName, dungeonName } = context;
 
-  if (!validation.isValid) {
-    throw new Error(validation.error || 'Class data validation failed');
+  let prompt = `You are an expert World of Warcraft guide writer. Generate a comprehensive guide for the following:\n\n`;
+  prompt += `Class: ${className}\n`;
+  if (specName) {
+    prompt += `Specialization: ${specName}\n`;
   }
 
-  // Use verified sources from curator if available
-  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
-
-  const expansionContext = expansion && expansion !== 'All' ? ` for ${expansion}` : ' for the latest expansion';
-  const prompt = `Provide a detailed and engaging overview for the ${wowClass.name} class in World of Warcraft${expansionContext}. Include its core identity, playstyle, strengths, weaknesses, and a summary of the most significant changes in that expansion. Format the response using markdown.`;
-  
-  try {
-    return await generateContentWithGemini(prompt, finalSourceUrls);
-  } catch (error) {
-    // Use mock data on API failure
-    console.warn('Using mock data for overview');
-    toastService.info('📚 Using cached overview');
-    return getMockOverview(wowClass, expansion);
-  }
-};
-
-export const getSpecGuide = async (
-  wowClass: WowClass,
-  spec: Specialization,
-  sourceUrls?: string,
-  customSourceUrls?: string[],
-  expansion?: string
-): Promise<string> => {
-  // Validate class and spec data before generation
-  const validation = validateClassDataBeforeGeneration(
-    wowClass.id,
-    spec.id,
-    undefined,
-    customSourceUrls
-  );
-
-  if (!validation.isValid) {
-    throw new Error(validation.error || 'Specialization data validation failed');
+  if (dungeonName) {
+    prompt += `Dungeon: ${dungeonName}\n`;
   }
 
-  // Use verified sources from curator if available
-  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
+  prompt += `\nProvide the guide in markdown format with clear sections and formatting. Include practical tips and strategies.`;
 
-  const expansionContext = expansion && expansion !== 'All' ? ` in ${expansion}` : ' in World of Warcraft\'s latest expansion';
-  const prompt = `Generate a comprehensive, expert-level guide focusing on the build, stats, and advanced strategies for the ${spec.name} ${wowClass.name} specialization${expansionContext}. Format the response using markdown. Include the following detailed sections:
+  return prompt;
+}
 
-1.  **Stat Priority:**
-    *   List the optimal secondary stats (e.g., Haste > Mastery > Critical Strike > Versatility) for this specialization.
-    *   Provide a clear explanation of *why* each stat is important and how it interacts with the spec's kit.
-
-2.  **Mythic+ Talent Build:**
-    *   **Core Strengths & Use Case:** Start this section with a bold brief explanation (e.g., "**Ideal for:** Sustained AoE and high utility in Mythic+ keys.").
-    *   Explain the core philosophy of the Mythic+ build.
-    *   List the "must-have" talents.
-    *   Highlight key choice nodes and explain when to take which option for dungeons.
-
-3.  **Alternative Talent Builds:**
-    *   Provide 1-2 brief example builds for other content types (e.g., "Single-Target Raid", "PvP").
-    *   For each, include a "**Core Strengths:**" summary line.
-
-4.  **Advanced Tips:**
-    *   **Nuanced Mechanics:** Explain any complex interactions or hidden mechanics that average players might miss.
-    *   **Common Mistakes:** Detail specific errors players often make with this spec (rotational or positional) and how to avoid them.
-    *   **Pro-Tips:** specific tricks to maximize throughput or survivability in high-difficulty content.`;
-  
-  try {
-    return await generateContentWithGemini(prompt, finalSourceUrls);
-  } catch (error) {
-    // Use mock data on API failure
-    console.warn('Using mock data for spec guide');
-    toastService.info('📚 Using cached spec guide');
-    return getMockSpecGuide(wowClass, spec, expansion);
-  }
-};
-
-export const getRotationGuide = async (
-  wowClass: WowClass,
-  spec: Specialization,
-  sourceUrls?: string,
-  customSourceUrls?: string[],
-  expansion?: string
-): Promise<string> => {
-  // Validate class and spec data before generation
-  const validation = validateClassDataBeforeGeneration(
-    wowClass.id,
-    spec.id,
-    undefined,
-    customSourceUrls
-  );
-
-  if (!validation.isValid) {
-    throw new Error(validation.error || 'Rotation guide data validation failed');
-  }
-
-  // Use verified sources from curator if available
-  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
-
-  const expansionContext = expansion && expansion !== 'All' ? ` in ${expansion}` : ' in World of Warcraft\'s latest expansion';
-  const prompt = `Generate a detailed rotation and ability priority guide for the ${spec.name} ${wowClass.name} specialization${expansionContext}. Format the response using markdown.
-
-CRITICAL FORMATTING INSTRUCTION:
-When listing specific class abilities, major offensive cooldowns, or defensive cooldowns, you MUST format them exactly like this:
-\`[Ability Name]{Cooldown: X sec. ID: SpellID. Description: A brief 1-sentence description of what the ability does.}\`
-
-Examples:
-\`[Mortal Strike]{Cooldown: 6 sec. ID: 12294. Description: A vicious strike that deals high physical damage and reduces healing received.}\`
-\`[Heroic Leap]{Cooldown: 45 sec. ID: 6544. Description: Leaps to a target location, dealing damage to all enemies within 8 yards.}\`
-
-*   **Cooldown:** Provide the base cooldown.
-*   **ID:** Provide the main Spell ID for the ability (best estimate for current patch).
-*   **Description:** Provide a short summary *inside* the curly braces after the ID.
-
-Include the following sections:
-
-1.  **Single-Target Rotation:**
-    *   A strict priority list of abilities. Explain *why* for each line.
-
-2.  **Multi-Target (AoE) Rotation:**
-    *   A priority list for fighting multiple enemies. Mention target counts.
-
-3.  **Offensive Cooldown Usage:**
-    *   Explain how to integrate major offensive cooldowns (Avatar, Combustion, Wings, etc.) for maximum burst.
-    *   Use the specific \`[Ability]{...}\` format.
-
-4.  **Defensive Cooldowns & Survival:**
-    *   **Dedicated Section:** List each major defensive cooldown using the \`[Ability]{...}\` format.
-    *   For each defensive, provide specific bullet points on **When to Use**:
-        *   "Use on high incoming magic damage."
-        *   "Save for Boss X's specific ability."
-    *   Include Spell IDs for all defensives.`;
-  
-  try {
-    return await generateContentWithGemini(prompt, finalSourceUrls);
-  } catch (error) {
-    // Use mock data on API failure
-    console.warn('Using mock data for rotation guide');
-    toastService.info('📚 Using cached rotation guide');
-    return getMockRotationGuide(wowClass, spec, expansion);
-  }
-};
-
-export const getAddons = async (
-  wowClass: WowClass,
-  sourceUrls?: string,
-  customSourceUrls?: string[],
-  expansion?: string
-): Promise<string> => {
-  // Validate class data before generation
-  const validation = validateClassDataBeforeGeneration(
-    wowClass.id,
-    undefined,
-    undefined,
-    customSourceUrls
-  );
-
-  if (!validation.isValid) {
-    throw new Error(validation.error || 'Addons guide data validation failed');
-  }
-
-  // Use verified sources from curator if available
-  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
-
-  const expansionContext = expansion && expansion !== 'All' ? ` for ${expansion}` : ' for World of Warcraft\'s latest expansion';
-  const prompt = `List the most essential addons and WeakAuras for a ${wowClass.name} player${expansionContext}. Format the response using markdown.
-- **Addons:** Categorize them into "General Must-Haves" (like DBM, Details!) and "${wowClass.name} Specific". Briefly explain why each is useful.
-- **WeakAuras:** 
-  - Describe the key things a ${wowClass.name} must track, including major offensive cooldowns, defensive cooldowns, procs, and resource levels. 
-  - Provide specific examples of WeakAura search terms for wago.io to find popular, comprehensive packs (e.g., "Afenar Warrior", "Luxthos Shaman").`;
-  
-  try {
-    return await generateContentWithGemini(prompt, finalSourceUrls);
-  } catch (error) {
-    // Use mock data on API failure
-    console.warn('Using mock data for addons guide');
-    toastService.info('📚 Using cached addons guide');
-    return getMockAddons(wowClass, expansion);
-  }
-};
-
-export const getDungeonTips = async (
-  wowClass: WowClass,
-  spec: Specialization,
-  dungeonName?: string,
-  sourceUrls?: string,
-  customSourceUrls?: string[],
-  expansion?: string
-): Promise<string> => {
-  // Validate class, spec, and dungeon data before generation
-  const validation = validateClassDataBeforeGeneration(
-    wowClass.id,
-    spec.id,
-    dungeonName,
-    customSourceUrls
-  );
-
-  if (!validation.isValid) {
-    throw new Error(validation.error || 'Dungeon tips data validation failed');
-  }
-
-  // Use verified sources from curator if available
-  const finalSourceUrls = validation.context?.verifiedSourceUrls.join('\n') || sourceUrls;
-
-  let targetDungeon = dungeonName || "two popular Mythic+ dungeons from the current season";
-  const expansionContext = expansion && expansion !== 'All' ? ` from ${expansion}` : '';
-  
-  const prompt = `For a ${spec.name} ${wowClass.name}, provide specific, expert-level tips for ${targetDungeon}${expansionContext} in World of Warcraft.
-    
-    Structure the response as follows:
-    
-    1.  **General Dungeon Strategy:**
-        *   **Key Utility:** Where can this spec's utility (stuns, dispels, knocks) be used on specific trash packs?
-    
-    2.  **Boss Breakdown (Major Bosses):**
-        *   Iterate through the main bosses of the dungeon.
-        *   For each boss, provide **Spec-Specific Tips**:
-            *   "Use [Defensive Cooldown] during Phase 2 when..."
-            *   "Save burst for the add spawn at..."
-            *   "Position yourself at X to bait Y mechanic."
-    
-    Format the response in markdown. Use the \`[Ability Name]{Cooldown: X sec. ID: Y}\` format if referencing specific class spells.`;
-  
-  try {
-    return await generateContentWithGemini(prompt, finalSourceUrls);
-  } catch (error) {
-    // Use mock data on API failure
-    console.warn('Using mock data for dungeon tips');
-    toastService.info('📚 Using cached dungeon tips');
-    return getMockDungeonTips(wowClass, spec, dungeonName, expansion);
-  }
+export default {
+  generateGuide,
+  setRetryProgressCallback,
 };

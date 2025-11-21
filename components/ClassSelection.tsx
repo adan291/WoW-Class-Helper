@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { WOW_CLASSES } from '../constants.ts';
 import type { WowClass } from '../types.ts';
-import { ClassCardEnhanced } from './ClassCardEnhanced.tsx';
+import ClassCard from './ClassCard.tsx';
 import '../styles/animations.css';
 
 interface ClassSelectionProps {
@@ -109,7 +109,7 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 w-full max-w-7xl px-4">
           {filteredClasses.map((wowClass) => (
-            <ClassCardEnhanced
+            <ClassCard
               key={wowClass.id}
               wowClass={wowClass}
               onClick={() => onSelectClass(wowClass)}
