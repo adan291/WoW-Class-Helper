@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../styles/animations.css';
-import { statsService, type DetailedStats } from '../services/statsService.ts';
 
 interface AdminPanelEnhancedProps {
   sourceUrls: string;
@@ -25,20 +24,6 @@ export const AdminPanelEnhanced: React.FC<AdminPanelEnhancedProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [urlCount, setUrlCount] = useState(0);
-  const [stats, setStats] = useState<DetailedStats | null>(null);
-  const [showStats, setShowStats] = useState(false);
-
-  // Update stats when component mounts and periodically
-  useEffect(() => {
-    const updateStats = () => {
-      setStats(statsService.getStats());
-    };
-
-    updateStats();
-    const interval = setInterval(updateStats, 1000); // Update every second
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleUrlChange = (value: string) => {
     onSourceUrlsChange(value);
@@ -154,81 +139,7 @@ export const AdminPanelEnhanced: React.FC<AdminPanelEnhancedProps> = ({
               </ul>
             </div>
 
-            {/* Statistics Toggle */}
-            <button
-              onClick={() => setShowStats(!showStats)}
-              className="mt-4 px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-xs font-bold rounded border border-blue-500/50 transition-colors"
-            >
-              {showStats ? '📊 Hide Statistics' : '📊 Show Statistics'}
-            </button>
 
-            {/* Statistics Panel */}
-            {showStats && stats && (
-              <div className="mt-4 p-4 bg-blue-900/20 border border-blue-500/30 rounded space-y-3 animate-fade-in">
-                <h4 className="text-sm font-bold text-blue-300 mb-3">API & Cache Statistics</h4>
-                
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Total Calls */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Total API Calls</p>
-                    <p className="text-lg font-bold text-blue-300">{stats.totalCalls}</p>
-                  </div>
-
-                  {/* Success Rate */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Success Rate</p>
-                    <p className="text-lg font-bold" style={{
-                      color: stats.successRate >= 80 ? '#86efac' : stats.successRate >= 50 ? '#fbbf24' : '#f87171'
-                    }}>
-                      {stats.successRate}%
-                    </p>
-                  </div>
-
-                  {/* Cache Hits */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Cache Hits</p>
-                    <p className="text-lg font-bold text-green-400">{stats.cacheHits}</p>
-                  </div>
-
-                  {/* Cache Hit Rate */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Cache Hit Rate</p>
-                    <p className="text-lg font-bold text-green-400">{stats.cacheHitRate}%</p>
-                  </div>
-
-                  {/* Mock Usage */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Mock Data Usage</p>
-                    <p className="text-lg font-bold text-orange-400">{stats.mockDataUsage}</p>
-                  </div>
-
-                  {/* Mock Usage Rate */}
-                  <div className="p-3 bg-gray-800/50 rounded border border-gray-600/50">
-                    <p className="text-xs text-gray-400 mb-1">Mock Usage Rate</p>
-                    <p className="text-lg font-bold text-orange-400">{stats.mockUsageRate}%</p>
-                  </div>
-                </div>
-
-                {/* Detailed Stats */}
-                <div className="mt-3 p-3 bg-gray-800/30 rounded border border-gray-600/30 text-xs text-gray-300 space-y-1">
-                  <p>✅ Successful: {stats.successfulCalls}</p>
-                  <p>❌ Failed: {stats.failedCalls}</p>
-                  <p>⏱️ Last Updated: {stats.lastUpdated.toLocaleTimeString()}</p>
-                </div>
-
-                {/* Reset Button */}
-                <button
-                  onClick={() => {
-                    statsService.reset();
-                    setStats(statsService.getStats());
-                  }}
-                  className="w-full mt-3 px-3 py-1.5 bg-red-600/30 hover:bg-red-600/50 text-red-300 text-xs font-bold rounded border border-red-500/50 transition-colors"
-                >
-                  🔄 Reset Statistics
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

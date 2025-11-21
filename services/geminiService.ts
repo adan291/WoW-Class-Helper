@@ -13,7 +13,6 @@ import {
   getMockAddons,
   getMockDungeonTips,
 } from './mockGuideService.ts';
-import { statsService } from './statsService.ts';
 import { toastService } from './toastService.ts';
 
 // Per coding guidelines, `process.env.API_KEY` is assumed to be available.
@@ -106,8 +105,6 @@ const generateContentWithGemini = async (
       throw new Error('Empty response from API');
     }
 
-    // Track successful API call
-    statsService.recordApiSuccess();
     toastService.success('✨ Guide generated successfully!');
     return response.text;
   } catch (error) {
@@ -150,12 +147,9 @@ const generateContentWithGemini = async (
       // Return mock data on API overload or unavailability
       if (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE')) {
         console.warn('API unavailable, using mock data');
-        statsService.recordApiFailure();
-        statsService.recordMockUsage();
         toastService.warning('⚠️ API unavailable - showing demo content');
         return `${prompt}\n\n---\n\n**[DEMO MODE]** This is demonstration content. The API is currently unavailable. Please try again in a few moments.`;
       }
-      statsService.recordApiFailure();
       toastService.error(`❌ ${error.message}`);
       throw error;
     }
@@ -239,7 +233,6 @@ export const getOverview = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for overview');
-    statsService.recordMockUsage();
     toastService.info('📚 Using cached overview');
     return getMockOverview(wowClass, expansion);
   }
@@ -294,7 +287,6 @@ export const getSpecGuide = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for spec guide');
-    statsService.recordMockUsage();
     toastService.info('📚 Using cached spec guide');
     return getMockSpecGuide(wowClass, spec, expansion);
   }
@@ -361,7 +353,6 @@ Include the following sections:
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for rotation guide');
-    statsService.recordMockUsage();
     toastService.info('📚 Using cached rotation guide');
     return getMockRotationGuide(wowClass, spec, expansion);
   }
@@ -400,7 +391,6 @@ export const getAddons = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for addons guide');
-    statsService.recordMockUsage();
     toastService.info('📚 Using cached addons guide');
     return getMockAddons(wowClass, expansion);
   }
@@ -453,7 +443,6 @@ export const getDungeonTips = async (
   } catch (error) {
     // Use mock data on API failure
     console.warn('Using mock data for dungeon tips');
-    statsService.recordMockUsage();
     toastService.info('📚 Using cached dungeon tips');
     return getMockDungeonTips(wowClass, spec, dungeonName, expansion);
   }
