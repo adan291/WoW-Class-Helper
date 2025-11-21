@@ -1,4 +1,4 @@
-/* WoW AI Class Helper - Animations & Effects */
+/* WoW AI Class Helper - Animations & Effects - v3 */
 
 /* ============================================
    GLOW EFFECTS
@@ -87,10 +87,12 @@
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 0.4;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.7;
+    opacity: 1;
+    transform: scale(1.05);
   }
 }
 
@@ -308,10 +310,10 @@
    ============================================ */
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
@@ -327,15 +329,23 @@
 @keyframes dots {
   0%, 20% {
     content: '.';
-    width: 0.25em;
+    opacity: 0.4;
   }
   40% {
     content: '..';
-    width: 0.5em;
+    opacity: 0.7;
   }
-  60%, 100% {
+  60% {
     content: '...';
-    width: 0.75em;
+    opacity: 1;
+  }
+  80% {
+    content: '..';
+    opacity: 0.7;
+  }
+  100% {
+    content: '.';
+    opacity: 0.4;
   }
 }
 
@@ -372,4 +382,28 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* ============================================
+   FLOATING PARTICLES
+   ============================================ */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-10px);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-20px) translateX(15px);
+    opacity: 0.5;
+  }
 }

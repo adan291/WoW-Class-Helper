@@ -1,11 +1,13 @@
 /**
  * Search Bar Component
- * Global search with history and filters
+ * Global search with history, filters, and validation
  */
 
 import React, { useState, useEffect } from 'react';
 import { searchService, type SearchResult } from '../services/searchService.ts';
 import { toastService } from '../services/toastService.ts';
+import { validateSearchQuery } from '../services/validationService.ts';
+import ValidationErrors from './ValidationErrors.tsx';
 
 interface SearchBarProps {
   onSelectResult?: (result: SearchResult) => void;
@@ -16,6 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
     setHistory(searchService.getHistory());
@@ -23,6 +26,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
 
   const handleSearch = (value: string) => {
     setQuery(value);
+
+    // Validate search query
+    const validation = validateSearchQuery(value);
+    if (!validation.valid) {
+      setValidationErrors(validation.errors);
+      setResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    setValidationErrors([]);
+
     if (value.trim()) {
       const searchResults = searchService.search(value);
       setResults(searchResults);
@@ -50,6 +65,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
 
   return (
     <div className="relative w-full max-w-md">
+      <ValidationErrors
+        errors={validationErrors}
+        severity="warning"
+        onDismiss={() => setValidationErrors([])}
+        className="mb-2"
+      />
       <div className="relative">
         <input
           type="text"
@@ -57,7 +78,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query && setShowResults(true)}
           placeholder="🔍 Search classes, specs, dungeons..."
-          className="w-full px-4 py-2 bg-gray-800 border-2 border-gray-600 rounded-lg text-gray-200 placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition"
+          className={`
+            w-full px-4 py-2 bg-gray-800 border-2 rounded-lg text-gray-200 placeholder-gray-500 transition
+            ${validationErrors.length > 0 ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-600 focus:border-yellow-500 focus:ring-yellow-500/50'}
+            focus:ring-2
+          `}
         />
         {query && (
           <button

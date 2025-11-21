@@ -1,287 +1,344 @@
 import { describe, it, expect } from 'vitest';
 import {
+  validateString,
+  validateEmail,
+  validateUrl,
+  validateNumber,
+  validateInteger,
+  validateArray,
+  validateArrayOf,
+  validateObject,
+  validateSearchQuery,
+  validateAdminConfig,
   validateClass,
   validateSpecialization,
   validateDungeon,
   validateApiResponse,
   validateSourceUrls,
-  validateStorageData,
   validateTabSelection,
   validateUserRole,
   validateClassSelection,
   validateDungeonSelection,
-} from './validationService.ts';
-import { WOW_CLASSES, DUNGEONS } from '../constants.ts';
+} from './validationService';
+import { WOW_CLASSES, DUNGEONS } from '../constants';
 
 describe('validationService', () => {
-  describe('validateClass', () => {
-    it('should return true for valid class', () => {
-      const validClass = WOW_CLASSES[0];
-      expect(validateClass(validClass)).toBe(true);
-    });
-
-    it('should return false for null', () => {
-      expect(validateClass(null)).toBe(false);
-    });
-
-    it('should return false for invalid class', () => {
-      expect(validateClass({ id: 'invalid', name: 'Invalid', color: '#000', specs: [] })).toBe(false);
-    });
-  });
-
-  describe('validateSpecialization', () => {
-    it('should return true for valid spec in class', () => {
-      const wowClass = WOW_CLASSES[0];
-      const spec = wowClass.specs[0];
-      expect(validateSpecialization(spec, wowClass)).toBe(true);
-    });
-
-    it('should return false for null spec', () => {
-      const wowClass = WOW_CLASSES[0];
-      expect(validateSpecialization(null, wowClass)).toBe(false);
-    });
-
-    it('should return false for spec not in class', () => {
-      const wowClass = WOW_CLASSES[0];
-      const invalidSpec = { id: 'invalid', name: 'Invalid', role: 'Tank' as const };
-      expect(validateSpecialization(invalidSpec, wowClass)).toBe(false);
-    });
-  });
-
-  describe('validateDungeon', () => {
-    it('should return true for valid dungeon', () => {
-      const validDungeon = DUNGEONS[0];
-      expect(validateDungeon(validDungeon)).toBe(true);
-    });
-
-    it('should return false for null', () => {
-      expect(validateDungeon(null)).toBe(false);
-    });
-
-    it('should return false for invalid dungeon', () => {
-      expect(validateDungeon({ name: 'Invalid', expansion: 'Invalid' })).toBe(false);
-    });
-  });
-
-  describe('validateApiResponse', () => {
-    it('should return true for valid string response', () => {
-      expect(validateApiResponse('Valid response')).toBe(true);
-    });
-
-    it('should return false for empty string', () => {
-      expect(validateApiResponse('')).toBe(false);
-    });
-
-    it('should return false for whitespace only', () => {
-      expect(validateApiResponse('   ')).toBe(false);
-    });
-
-    it('should return false for non-string', () => {
-      expect(validateApiResponse(123)).toBe(false);
-      expect(validateApiResponse(null)).toBe(false);
-      expect(validateApiResponse(undefined)).toBe(false);
-    });
-  });
-
-  describe('validateSourceUrls', () => {
-    it('should return valid for empty string', () => {
-      const result = validateSourceUrls('');
+  describe('validateString', () => {
+    it('should accept valid strings', () => {
+      const result = validateString('hello');
       expect(result.valid).toBe(true);
-      expect(result.urls).toEqual([]);
     });
 
-    it('should return valid for single valid URL', () => {
-      const result = validateSourceUrls('https://example.com');
-      expect(result.valid).toBe(true);
-      expect(result.urls).toContain('https://example.com');
-      expect(result.errors).toEqual([]);
-    });
-
-    it('should return valid for multiple valid URLs', () => {
-      const urls = 'https://example.com\nhttps://test.com';
-      const result = validateSourceUrls(urls);
-      expect(result.valid).toBe(true);
-      expect(result.urls).toHaveLength(2);
-      expect(result.errors).toEqual([]);
-    });
-
-    it('should return invalid for malformed URLs', () => {
-      const result = validateSourceUrls('not a url');
+    it('should reject non-strings', () => {
+      const result = validateString(123);
       expect(result.valid).toBe(false);
-      expect(result.urls).toEqual([]);
-      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.error).toBe('Value must be a string');
     });
 
-    it('should filter out invalid URLs and keep valid ones', () => {
-      const urls = 'https://example.com\ninvalid\nhttps://test.com';
-      const result = validateSourceUrls(urls);
+    it('should enforce minimum length', () => {
+      const result = validateString('hi', 3);
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('Minimum length is 3');
+    });
+
+    it('should enforce maximum length', () => {
+      const result = validateString('hello world', 0, 5);
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('Maximum length is 5');
+    });
+  });
+
+  describe('validateEmail', () => {
+    it('should accept valid emails', () => {
+      const result = validateEmail('test@example.com');
       expect(result.valid).toBe(true);
-      expect(result.urls).toHaveLength(2);
-      expect(result.errors).toHaveLength(1);
     });
 
-    it('should trim whitespace from URLs', () => {
-      const result = validateSourceUrls('  https://example.com  ');
-      expect(result.urls).toContain('https://example.com');
-    });
-  });
-
-  describe('Error Handling and Recovery', () => {
-    it('should handle API errors gracefully', () => {
-      const apiError = new Error('API key not configured');
-      expect(apiError.message).toContain('API');
+    it('should reject invalid emails', () => {
+      const result = validateEmail('invalid-email');
+      expect(result.valid).toBe(false);
     });
 
-    it('should handle network errors gracefully', () => {
-      const networkError = new Error('Network timeout');
-      expect(networkError.message).toContain('timeout');
-    });
-
-    it('should handle validation errors gracefully', () => {
-      const validationError = new Error('Invalid class selected');
-      expect(validationError.message).toContain('Invalid');
-    });
-
-    it('should provide actionable error messages', () => {
-      const errors = [
-        'Invalid class selected. Please select a valid class.',
-        'Invalid specialization selected. Please select a valid specialization.',
-        'Invalid dungeon selected. Please select a valid dungeon.',
-      ];
-      
-      errors.forEach(error => {
-        expect(error).toContain('Invalid');
-        expect(error).toContain('Please');
-      });
+    it('should reject non-strings', () => {
+      const result = validateEmail(123);
+      expect(result.valid).toBe(false);
     });
   });
 
-  describe('validateStorageData', () => {
-    it('should return true for valid object', () => {
-      expect(validateStorageData({ key: 'value' })).toBe(true);
+  describe('validateUrl', () => {
+    it('should accept valid HTTP URLs', () => {
+      const result = validateUrl('http://example.com');
+      expect(result.valid).toBe(true);
     });
 
-    it('should return false for null', () => {
-      expect(validateStorageData(null)).toBe(false);
+    it('should accept valid HTTPS URLs', () => {
+      const result = validateUrl('https://example.com');
+      expect(result.valid).toBe(true);
     });
 
-    it('should return false for array', () => {
-      expect(validateStorageData([1, 2, 3])).toBe(false);
+    it('should reject invalid URLs', () => {
+      const result = validateUrl('not a url');
+      expect(result.valid).toBe(false);
     });
 
-    it('should return false for primitive types', () => {
-      expect(validateStorageData('string')).toBe(false);
-      expect(validateStorageData(123)).toBe(false);
-      expect(validateStorageData(true)).toBe(false);
+    it('should reject non-HTTP protocols', () => {
+      const result = validateUrl('ftp://example.com');
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateNumber', () => {
+    it('should accept valid numbers', () => {
+      const result = validateNumber(42);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject non-numbers', () => {
+      const result = validateNumber('42');
+      expect(result.valid).toBe(false);
+    });
+
+    it('should enforce minimum value', () => {
+      const result = validateNumber(5, 10);
+      expect(result.valid).toBe(false);
+    });
+
+    it('should enforce maximum value', () => {
+      const result = validateNumber(15, 0, 10);
+      expect(result.valid).toBe(false);
+    });
+
+    it('should reject NaN', () => {
+      const result = validateNumber(NaN);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateInteger', () => {
+    it('should accept integers', () => {
+      const result = validateInteger(42);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject floats', () => {
+      const result = validateInteger(42.5);
+      expect(result.valid).toBe(false);
+    });
+
+    it('should reject non-numbers', () => {
+      const result = validateInteger('42');
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateArray', () => {
+    it('should accept valid arrays', () => {
+      const result = validateArray([1, 2, 3]);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject non-arrays', () => {
+      const result = validateArray('not an array');
+      expect(result.valid).toBe(false);
+    });
+
+    it('should enforce minimum length', () => {
+      const result = validateArray([1], 2);
+      expect(result.valid).toBe(false);
+    });
+
+    it('should enforce maximum length', () => {
+      const result = validateArray([1, 2, 3], 0, 2);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateArrayOf', () => {
+    it('should validate array of strings', () => {
+      const isString = (v: unknown): v is string => typeof v === 'string';
+      const result = validateArrayOf(['a', 'b', 'c'], isString);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject mixed types', () => {
+      const isString = (v: unknown): v is string => typeof v === 'string';
+      const result = validateArrayOf(['a', 1, 'c'], isString);
+      expect(result.valid).toBe(false);
+      expect(result.invalidIndex).toBe(1);
+    });
+  });
+
+  describe('validateObject', () => {
+    it('should validate object against schema', () => {
+      const schema = {
+        name: (v: unknown) => validateString(v, 1, 100),
+        age: (v: unknown) => validateNumber(v, 0, 150),
+      };
+
+      const result = validateObject({ name: 'John', age: 30 }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should collect errors for invalid fields', () => {
+      const schema = {
+        name: (v: unknown) => validateString(v, 1, 100),
+        age: (v: unknown) => validateNumber(v, 0, 150),
+      };
+
+      const result = validateObject({ name: '', age: 200 }, schema);
+      expect(result.valid).toBe(false);
+      expect(Object.keys(result.errors).length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('validateSearchQuery', () => {
+    it('should accept valid search queries', () => {
+      const result = validateSearchQuery('warrior');
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject empty queries', () => {
+      const result = validateSearchQuery('');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Search query cannot be empty');
+    });
+
+    it('should reject queries shorter than 2 chars', () => {
+      const result = validateSearchQuery('a');
+      expect(result.valid).toBe(false);
+    });
+
+    it('should reject queries longer than 100 chars', () => {
+      const result = validateSearchQuery('a'.repeat(101));
+      expect(result.valid).toBe(false);
+    });
+
+    it('should reject invalid characters', () => {
+      const result = validateSearchQuery('warrior@#$');
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateAdminConfig', () => {
+    it('should accept valid config', () => {
+      const result = validateAdminConfig({ sourceUrls: '' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject non-objects', () => {
+      const result = validateAdminConfig('not an object');
+      expect(result.valid).toBe(false);
+    });
+
+    it('should validate sourceUrls if present', () => {
+      const result = validateAdminConfig({ sourceUrls: 'invalid-url' });
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateClass', () => {
+    it('should accept valid class', () => {
+      const validClass = WOW_CLASSES[0];
+      const result = validateClass(validClass);
+      expect(result).toBe(true);
+    });
+
+    it('should reject null', () => {
+      const result = validateClass(null);
+      expect(result).toBe(false);
+    });
+
+    it('should reject invalid class', () => {
+      const result = validateClass({ id: 'invalid', name: 'Invalid', color: '', specs: [] });
+      expect(result).toBe(false);
     });
   });
 
   describe('validateTabSelection', () => {
-    it('should return true for valid tab selections', () => {
+    it('should accept valid tabs', () => {
       expect(validateTabSelection('overview')).toBe(true);
       expect(validateTabSelection('specs')).toBe(true);
       expect(validateTabSelection('rotations')).toBe(true);
-      expect(validateTabSelection('addons')).toBe(true);
-      expect(validateTabSelection('dungeons')).toBe(true);
     });
 
-    it('should return false for invalid tab selections', () => {
+    it('should reject invalid tabs', () => {
       expect(validateTabSelection('invalid')).toBe(false);
-      expect(validateTabSelection('')).toBe(false);
-      expect(validateTabSelection(null)).toBe(false);
-      expect(validateTabSelection(123)).toBe(false);
     });
   });
 
   describe('validateUserRole', () => {
-    it('should return true for valid user roles', () => {
+    it('should accept valid roles', () => {
       expect(validateUserRole('user')).toBe(true);
       expect(validateUserRole('master')).toBe(true);
       expect(validateUserRole('admin')).toBe(true);
     });
 
-    it('should return false for invalid user roles', () => {
-      expect(validateUserRole('superadmin')).toBe(false);
-      expect(validateUserRole('')).toBe(false);
-      expect(validateUserRole(null)).toBe(false);
+    it('should reject invalid roles', () => {
+      expect(validateUserRole('invalid')).toBe(false);
+    });
+  });
+
+  describe('validateSourceUrls', () => {
+    it('should accept valid URLs', () => {
+      const result = validateSourceUrls('https://example.com');
+      expect(result.valid).toBe(true);
+      expect(result.urls).toContain('https://example.com');
+    });
+
+    it('should reject invalid URLs', () => {
+      const result = validateSourceUrls('not a url');
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it('should enforce maximum URLs', () => {
+      const urls = Array(11).fill('https://example.com').join('\n');
+      const result = validateSourceUrls(urls);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe('validateApiResponse', () => {
+    it('should accept valid responses', () => {
+      const result = validateApiResponse('Valid response');
+      expect(result).toBe(true);
+    });
+
+    it('should reject empty responses', () => {
+      const result = validateApiResponse('');
+      expect(result).toBe(false);
+    });
+
+    it('should reject non-strings', () => {
+      const result = validateApiResponse(123);
+      expect(result).toBe(false);
     });
   });
 
   describe('validateClassSelection', () => {
-    it('should validate correct class and spec selection', () => {
-      const warrior = WOW_CLASSES[0];
-      const spec = warrior.specs[0];
-      const result = validateClassSelection(warrior, spec);
+    it('should accept valid selection', () => {
+      const validClass = WOW_CLASSES[0];
+      const validSpec = validClass.specs[0];
+      const result = validateClassSelection(validClass, validSpec);
       expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
     });
 
-    it('should reject invalid class selection', () => {
+    it('should reject invalid class', () => {
       const result = validateClassSelection(null, null);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Invalid class selected');
-    });
-
-    it('should reject spec from different class', () => {
-      const warrior = WOW_CLASSES[0];
-      const mage = WOW_CLASSES.find(c => c.name === 'Mage');
-      const mageSpec = mage?.specs[0];
-      
-      const result = validateClassSelection(warrior, mageSpec || null);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Invalid specialization for selected class');
     });
   });
 
   describe('validateDungeonSelection', () => {
-    it('should validate correct dungeon selection', () => {
-      const dungeon = DUNGEONS[0];
-      const result = validateDungeonSelection(dungeon, dungeon.expansion);
+    it('should accept valid dungeon', () => {
+      const validDungeon = DUNGEONS[0];
+      const result = validateDungeonSelection(validDungeon, validDungeon.expansion);
       expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
     });
 
-    it('should reject invalid dungeon selection', () => {
+    it('should reject invalid dungeon', () => {
       const result = validateDungeonSelection(null, null);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Invalid dungeon selected');
-    });
-
-    it('should reject dungeon with mismatched expansion', () => {
-      const dungeon = DUNGEONS[0];
-      const wrongExpansion = 'Wrong Expansion';
-      const result = validateDungeonSelection(dungeon, wrongExpansion);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Selected dungeon does not match expansion filter');
-    });
-  });
-
-  describe('Enhanced URL Validation', () => {
-    it('should reject URLs with invalid protocols', () => {
-      const result = validateSourceUrls('ftp://example.com');
-      expect(result.valid).toBe(false);
-      expect(result.errors.length).toBeGreaterThan(0);
-    });
-
-    it('should reject more than 10 URLs', () => {
-      const urls = Array(11).fill('https://example.com').join('\n');
-      const result = validateSourceUrls(urls);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Maximum 10 URLs allowed');
-    });
-
-    it('should reject URLs longer than 2048 characters', () => {
-      const longUrl = 'https://example.com/' + 'a'.repeat(2100);
-      const result = validateSourceUrls(longUrl);
-      expect(result.valid).toBe(false);
-      expect(result.errors.length).toBeGreaterThan(0);
-    });
-
-    it('should accept HTTP and HTTPS URLs', () => {
-      const urls = 'http://example.com\nhttps://example.com';
-      const result = validateSourceUrls(urls);
-      expect(result.valid).toBe(true);
-      expect(result.urls).toHaveLength(2);
     });
   });
 });

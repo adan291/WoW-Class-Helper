@@ -14,6 +14,7 @@ import {
   getMockDungeonTips,
 } from './mockGuideService.ts';
 import { toastService } from './toastService.ts';
+import { errorService, type AppError } from './errorService.ts';
 
 // Per coding guidelines, `process.env.API_KEY` is assumed to be available.
 // The GoogleGenAI instance is initialized directly without fallbacks.
@@ -108,11 +109,9 @@ const generateContentWithGemini = async (
     toastService.success('✨ Guide generated successfully!');
     return response.text;
   } catch (error) {
-    console.error(`Error calling Gemini API (attempt ${retryCount + 1}/${MAX_RETRIES}):`, error);
-
+    // Handle retryable errors
     if (isRetryableError(error) && retryCount < MAX_RETRIES) {
       const waitTime = RETRY_DELAY_MS * Math.pow(2, retryCount);
-      console.log(`Retrying in ${waitTime}ms...`);
       
       // Report retry progress
       if (retryProgressCallback) {
@@ -133,28 +132,18 @@ const generateContentWithGemini = async (
       return generateContentWithGemini(prompt, sourceUrls, retryCount + 1);
     }
 
-    // Provide specific error messages
-    if (error instanceof Error) {
-      if (error.message.includes('API key')) {
-        throw new Error('API configuration error. Please check your GEMINI_API_KEY environment variable.');
-      }
-      if (error.message.includes('URL')) {
-        throw new Error(`URL validation error: ${error.message}`);
-      }
-      if (error.message.includes('Invalid prompt')) {
-        throw new Error('The request could not be processed. Please try again.');
-      }
-      // Return mock data on API overload or unavailability
-      if (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE')) {
-        console.warn('API unavailable, using mock data');
-        toastService.warning('⚠️ API unavailable - showing demo content');
-        return `${prompt}\n\n---\n\n**[DEMO MODE]** This is demonstration content. The API is currently unavailable. Please try again in a few moments.`;
-      }
-      toastService.error(`❌ ${error.message}`);
-      throw error;
+    // Handle API unavailability with fallback
+    if (error instanceof Error && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE'))) {
+      errorService.logError(error, { action: 'generateContent', severity: 'warning' });
+      toastService.warning('⚠️ API unavailable - showing demo content');
+      return `${prompt}\n\n---\n\n**[DEMO MODE]** This is demonstration content. The API is currently unavailable. Please try again in a few moments.`;
     }
 
-    throw new Error('Failed to generate content from AI. Please try again later.');
+    // Log and handle error
+    const appError = errorService.handleApiError(error, { action: 'generateContent' });
+    const userMessage = errorService.getUserMessage(appError);
+    toastService.error(`❌ ${userMessage}`);
+    throw appError;
   }
 };
 

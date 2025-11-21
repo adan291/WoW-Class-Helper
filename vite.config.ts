@@ -27,16 +27,30 @@ export default defineConfig(({ mode }) => {
         minify: 'esbuild',
         cssCodeSplit: true,
         cssMinify: 'esbuild',
+        sourcemap: false,
         rollupOptions: {
           output: {
             manualChunks: {
               'vendor': ['react', 'react-dom'],
               'gemini': ['@google/genai'],
-            }
-          }
+            },
+            // Optimize chunk names
+            chunkFileNames: 'chunks/[name]-[hash].js',
+            entryFileNames: '[name]-[hash].js',
+            assetFileNames: 'assets/[name]-[hash][extname]',
+          },
+          // Optimize external dependencies
+          external: [],
         },
         reportCompressedSize: false,
         chunkSizeWarningLimit: 500,
+        // Optimize terser options
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+        },
       },
       test: {
         globals: true,

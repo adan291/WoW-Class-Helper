@@ -129,7 +129,7 @@ const GuideSection = ({
 
       {isLoading && (
         <LoadingStateEnhanced
-          classColor="var(--class-color, #FFD700)"
+          classColor="#FFD700"
           message="Generating guide..."
           retryCount={retryCount}
           retryTimer={retryTimer}
