@@ -10,6 +10,10 @@ export interface WowClass {
   name: string;
   color: string;
   specs: Specialization[];
+  role?: 'tank' | 'healer' | 'dps';
+  icon?: string;
+  description?: string;
+  videoTutorials?: { title: string; url: string; thumbnail?: string }[];
 }
 
 export interface Dungeon {

@@ -7,6 +7,7 @@ import { cacheService } from '../services/cacheService.ts';
 import { validateAndPrepareGuideRequest } from '../services/classOrchestratorService.ts';
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
+import { VideoTutorials } from './VideoTutorials.tsx';
 import '../styles/animations.css';
 
 interface ClassHubProps {
@@ -15,7 +16,7 @@ interface ClassHubProps {
   userRole: UserRole;
 }
 
-type TabId = 'overview' | 'specs' | 'rotations' | 'addons' | 'dungeons';
+type TabId = 'overview' | 'specs' | 'rotations' | 'addons' | 'dungeons' | 'videos';
 
 const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
@@ -34,7 +35,9 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
 
   // Load guide content when tab or spec changes
   useEffect(() => {
-    loadGuideContent();
+    if (activeTab !== 'videos') {
+      loadGuideContent();
+    }
   }, [activeTab, activeSpec, selectedDungeon, guideExpansion]);
 
   const loadGuideContent = useCallback(async () => {
@@ -80,6 +83,7 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
       { id: 'rotations' as TabId, label: 'Rotations' },
       { id: 'addons' as TabId, label: 'Addons' },
       { id: 'dungeons' as TabId, label: 'Dungeons' },
+      { id: 'videos' as TabId, label: 'Videos' },
     ],
     []
   );
@@ -112,11 +116,10 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition ${
-                activeTab === tab.id
+              className={`flex-1 px-4 py-3 text-sm font-medium transition ${activeTab === tab.id
                   ? 'bg-gray-700 text-white border-b-2'
                   : 'text-gray-400 hover:text-gray-200'
-              }`}
+                }`}
               style={
                 activeTab === tab.id
                   ? { borderBottomColor: wowClass.color }
@@ -135,11 +138,10 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
               <button
                 key={spec.id}
                 onClick={() => setActiveSpec(spec)}
-                className={`px-4 py-2 rounded-lg transition ${
-                  activeSpec.id === spec.id
+                className={`px-4 py-2 rounded-lg transition ${activeSpec.id === spec.id
                     ? 'bg-yellow-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                  }`}
               >
                 {spec.name}
               </button>
@@ -187,7 +189,9 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
 
         {/* Guide Content */}
         <div className="p-6">
-          {isLoading ? (
+          {activeTab === 'videos' ? (
+            <VideoTutorials wowClass={wowClass} />
+          ) : isLoading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
               <p className="mt-4 text-gray-400">Loading guide...</p>

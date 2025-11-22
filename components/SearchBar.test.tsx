@@ -37,12 +37,13 @@ describe('SearchBar Component', () => {
     const input = screen.getByPlaceholderText(/search classes/i);
     await user.type(input, 'warrior');
 
+    // Wait for results to appear (debounce is 300ms)
     await waitFor(() => {
-      const results = screen.queryAllByRole('button', { name: /warrior/i });
-      if (results.length > 0) {
-        fireEvent.click(results[0]);
-      }
-    });
+      expect(screen.getAllByRole('button', { name: /warrior/i }).length).toBeGreaterThan(0);
+    }, { timeout: 1000 });
+
+    const results = screen.getAllByRole('button', { name: /warrior/i });
+    await user.click(results[0]);
 
     expect(onSelectResult).toHaveBeenCalled();
   });

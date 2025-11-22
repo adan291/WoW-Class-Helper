@@ -1,5 +1,6 @@
 import React from 'react';
 import type { WowClass } from '../types.ts';
+import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 
 interface ClassCardProps {
   wowClass: WowClass;
@@ -37,10 +38,10 @@ export const ClassCard: React.FC<ClassCardProps> = ({
 
         {/* Class Icon */}
         <div
-          className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3 transition-transform group-hover:scale-110"
-          style={{ backgroundColor: `${wowClass.color}30` }}
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
+          style={{ backgroundColor: `${wowClass.color}40`, border: `2px solid ${wowClass.color}60` }}
         >
-          {wowClass.icon}
+          <ClassIconRenderer classId={wowClass.id} className="w-12 h-12" />
         </div>
 
         {/* Class Name */}
