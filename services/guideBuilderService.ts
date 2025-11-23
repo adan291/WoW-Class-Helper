@@ -53,21 +53,15 @@ export class GuideBuilderService {
       sections: [
         {
           name: 'Dungeon Overview',
-          sections: [
-            { type: 'heading', id: 'intro', content: 'Dungeon Introduction' },
-          ],
+          sections: [{ type: 'heading', id: 'intro', content: 'Dungeon Introduction' }],
         },
         {
           name: 'Boss Mechanics',
-          sections: [
-            { type: 'heading', id: 'bosses', content: 'Boss Mechanics' },
-          ],
+          sections: [{ type: 'heading', id: 'bosses', content: 'Boss Mechanics' }],
         },
         {
           name: 'Loot Overview',
-          sections: [
-            { type: 'heading', id: 'loot', content: 'Loot Table' },
-          ],
+          sections: [{ type: 'heading', id: 'loot', content: 'Loot Table' }],
         },
       ],
     },
@@ -79,27 +73,19 @@ export class GuideBuilderService {
       sections: [
         {
           name: 'Specialization Overview',
-          sections: [
-            { type: 'heading', id: 'intro', content: 'Specialization Introduction' },
-          ],
+          sections: [{ type: 'heading', id: 'intro', content: 'Specialization Introduction' }],
         },
         {
           name: 'Rotation',
-          sections: [
-            { type: 'heading', id: 'rotation', content: 'Combat Rotation' },
-          ],
+          sections: [{ type: 'heading', id: 'rotation', content: 'Combat Rotation' }],
         },
         {
           name: 'Gearing',
-          sections: [
-            { type: 'heading', id: 'gearing', content: 'Gearing Strategy' },
-          ],
+          sections: [{ type: 'heading', id: 'gearing', content: 'Gearing Strategy' }],
         },
         {
           name: 'Key Abilities',
-          sections: [
-            { type: 'heading', id: 'abilities', content: 'Key Abilities' },
-          ],
+          sections: [{ type: 'heading', id: 'abilities', content: 'Key Abilities' }],
         },
       ],
     },
@@ -111,21 +97,15 @@ export class GuideBuilderService {
       sections: [
         {
           name: 'Class Overview',
-          sections: [
-            { type: 'heading', id: 'intro', content: 'Class Introduction' },
-          ],
+          sections: [{ type: 'heading', id: 'intro', content: 'Class Introduction' }],
         },
         {
           name: 'Specializations',
-          sections: [
-            { type: 'heading', id: 'specs', content: 'Available Specializations' },
-          ],
+          sections: [{ type: 'heading', id: 'specs', content: 'Available Specializations' }],
         },
         {
           name: 'Pro Tips',
-          sections: [
-            { type: 'heading', id: 'tips', content: 'Pro Tips' },
-          ],
+          sections: [{ type: 'heading', id: 'tips', content: 'Pro Tips' }],
         },
       ],
     },
@@ -228,11 +208,7 @@ export class GuideBuilderService {
   /**
    * Create guide from template
    */
-  createGuideFromTemplate(
-    templateId: string,
-    title: string,
-    author: string
-  ): CustomGuide | null {
+  createGuideFromTemplate(templateId: string, title: string, author: string): CustomGuide | null {
     const template = this.getTemplate(templateId);
     if (!template) return null;
 
@@ -263,10 +239,7 @@ export class GuideBuilderService {
   /**
    * Update guide
    */
-  updateGuide(
-    guideId: string,
-    updates: Partial<CustomGuide>
-  ): CustomGuide | null {
+  updateGuide(guideId: string, updates: Partial<CustomGuide>): CustomGuide | null {
     const guide = this.getGuide(guideId);
     if (!guide) return null;
 

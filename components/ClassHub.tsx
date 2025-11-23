@@ -69,7 +69,8 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
       cacheService.set(cacheKey, content);
       setGuideContent(content);
     } catch (error) {
-      console.error('Failed to load guide:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Failed to load guide:', errorMsg);
       setGuideContent('Failed to load guide content. Please try again.');
     } finally {
       setIsLoading(false);
@@ -89,7 +90,10 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
   );
 
   return (
-    <div className="animate-fade-in" style={{ '--class-color': wowClass.color } as React.CSSProperties}>
+    <div
+      className="animate-fade-in"
+      style={{ '--class-color': wowClass.color } as React.CSSProperties}
+    >
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -116,15 +120,12 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition ${activeTab === tab.id
+              className={`flex-1 px-4 py-3 text-sm font-medium transition ${
+                activeTab === tab.id
                   ? 'bg-gray-700 text-white border-b-2'
                   : 'text-gray-400 hover:text-gray-200'
-                }`}
-              style={
-                activeTab === tab.id
-                  ? { borderBottomColor: wowClass.color }
-                  : undefined
-              }
+              }`}
+              style={activeTab === tab.id ? { borderBottomColor: wowClass.color } : undefined}
             >
               {tab.label}
             </button>
@@ -138,10 +139,11 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
               <button
                 key={spec.id}
                 onClick={() => setActiveSpec(spec)}
-                className={`px-4 py-2 rounded-lg transition ${activeSpec.id === spec.id
+                className={`px-4 py-2 rounded-lg transition ${
+                  activeSpec.id === spec.id
                     ? 'bg-yellow-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                }`}
               >
                 {spec.name}
               </button>
@@ -170,7 +172,10 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
         )}
 
         {/* Expansion Filter */}
-        {(activeTab === 'overview' || activeTab === 'specs' || activeTab === 'rotations' || activeTab === 'addons') && (
+        {(activeTab === 'overview' ||
+          activeTab === 'specs' ||
+          activeTab === 'rotations' ||
+          activeTab === 'addons') && (
           <div className="bg-gray-800/50 border-b border-gray-700 p-4">
             <select
               value={guideExpansion}

@@ -9,9 +9,11 @@ This directory contains the complete specification for the WoW AI Class Helper p
 ### 📋 Specs Principales (Originales)
 
 #### requirements.md
+
 **Purpose**: Define what the application does and what users can do with it.
 
 **Contains**:
+
 - Project vision and core principles
 - Scope definition (in-scope and out-of-scope)
 - 8 Acceptance Criteria (AC) covering all major features
@@ -21,12 +23,14 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Future phases and constraints
 
 **Use When**:
+
 - Planning features
 - Writing tests
 - Validating implementation completeness
 - Understanding user requirements
 
 **Key Sections**:
+
 - AC1: Class & Specialization Discovery
 - AC2: Specialization Selection & Content Routing
 - AC3: Guide Generation with Source Verification
@@ -37,9 +41,11 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - AC8: Responsive Design & Performance
 
 #### design.md
+
 **Purpose**: Explain how the application is built and ensure correct behavior.
 
 **Contains**:
+
 - System architecture and component hierarchy
 - State management strategy
 - 12 Correctness Properties (CP) with implementations and test cases
@@ -52,6 +58,7 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Deployment considerations
 
 **Use When**:
+
 - Implementing features
 - Debugging complex issues
 - Optimizing performance
@@ -59,6 +66,7 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Verifying correctness
 
 **Key Sections**:
+
 - CP1: Class & Specialization Consistency
 - CP2: Dungeon Filtering Accuracy
 - CP3: Content Generation Consistency
@@ -75,9 +83,11 @@ This directory contains the complete specification for the WoW AI Class Helper p
 ### 📊 Specs Mejorados (Noviembre 2025)
 
 #### requirements-improved.md ⭐ RECOMENDADO
+
 **Purpose**: Requisitos mejorados y estructurados con mayor detalle.
 
 **Mejoras**:
+
 - 8 Requisitos Funcionales (RF1-RF8) detallados
 - 4 Requisitos No Funcionales (RNF1-RNF4)
 - Matriz de trazabilidad RF → AC → CP
@@ -85,14 +95,17 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Cambios futuros planificados
 
 **Use When**:
+
 - Necesitas especificación más detallada
 - Planificando nuevas fases
 - Documentando requisitos para stakeholders
 
 #### design-improved.md ⭐ RECOMENDADO
+
 **Purpose**: Diseño mejorado con propiedades de corrección detalladas.
 
 **Mejoras**:
+
 - Arquitectura de alto nivel con diagramas
 - 12 Correctness Properties (CP1-CP12) con:
   - Invariantes matemáticas
@@ -104,14 +117,17 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Performance y seguridad
 
 **Use When**:
+
 - Implementando características complejas
 - Validando propiedades de corrección
 - Optimizando rendimiento
 
 #### tasks-improved.md ⭐ RECOMENDADO
+
 **Purpose**: Plan de tareas mejorado y organizado.
 
 **Mejoras**:
+
 - 12 tareas organizadas en 4 grupos
 - Duración estimada por tarea
 - Matriz de dependencias
@@ -120,6 +136,7 @@ This directory contains the complete specification for the WoW AI Class Helper p
 - Cronograma realista (5-8 horas)
 
 **Use When**:
+
 - Planificando sprints
 - Asignando trabajo
 - Estimando duración
@@ -129,42 +146,47 @@ This directory contains the complete specification for the WoW AI Class Helper p
 
 ### Acceptance Criteria → Correctness Properties
 
-| AC | Description | Related CPs |
-|---|---|---|
-| AC1 | Class & Specialization Discovery | CP1, CP10, CP11 |
-| AC2 | Specialization Selection & Content Routing | CP1, CP3 |
-| AC3 | Guide Generation with Source Verification | CP3, CP5, CP6, CP12 |
-| AC4 | Dungeon-Specific Strategies | CP2, CP3, CP11 |
-| AC5 | User Roles & Admin Capabilities | CP5, CP8 |
-| AC6 | Content Rendering & Formatting | CP6, CP7 |
-| AC7 | Error Handling & Recovery | CP7, CP9 |
-| AC8 | Responsive Design & Performance | CP10 |
+| AC  | Description                                | Related CPs         |
+| --- | ------------------------------------------ | ------------------- |
+| AC1 | Class & Specialization Discovery           | CP1, CP10, CP11     |
+| AC2 | Specialization Selection & Content Routing | CP1, CP3            |
+| AC3 | Guide Generation with Source Verification  | CP3, CP5, CP6, CP12 |
+| AC4 | Dungeon-Specific Strategies                | CP2, CP3, CP11      |
+| AC5 | User Roles & Admin Capabilities            | CP5, CP8            |
+| AC6 | Content Rendering & Formatting             | CP6, CP7            |
+| AC7 | Error Handling & Recovery                  | CP7, CP9            |
+| AC8 | Responsive Design & Performance            | CP10                |
 
 **Coverage**: 100% - Every acceptance criterion has corresponding correctness properties
 
 ## Key Principles
 
 ### 1. Data Integrity First
+
 - All information must be verifiable and sourced from authoritative WoW data
 - 100% accuracy for official WoW data, 95%+ for community-verified content
 - Every guide includes sources and verification methods
 
 ### 2. Real-Time Accuracy
+
 - Content reflects current game state (patches, balance changes)
 - Automatic patch detection and content updates (Phase 2)
 - Live ability and talent data (Phase 2)
 
 ### 3. Source Attribution
+
 - Every guide includes verifiable sources
 - Clear distinction between AI-generated and verified content
 - Source types: official, community, data, custom
 
 ### 4. Extensibility
+
 - Architecture supports future addon integration
 - Data structures compatible with WoW addon format
 - API abstraction layer for future real-time data
 
 ### 5. User Trust
+
 - Clear error messages and recovery steps
 - Transparent about data sources
 - Admin audit trail for custom sources
@@ -172,33 +194,39 @@ This directory contains the complete specification for the WoW AI Class Helper p
 ## Quick Reference
 
 ### 🚀 Para Empezar Rápido
+
 1. Lee `requirements-improved.md` para entender qué se debe hacer
 2. Lee `design-improved.md` para entender cómo se debe hacer
 3. Usa `tasks-improved.md` para saber qué implementar
 
 ### For Feature Planning
+
 1. Read requirements-improved.md → Requisitos Funcionales (RF)
 2. Identify which RF your feature addresses
 3. Check related CPs in design-improved.md
 
 ### For Implementation
+
 1. Read design-improved.md → Relevant Correctness Property
 2. Review implementation strategy with code examples
 3. Check test cases
 4. Follow project-standards.md for code style
 
 ### For Testing
+
 1. Read design-improved.md → Verification section for each CP
 2. Implement test cases listed
 3. Verify against acceptance criteria in requirements-improved.md
 
 ### For Debugging
+
 1. Identify which CP is failing
 2. Read design-improved.md → Implementation section
 3. Check error handling strategy
 4. Review test cases for similar scenarios
 
 ### 📚 Documentación Complementaria
+
 - **PROJECT_ANALYSIS.md** - Análisis completo del proyecto (raíz)
 - **IMPLEMENTATION_STATUS_UPDATED.md** - Estado actual (raíz)
 - **OPTIMIZATION_RECOMMENDATIONS.md** - Mejoras futuras (raíz)
@@ -207,6 +235,7 @@ This directory contains the complete specification for the WoW AI Class Helper p
 ## Data Structures
 
 ### Class Data
+
 ```typescript
 Class {
   id: string
@@ -219,6 +248,7 @@ Class {
 ```
 
 ### Specialization Data
+
 ```typescript
 Specialization {
   id: string
@@ -232,6 +262,7 @@ Specialization {
 ```
 
 ### Guide Content
+
 ```typescript
 Guide {
   classId: string
@@ -272,21 +303,25 @@ Guide {
 ## Future Phases
 
 ### Phase 2: Real-Time Data Integration
+
 - WoW API integration for live data
 - Automatic patch detection
 - Real-time ability and talent data
 
 ### Phase 3: Community & Verification
+
 - User accounts and guide ratings
 - Community verification system
 - Expert reviewer program
 
 ### Phase 4: Addon Integration
+
 - In-game addon version
 - Synchronized data between web and addon
 - In-game guide overlay
 
 ### Phase 5: Advanced Features
+
 - PvP rating-specific guides
 - Raid progression guides
 - Item recommendations with market data
@@ -294,17 +329,20 @@ Guide {
 ## Integration Points
 
 ### Gemini API
+
 - Model: `gemini-2.5-flash`
 - Purpose: Content generation
 - Error handling: Retry logic with exponential backoff
 - Rate limiting: Respect API quotas
 
 ### LocalStorage
+
 - Key: `wow_class_helper_favorites`
 - Format: JSON array of class IDs
 - Validation: Parse errors handled gracefully
 
 ### Environment
+
 - Variable: `GEMINI_API_KEY`
 - Source: `.env.local` (dev), process.env (build-time)
 - Security: Never exposed in client code
@@ -318,18 +356,23 @@ Guide {
 ## How to Use These Specs
 
 ### Step 1: Understand Requirements
+
 Read `requirements.md` to understand what the application should do.
 
 ### Step 2: Understand Design
+
 Read `design.md` to understand how it should work.
 
 ### Step 3: Plan Implementation
+
 Map requirements to correctness properties and identify implementation tasks.
 
 ### Step 4: Implement Features
+
 Follow `project-standards.md` for code style and conventions.
 
 ### Step 5: Verify Correctness
+
 Test against correctness properties and acceptance criteria.
 
 ## Maintenance
@@ -337,12 +380,14 @@ Test against correctness properties and acceptance criteria.
 ### When to Update Specs
 
 **Update requirements.md when**:
+
 - New features are planned
 - Acceptance criteria change
 - Scope changes
 - Success metrics change
 
 **Update design.md when**:
+
 - Architecture changes
 - New correctness properties needed
 - Implementation strategy changes

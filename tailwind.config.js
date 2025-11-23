@@ -1,11 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./index.html",
-    "./App.tsx",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./hooks/**/*.{js,ts,jsx,tsx}",
-    "./services/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './App.tsx',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './hooks/**/*.{js,ts,jsx,tsx}',
+    './services/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -29,8 +29,8 @@ export default {
       },
       animation: {
         'glow-pulse': 'glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'shimmer': 'shimmer 2s infinite',
-        'lift': 'lift 0.3s ease-out',
+        shimmer: 'shimmer 2s infinite',
+        lift: 'lift 0.3s ease-out',
         'fade-in': 'fade-in 0.3s ease-in-out',
       },
       keyframes: {
@@ -38,11 +38,11 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.7' },
         },
-        'shimmer': {
+        shimmer: {
           '0%': { backgroundPosition: '-1000px 0' },
           '100%': { backgroundPosition: '1000px 0' },
         },
-        'lift': {
+        lift: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-4px)' },
         },

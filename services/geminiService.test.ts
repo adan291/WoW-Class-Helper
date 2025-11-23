@@ -56,9 +56,7 @@ describe('geminiService', () => {
         warnings: [],
       };
 
-      vi.spyOn(geminiService, 'generateGuide').mockRejectedValue(
-        new Error('API Error')
-      );
+      vi.spyOn(geminiService, 'generateGuide').mockRejectedValue(new Error('API Error'));
 
       await expect(geminiService.generateGuide(mockContext)).rejects.toThrow('API Error');
     });

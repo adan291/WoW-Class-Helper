@@ -46,10 +46,7 @@ interface I18nProviderProps {
   defaultLanguage?: Language;
 }
 
-export const I18nProvider: React.FC<I18nProviderProps> = ({
-  children,
-  defaultLanguage = 'en',
-}) => {
+export const I18nProvider: React.FC<I18nProviderProps> = ({ children, defaultLanguage = 'en' }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const stored = localStorage.getItem('wow_class_helper_language');
     if (stored && Object.keys(TRANSLATIONS).includes(stored)) {
@@ -72,9 +69,7 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
   };
 
   return (
-    <I18nContext.Provider value={{ language, setLanguage, t }}>
-      {children}
-    </I18nContext.Provider>
+    <I18nContext.Provider value={{ language, setLanguage, t }}>{children}</I18nContext.Provider>
   );
 };
 

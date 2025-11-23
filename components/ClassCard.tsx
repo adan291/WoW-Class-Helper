@@ -39,16 +39,16 @@ export const ClassCard: React.FC<ClassCardProps> = ({
         {/* Class Icon */}
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
-          style={{ backgroundColor: `${wowClass.color}40`, border: `2px solid ${wowClass.color}60` }}
+          style={{
+            backgroundColor: `${wowClass.color}40`,
+            border: `2px solid ${wowClass.color}60`,
+          }}
         >
           <ClassIconRenderer classId={wowClass.id} className="w-12 h-12" />
         </div>
 
         {/* Class Name */}
-        <h3
-          className="text-lg font-bold mb-2 transition-colors"
-          style={{ color: wowClass.color }}
-        >
+        <h3 className="text-lg font-bold mb-2 transition-colors" style={{ color: wowClass.color }}>
           {wowClass.name}
         </h3>
 
@@ -65,9 +65,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-gray-400 line-clamp-2">
-          {wowClass.description}
-        </p>
+        <p className="text-xs text-gray-400 line-clamp-2">{wowClass.description}</p>
       </div>
     </div>
   );

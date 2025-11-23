@@ -13,9 +13,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ## Acceptance Criteria
 
 ### AC1: Class & Specialization Discovery
+
 **Given** a user visits the application  
 **When** they view the class selection screen  
 **Then** they should see:
+
 - All 13 WoW classes with accurate icons and names
 - Each class grouped by role (Tank, Healer, Damage, Support)
 - Specialization count displayed per class
@@ -29,9 +31,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC2: Specialization Selection & Content Routing
+
 **Given** a user selects a class  
 **When** they view the class details page  
 **Then** they should see:
+
 - All available specializations for that class
 - Specialization icons, names, and descriptions
 - Role indicator for each specialization
@@ -44,9 +48,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC3: Guide Generation with Source Verification
+
 **Given** a user selects a class, specialization, and guide type  
 **When** they request guide content  
 **Then** the system should:
+
 - Generate comprehensive, accurate guide content
 - Include source attribution and verification methods
 - Display loading state during generation
@@ -59,9 +65,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC4: Dungeon-Specific Strategies
+
 **Given** a user selects the "Dungeons" tab  
 **When** they view dungeon content  
 **Then** they should see:
+
 - Dungeon list filtered by expansion
 - Dungeons sorted alphabetically
 - Ability to select a specific dungeon
@@ -74,9 +82,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC5: User Roles & Admin Capabilities
+
 **Given** a user with Admin role  
 **When** they access the application  
 **Then** they should see:
+
 - Admin configuration panel
 - Ability to inject custom source URLs
 - Custom sources override default AI knowledge
@@ -86,6 +96,7 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 **Given** a user with User or Master role  
 **When** they access the application  
 **Then** they should:
+
 - Not see admin configuration panel
 - View content generated from default sources
 - Have read-only access to guide content
@@ -95,9 +106,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC6: Content Rendering & Formatting
+
 **Given** generated guide content  
 **When** the content is displayed  
 **Then** it should render:
+
 - Markdown formatting (headers, lists, bold, italic)
 - Code blocks with syntax highlighting
 - Ability tooltips in format: `[Ability Name]{Cooldown: X sec, ID: SpellID, Description: ...}`
@@ -110,9 +123,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC7: Error Handling & Recovery
+
 **Given** an error occurs during content generation  
 **When** the user views the error state  
 **Then** they should see:
+
 - Clear, user-friendly error message
 - Actionable recovery steps
 - Reload/retry button
@@ -124,9 +139,11 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### AC8: Responsive Design & Performance
+
 **Given** a user on any device (mobile, tablet, desktop)  
 **When** they interact with the application  
 **Then** it should:
+
 - Adapt layout to screen size
 - Maintain usability on all breakpoints
 - Load initial content in < 3 seconds
@@ -141,6 +158,7 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ## Implementation Tasks
 
 ### Phase 1: Complete AC6 - Content Rendering
+
 **Duration**: 2-3 hours
 
 - [ ] Implement markdown table rendering
@@ -149,11 +167,13 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 - [ ] Validate against CP6
 
 **Files to Modify**:
+
 - `components/GuideSection.tsx`
 
 ---
 
 ### Phase 2: Improve AC7 - Error Handling
+
 **Duration**: 1-2 hours
 
 - [ ] Implement robust data validation
@@ -162,12 +182,14 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 - [ ] Validate against CP7, CP9
 
 **Files to Modify**:
+
 - `components/GuideSection.tsx`
 - `services/geminiService.ts`
 
 ---
 
 ### Phase 3: Optimize AC8 - Performance
+
 **Duration**: 2-3 hours
 
 - [ ] Implement guide caching
@@ -176,6 +198,7 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 - [ ] Validate against CP10
 
 **Files to Modify**:
+
 - `components/ClassHub.tsx`
 - `components/GuideSection.tsx`
 
@@ -184,14 +207,17 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ## Correctness Properties
 
 ### CP1: Class & Specialization Consistency
+
 **Property**: Selected specialization must belong to selected class
 
 **Implementation**:
+
 - `activeSpec` initialized from `wowClass.specs[0]`
 - `setActiveSpec()` only accepts specs from current class
 - Spec selector renders only specs from `selectedClass.specs`
 
 **Verification**:
+
 - ✅ Spec selector disabled if no specs available
 - ✅ Invalid spec selection rejected with error
 - ✅ Spec persists correctly across tab changes
@@ -199,17 +225,20 @@ WoW AI Class Helper is a data-driven, verification-first guide platform for Worl
 ---
 
 ### CP2: Dungeon Filtering Accuracy
+
 **Property**: Displayed dungeons must match selected expansion filter
 
 **Implementation**:
+
 ```typescript
 const filteredDungeons = useMemo(() => {
   if (selectedExpansion === 'all') return DUNGEONS;
-  return DUNGEONS.filter(d => d.expansion === selectedExpansion);
+  return DUNGEONS.filter((d) => d.expansion === selectedExpansion);
 }, [selectedExpansion]);
 ```
 
 **Verification**:
+
 - ✅ Dungeon list updates when expansion filter changes
 - ✅ Invalid dungeon selection resets to first available
 - ✅ Dungeon count matches expansion data
@@ -217,17 +246,20 @@ const filteredDungeons = useMemo(() => {
 ---
 
 ### CP3: Content Generation Consistency
+
 **Property**: Generated content must match active tab, spec, and dungeon selection
 
 **Implementation**:
+
 ```typescript
-const memoizedContentKey = useMemo(() => 
-  `${selectedClass.id}-${activeSpec.id}-${activeTab}-${selectedDungeon?.id || 'none'}`,
+const memoizedContentKey = useMemo(
+  () => `${selectedClass.id}-${activeSpec.id}-${activeTab}-${selectedDungeon?.id || 'none'}`,
   [selectedClass, activeSpec, activeTab, selectedDungeon]
 );
 ```
 
 **Verification**:
+
 - ✅ Content regenerates only when key factors change
 - ✅ Content matches requested class/spec/tab/dungeon
 - ✅ No stale content displayed
@@ -235,9 +267,11 @@ const memoizedContentKey = useMemo(() =>
 ---
 
 ### CP4: Favorites Persistence
+
 **Property**: Marked favorites must persist across page reloads
 
 **Implementation**:
+
 ```typescript
 useEffect(() => {
   const stored = localStorage.getItem('wow_class_helper_favorites');
@@ -253,6 +287,7 @@ useEffect(() => {
 ```
 
 **Verification**:
+
 - ✅ Favorites saved to localStorage on toggle
 - ✅ Favorites loaded on app mount
 - ✅ Invalid localStorage data handled gracefully
@@ -260,23 +295,23 @@ useEffect(() => {
 ---
 
 ### CP5: Admin Source Injection
+
 **Property**: Custom URLs must override default AI knowledge when provided
 
 **Implementation**:
+
 ```typescript
-const generateContentWithGemini = async (
-  prompt: string,
-  sourceUrls?: string
-) => {
+const generateContentWithGemini = async (prompt: string, sourceUrls?: string) => {
   const enhancedPrompt = sourceUrls
     ? `Use these sources as primary knowledge:\n${sourceUrls}\n\n${prompt}`
     : prompt;
-  
+
   return await generateContent(enhancedPrompt);
 };
 ```
 
 **Verification**:
+
 - ✅ Custom URLs prepended to prompt
 - ✅ Content reflects custom source information
 - ✅ Regenerate button applies custom sources
@@ -285,14 +320,17 @@ const generateContentWithGemini = async (
 ---
 
 ### CP6: Markdown Rendering Fidelity
+
 **Property**: Markdown must render correctly without XSS vulnerabilities
 
 **Implementation**:
+
 - ✅ HTML entities escaped before rendering
 - ✅ Ability tooltip parsing uses regex, not eval
 - ✅ dangerouslySetInnerHTML used only after sanitization
 
 **Verification**:
+
 - ✅ All markdown elements render correctly
 - ✅ No XSS vulnerabilities in rendered content
 - ✅ Ability tooltips parse and display correctly
@@ -302,9 +340,11 @@ const generateContentWithGemini = async (
 ---
 
 ### CP7: Error Recovery
+
 **Property**: Errors must be catchable and displayable without crashing the app
 
 **Implementation**:
+
 ```typescript
 const fetchContent = async () => {
   try {
@@ -322,6 +362,7 @@ const fetchContent = async () => {
 ```
 
 **Verification**:
+
 - ✅ All errors caught and logged
 - ✅ User-friendly error messages displayed
 - ✅ App remains interactive after error
@@ -330,9 +371,11 @@ const fetchContent = async () => {
 ---
 
 ### CP8: Role-Based Access Control
+
 **Property**: Admin features only visible when userRole === 'admin'
 
 **Implementation**:
+
 ```typescript
 {userRole === 'admin' && (
   <AdminPanel
@@ -344,6 +387,7 @@ const fetchContent = async () => {
 ```
 
 **Verification**:
+
 - ✅ Admin panel hidden for User and Master roles
 - ✅ Admin features not accessible via URL manipulation
 - ✅ Role validation on all admin operations
@@ -351,20 +395,23 @@ const fetchContent = async () => {
 ---
 
 ### CP9: Loading State Management
+
 **Property**: isLoading must be true during API call, false after completion or error
 
 **Implementation**:
+
 ```typescript
 useEffect(() => {
   setIsLoading(true);
   generateContentWithGemini(prompt)
-    .then(result => setContent(result))
-    .catch(err => setError(err.message))
+    .then((result) => setContent(result))
+    .catch((err) => setError(err.message))
     .finally(() => setIsLoading(false));
 }, [memoizedContentKey]);
 ```
 
 **Verification**:
+
 - ✅ Loading spinner displays during generation
 - ✅ Spinner hidden after content loads
 - ✅ Spinner hidden after error
@@ -373,14 +420,17 @@ useEffect(() => {
 ---
 
 ### CP10: Responsive Design
+
 **Property**: UI must adapt to mobile, tablet, and desktop viewports
 
 **Implementation**:
+
 - ✅ Mobile: < 640px
 - ✅ Tablet: 640px - 1024px
 - ✅ Desktop: > 1024px
 
 **Verification**:
+
 - ✅ Layout adapts to all breakpoints
 - ✅ No horizontal scrolling on mobile
 - ✅ Touch targets ≥ 44px on mobile
@@ -389,21 +439,22 @@ useEffect(() => {
 ---
 
 ### CP11: Data Accuracy Validation
+
 **Property**: All displayed data must match official WoW sources
 
 **Implementation**:
+
 ```typescript
 const validateClassData = (classData: WowClass): boolean => {
-  const official = OFFICIAL_WOW_CLASSES.find(c => c.id === classData.id);
+  const official = OFFICIAL_WOW_CLASSES.find((c) => c.id === classData.id);
   if (!official) return false;
   if (classData.specs.length !== official.specs.length) return false;
-  return classData.specs.every(spec =>
-    official.specs.some(s => s.id === spec.id)
-  );
+  return classData.specs.every((spec) => official.specs.some((s) => s.id === spec.id));
 };
 ```
 
 **Verification**:
+
 - ✅ Class data matches official WoW API
 - ✅ Specialization data matches official sources
 - ✅ Dungeon data matches current content
@@ -412,9 +463,11 @@ const validateClassData = (classData: WowClass): boolean => {
 ---
 
 ### CP12: Content Source Attribution
+
 **Property**: Every guide must include verifiable sources
 
 **Implementation**:
+
 ```typescript
 interface Guide {
   content: string;
@@ -433,6 +486,7 @@ interface Source {
 ```
 
 **Verification**:
+
 - ✅ Every guide includes at least one source
 - ✅ Sources are verifiable and accessible
 - ✅ Source types are accurate
@@ -442,16 +496,16 @@ interface Source {
 
 ## Implementation Status
 
-| AC | Status | Completeness |
-|---|---|---|
-| AC1 | ✅ Complete | 100% |
-| AC2 | ✅ Complete | 100% |
-| AC3 | ✅ Complete | 100% |
-| AC4 | ✅ Complete | 100% |
-| AC5 | ✅ Complete | 100% |
-| AC6 | ⚠️ Partial | 60% |
-| AC7 | ⚠️ Partial | 70% |
-| AC8 | ⚠️ Partial | 75% |
+| AC  | Status      | Completeness |
+| --- | ----------- | ------------ |
+| AC1 | ✅ Complete | 100%         |
+| AC2 | ✅ Complete | 100%         |
+| AC3 | ✅ Complete | 100%         |
+| AC4 | ✅ Complete | 100%         |
+| AC5 | ✅ Complete | 100%         |
+| AC6 | ⚠️ Partial  | 60%          |
+| AC7 | ⚠️ Partial  | 70%          |
+| AC8 | ⚠️ Partial  | 75%          |
 
 **Overall**: 81.25% Complete
 

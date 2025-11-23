@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const RogueIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -12,7 +11,16 @@ export const RogueIcon = (props: React.SVGProps<SVGSVGElement>) => (
     {/* Right dagger crossguard */}
     <rect x="46" y="38" width="8" height="3" fill="#ffd700" stroke="#ccaa00" strokeWidth="0.5" />
     {/* Shadow/stealth aura */}
-    <ellipse cx="32" cy="35" rx="14" ry="10" fill="none" stroke="#666666" strokeWidth="1.2" opacity="0.7" />
+    <ellipse
+      cx="32"
+      cy="35"
+      rx="14"
+      ry="10"
+      fill="none"
+      stroke="#666666"
+      strokeWidth="1.2"
+      opacity="0.7"
+    />
     {/* Stealth indicator */}
     <path d="M32 20 L28 28 L36 28 Z" fill="#666666" opacity="0.8" />
   </svg>

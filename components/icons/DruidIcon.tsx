@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const DruidIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -11,7 +10,12 @@ export const DruidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <circle cx="20" cy="26" r="8" fill="#228b22" stroke="#1a6b1a" strokeWidth="1" opacity="0.8" />
     <circle cx="44" cy="26" r="8" fill="#228b22" stroke="#1a6b1a" strokeWidth="1" opacity="0.8" />
     {/* Roots */}
-    <path d="M26 56 Q20 60 18 62 M32 56 L32 62 M38 56 Q44 60 46 62" stroke="#8b4513" strokeWidth="1.5" strokeLinecap="round" />
+    <path
+      d="M26 56 Q20 60 18 62 M32 56 L32 62 M38 56 Q44 60 46 62"
+      stroke="#8b4513"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
     {/* Nature aura */}
     <circle cx="32" cy="32" r="14" fill="none" stroke="#228b22" strokeWidth="1" opacity="0.6" />
   </svg>

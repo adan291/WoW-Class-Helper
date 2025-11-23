@@ -5,11 +5,7 @@
 
 const CACHE_NAME = 'wow-class-helper-v1';
 const RUNTIME_CACHE = 'wow-class-helper-runtime-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-];
+const ASSETS_TO_CACHE = ['/', '/index.html', '/manifest.json'];
 
 /**
  * Install event - cache essential assets

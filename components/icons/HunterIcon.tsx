@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const HunterIcon = (props: React.SVGProps<SVGSVGElement>) => (

@@ -15,18 +15,21 @@ interface ProcessedMarkdown {
 export const processInlineMarkdown = (text: string): string => {
   let processed = text
     // Escape basic HTML chars to prevent injection
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
   // Bold: **text**
-  processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
-  
+  processed = processed.replace(
+    /\*\*(.*?)\*\*/g,
+    '<strong class="font-semibold text-white">$1</strong>'
+  );
+
   // Italic: *text*
   processed = processed.replace(/\*(.*?)\*/g, '<em class="text-gray-300">$1</em>');
 
   // Tooltips: [Ability]{Cooldown: X. ID: Y. Description: Z}
-  const tooltipRegex = /\[([^\]]+)\]\{([^\}]+)\}/g;
+  const tooltipRegex = /\[([^\]]+)]\{([^}]+)\}/g;
   processed = processed.replace(tooltipRegex, (_match, ability, content) => {
     const cooldownMatch = content.match(/Cooldown:\s*([^.]+)/i);
     const idMatch = content.match(/ID:\s*(\d+)/i);
@@ -34,7 +37,11 @@ export const processInlineMarkdown = (text: string): string => {
 
     const cooldown = cooldownMatch ? cooldownMatch[1].trim() : 'N/A';
     const spellId = idMatch ? idMatch[1].trim() : '???';
-    const description = descMatch ? descMatch[1].trim() : (content.includes('Cooldown') ? '' : content);
+    const description = descMatch
+      ? descMatch[1].trim()
+      : content.includes('Cooldown')
+        ? ''
+        : content;
 
     const firstLetter = ability.charAt(0).toUpperCase();
 
@@ -59,11 +66,14 @@ export const processInlineMarkdown = (text: string): string => {
 
             <!-- Tooltip Body -->
             <div class="p-4">
-                ${cooldown !== 'N/A' ? `
+                ${cooldown !== 'N/A'
+        ? `
                 <div class="flex items-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
                     Cooldown: <span class="text-white ml-1">${cooldown}</span>
-                </div>` : ''}
+                </div>`
+        : ''
+      }
                 
                 <p class="text-sm text-gray-300 leading-relaxed">
                     ${description}
@@ -92,8 +102,11 @@ export const processInlineMarkdown = (text: string): string => {
  * @returns Array of alignment values ('left', 'center', 'right')
  */
 const parseTableAlignments = (separatorLine: string): string[] => {
-  const cells = separatorLine.split('|').slice(1, -1).map(cell => cell.trim());
-  return cells.map(cell => {
+  const cells = separatorLine
+    .split('|')
+    .slice(1, -1)
+    .map((cell) => cell.trim());
+  return cells.map((cell) => {
     const hasLeft = cell.startsWith(':');
     const hasRight = cell.endsWith(':');
     if (hasLeft && hasRight) return 'center';
@@ -136,24 +149,35 @@ export const formatContent = (text: string): ProcessedMarkdown => {
         html += '</code></pre>';
         inCodeBlock = false;
       } else {
-        if (inList) { html += '</ul>'; inList = false; }
-        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false; }
-        html += '<pre class="bg-black bg-opacity-30 rounded-lg p-4 my-4 overflow-x-auto border-l-4 border-[var(--class-color)]"><code class="text-sm font-mono text-gray-300 whitespace-pre-wrap">';
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        if (inBlockquote) {
+          html += '</blockquote>';
+          inBlockquote = false;
+        }
+        html +=
+          '<pre class="bg-black bg-opacity-30 rounded-lg p-4 my-4 overflow-x-auto border-l-4 border-[var(--class-color)]"><code class="text-sm font-mono text-gray-300 whitespace-pre-wrap">';
         inCodeBlock = true;
       }
       continue;
     }
 
     if (inCodeBlock) {
-      html += line.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '\n';
+      html += line.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '\n';
       continue;
     }
 
     // Blockquotes (support nested blockquotes with multiple > symbols)
     if (line.startsWith('>')) {
       if (!inBlockquote) {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += '<blockquote class="border-l-4 border-[var(--class-color)] pl-4 my-4 italic text-gray-400 bg-gray-900/30 py-2 rounded-r">';
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        html +=
+          '<blockquote class="border-l-4 border-[var(--class-color)] pl-4 my-4 italic text-gray-400 bg-gray-900/30 py-2 rounded-r">';
         inBlockquote = true;
       }
       // Remove leading > symbols and spaces (support nested blockquotes)
@@ -176,23 +200,31 @@ export const formatContent = (text: string): ProcessedMarkdown => {
       // Tables (markdown table detection)
       if (line.includes('|') && line.trim().startsWith('|')) {
         if (!inTable) {
-          if (inList) { html += '</ul>'; inList = false; }
-          html += '<div class="overflow-x-auto my-4"><table class="w-full border-collapse border border-gray-600 rounded-lg overflow-hidden">';
+          if (inList) {
+            html += '</ul>';
+            inList = false;
+          }
+          html +=
+            '<div class="overflow-x-auto my-4"><table class="w-full border-collapse border border-gray-600 rounded-lg overflow-hidden">';
           inTable = true;
         }
-        
+
         // Split by pipe and filter empty cells (first and last are usually empty)
-        const cells = line.split('|').slice(1, -1).map(cell => cell.trim());
-        
+        const cells = line
+          .split('|')
+          .slice(1, -1)
+          .map((cell) => cell.trim());
+
         // Check if this is a header row (next line contains dashes and pipes)
-        const isHeader = i + 1 < lines.length && lines[i + 1].includes('---') && lines[i + 1].includes('|');
+        const isHeader =
+          i + 1 < lines.length && lines[i + 1].includes('---') && lines[i + 1].includes('|');
         const cellTag = isHeader ? 'th' : 'td';
-        
+
         // Parse alignments from separator row if this is header
         if (isHeader && tableAlignments.length === 0) {
           tableAlignments = parseTableAlignments(lines[i + 1]);
         }
-        
+
         html += '<tr>';
         cells.forEach((cell, index) => {
           const cellContent = processInlineMarkdown(cell);
@@ -212,7 +244,7 @@ export const formatContent = (text: string): ProcessedMarkdown => {
         if (line.includes('---') && line.includes('|')) {
           continue;
         }
-        
+
         // Lists
         if (line.match(/^(\*|-)\s/)) {
           if (!inList) {

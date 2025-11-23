@@ -24,9 +24,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error);
     console.error('Error info:', errorInfo);
-    
+
     // Increment error count to detect repeated errors
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       errorCount: prevState.errorCount + 1,
     }));
   }
@@ -52,26 +52,32 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <div className="bg-gray-800 border border-red-500 rounded-lg p-8 max-w-md w-full shadow-2xl">
             <div className="flex items-center mb-4">
               <svg className="h-8 w-8 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <h2 className="text-2xl font-bold text-red-400">Something went wrong</h2>
+              <h2 className="text-2xl font-bold text-red-400 tracking-wide">System Error</h2>
             </div>
-            
+
             <p className="text-gray-300 mb-4">{this.state.error.message}</p>
-            
+
             {isRepeatedError && (
               <div className="mb-4 p-3 bg-yellow-900/30 border border-yellow-500/50 rounded text-sm text-yellow-200">
                 ⚠️ This error has occurred multiple times. Try reloading the page.
               </div>
             )}
-            
+
             <details className="mb-6 text-sm text-gray-400">
-              <summary className="cursor-pointer hover:text-gray-300 font-medium">Error details</summary>
+              <summary className="cursor-pointer hover:text-gray-300 font-medium">
+                Error details
+              </summary>
               <pre className="mt-2 bg-gray-900 p-2 rounded overflow-auto text-xs max-h-40 border border-gray-700">
                 {this.state.error.stack}
               </pre>
             </details>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={this.handleRetry}

@@ -23,12 +23,7 @@ class CacheService {
   /**
    * Generates a cache key from content parameters
    */
-  generateKey(
-    wowClass: string,
-    spec: string,
-    tab: string,
-    dungeon?: string
-  ): string {
+  generateKey(wowClass: string, spec: string, tab: string, dungeon?: string): string {
     const parts = [wowClass, spec, tab];
     if (dungeon) parts.push(dungeon);
     return parts.join(':');
@@ -107,7 +102,7 @@ class CacheService {
       }
     });
 
-    keysToDelete.forEach(key => this.cache.delete(key));
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   /**

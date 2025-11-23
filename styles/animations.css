@@ -5,24 +5,30 @@
    ============================================ */
 
 @keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3),
-                0 0 20px rgba(255, 255, 255, 0.1);
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(255, 255, 255, 0.1);
   }
   50% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
-                0 0 30px rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 0 20px rgba(255, 255, 255, 0.5),
+      0 0 30px rgba(255, 255, 255, 0.2);
   }
 }
 
 @keyframes glow-color-pulse {
-  0%, 100% {
-    box-shadow: 0 0 10px var(--glow-color, #fff),
-                0 0 20px rgba(255, 255, 255, 0.1);
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px var(--glow-color, #fff),
+      0 0 20px rgba(255, 255, 255, 0.1);
   }
   50% {
-    box-shadow: 0 0 20px var(--glow-color, #fff),
-                0 0 30px rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 0 20px var(--glow-color, #fff),
+      0 0 30px rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -86,7 +92,8 @@
    ============================================ */
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1);
   }
@@ -214,55 +221,55 @@
    ============================================ */
 
 .glow-warrior {
-  --glow-color: #C79C6E;
+  --glow-color: #c79c6e;
 }
 
 .glow-paladin {
-  --glow-color: #F58CBA;
+  --glow-color: #f58cba;
 }
 
 .glow-hunter {
-  --glow-color: #ABD473;
+  --glow-color: #abd473;
 }
 
 .glow-rogue {
-  --glow-color: #FFF569;
+  --glow-color: #fff569;
 }
 
 .glow-priest {
-  --glow-color: #FFFFFF;
+  --glow-color: #ffffff;
 }
 
 .glow-death-knight {
-  --glow-color: #C41E3A;
+  --glow-color: #c41e3a;
 }
 
 .glow-shaman {
-  --glow-color: #0070DE;
+  --glow-color: #0070de;
 }
 
 .glow-mage {
-  --glow-color: #3FC7EB;
+  --glow-color: #3fc7eb;
 }
 
 .glow-warlock {
-  --glow-color: #9482CA;
+  --glow-color: #9482ca;
 }
 
 .glow-monk {
-  --glow-color: #00FF96;
+  --glow-color: #00ff96;
 }
 
 .glow-druid {
-  --glow-color: #FF7D0A;
+  --glow-color: #ff7d0a;
 }
 
 .glow-demon-hunter {
-  --glow-color: #A335EE;
+  --glow-color: #a335ee;
 }
 
 .glow-evoker {
-  --glow-color: #33937F;
+  --glow-color: #33937f;
 }
 
 /* ============================================
@@ -270,15 +277,18 @@
    ============================================ */
 
 @keyframes border-glow {
-  0%, 100% {
+  0%,
+  100% {
     border-color: var(--glow-color, #fff);
-    box-shadow: 0 0 10px var(--glow-color, #fff),
-                inset 0 0 10px rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 0 10px var(--glow-color, #fff),
+      inset 0 0 10px rgba(255, 255, 255, 0.1);
   }
   50% {
     border-color: var(--glow-color, #fff);
-    box-shadow: 0 0 20px var(--glow-color, #fff),
-                inset 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 0 20px var(--glow-color, #fff),
+      inset 0 0 20px rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -327,7 +337,8 @@
    ============================================ */
 
 @keyframes dots {
-  0%, 20% {
+  0%,
+  20% {
     content: '.';
     opacity: 0.4;
   }
@@ -354,12 +365,22 @@
    ============================================ */
 
 @keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow: 0 0 10px var(--glow-color, #fff),
-                 0 0 20px var(--glow-color, #fff),
-                 0 0 30px var(--glow-color, #fff);
+  0%,
+  19%,
+  21%,
+  23%,
+  25%,
+  54%,
+  56%,
+  100% {
+    text-shadow:
+      0 0 10px var(--glow-color, #fff),
+      0 0 20px var(--glow-color, #fff),
+      0 0 30px var(--glow-color, #fff);
   }
-  20%, 24%, 55% {
+  20%,
+  24%,
+  55% {
     text-shadow: 0 0 5px var(--glow-color, #fff);
   }
 }
@@ -384,13 +405,13 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-
 /* ============================================
    FLOATING PARTICLES
    ============================================ */
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) translateX(0px);
     opacity: 0.3;
   }

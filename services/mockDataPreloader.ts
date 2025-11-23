@@ -56,7 +56,8 @@ class MockDataPreloader {
       const dungeonCount = DUNGEONS.length;
 
       // Total: overview + specs + rotations + addons + dungeons per class
-      this.preloadProgress.total = classCount * (1 + specsPerClass + specsPerClass + 1 + dungeonCount);
+      this.preloadProgress.total =
+        classCount * (1 + specsPerClass + specsPerClass + 1 + dungeonCount);
 
       console.log(`Starting mock data preload. Total items: ${this.preloadProgress.total}`);
 
@@ -181,7 +182,11 @@ class MockDataPreloader {
   /**
    * Preload dungeon tips for a class, spec, and dungeon
    */
-  private async preloadDungeonTips(wowClass: WowClass, spec: Specialization, dungeonName: string): Promise<void> {
+  private async preloadDungeonTips(
+    wowClass: WowClass,
+    spec: Specialization,
+    dungeonName: string
+  ): Promise<void> {
     try {
       this.preloadProgress.currentItem = `Loading ${wowClass.name} - ${dungeonName} tips...`;
       const cacheKey = `guide_${wowClass.id}_${spec.id}_dungeons_${dungeonName}`;

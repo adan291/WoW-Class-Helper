@@ -3,7 +3,8 @@ import type { GeminiReadyContext } from './classOrchestratorService.ts';
 import { validateSourceUrls, validateApiResponse } from './validationService.ts';
 import { toastService } from './toastService.ts';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const ai = new GoogleGenAI({ apiKey });
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
@@ -53,8 +54,10 @@ const generateContentWithGemini = async (
 ): Promise<string> => {
   try {
     // Validate API key
-    if (!process.env.API_KEY) {
-      throw new Error('API key not configured. Please set GEMINI_API_KEY environment variable.');
+    if (!apiKey) {
+      throw new Error(
+        'API key not configured. Please set VITE_GEMINI_API_KEY environment variable.'
+      );
     }
 
     // Validate prompt
@@ -68,12 +71,22 @@ const generateContentWithGemini = async (
     if (sourceUrls && sourceUrls.trim() !== '') {
       const validation = validateSourceUrls(sourceUrls);
 
-      if (validation && typeof validation === 'object' && 'valid' in validation && !validation.valid) {
+      if (
+        validation &&
+        typeof validation === 'object' &&
+        'valid' in validation &&
+        !validation.valid
+      ) {
         const errorMsg = (validation as any).errors?.join('\n') || 'Invalid URLs';
         throw new Error(`Invalid source URLs:\n${errorMsg}`);
       }
 
-      if (validation && typeof validation === 'object' && 'urls' in validation && (validation as any).urls?.length > 0) {
+      if (
+        validation &&
+        typeof validation === 'object' &&
+        'urls' in validation &&
+        (validation as any).urls?.length > 0
+      ) {
         const urls = (validation as any).urls.map((url: string) => `- ${url}`).join('\n');
         finalPrompt = `IMPORTANT: Your primary task is to act as an expert World of Warcraft guide writer. You MUST use the information from the following web pages to construct your answer. If the information from these sources conflicts with your base knowledge, you MUST prioritize the information from the provided URLs. At the end of your response, you MUST cite the URLs you used under a "Sources:" heading.\n\nProvided URLs:\n${urls}\n\n---\n\nOriginal Request:\n${prompt}`;
       }
@@ -99,7 +112,12 @@ const generateContentWithGemini = async (
 
     // Validate response
     const validation = validateApiResponse(text);
-    if (validation && typeof validation === 'object' && 'valid' in validation && !(validation as any).valid) {
+    if (
+      validation &&
+      typeof validation === 'object' &&
+      'valid' in validation &&
+      !(validation as any).valid
+    ) {
       console.warn('API response validation warnings:', (validation as any).warnings);
     }
 
@@ -126,7 +144,8 @@ const generateContentWithGemini = async (
 export const generateGuide = async (context: GeminiReadyContext): Promise<string> => {
   try {
     const prompt = buildPrompt(context);
-    const sourceUrlsStr = context.verifiedSourceUrls?.length > 0 ? context.verifiedSourceUrls.join('\n') : undefined;
+    const sourceUrlsStr =
+      context.verifiedSourceUrls?.length > 0 ? context.verifiedSourceUrls.join('\n') : undefined;
     const content = await generateContentWithGemini(prompt, sourceUrlsStr);
     return content;
   } catch (error) {

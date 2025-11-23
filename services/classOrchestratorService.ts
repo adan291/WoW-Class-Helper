@@ -1,6 +1,6 @@
 /**
  * Class Orchestrator Service
- * 
+ *
  * Validates and prepares guide requests for Gemini API.
  * Ensures all data passed to Gemini is accurate and verified.
  */
@@ -36,7 +36,7 @@ export const validateAndPrepareGuideRequest = (
   const errors: string[] = [];
 
   // Find the class
-  const wowClass = WOW_CLASSES.find(c => c.id === classId);
+  const wowClass = WOW_CLASSES.find((c) => c.id === classId);
   if (!wowClass) {
     errors.push(`Class not found: ${classId}`);
     return { isValid: false, context: null, errors };
@@ -51,7 +51,7 @@ export const validateAndPrepareGuideRequest = (
   // Validate specialization if provided
   let specName: string | undefined;
   if (specId) {
-    const spec = wowClass.specs.find(s => s.id === specId);
+    const spec = wowClass.specs.find((s) => s.id === specId);
     if (!spec || !validateSpecialization(spec, wowClass)) {
       errors.push(`Invalid specialization: ${specId}`);
       return { isValid: false, context: null, errors };

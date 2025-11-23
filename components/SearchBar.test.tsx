@@ -38,9 +38,12 @@ describe('SearchBar Component', () => {
     await user.type(input, 'warrior');
 
     // Wait for results to appear (debounce is 300ms)
-    await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /warrior/i }).length).toBeGreaterThan(0);
-    }, { timeout: 1000 });
+    await waitFor(
+      () => {
+        expect(screen.getAllByRole('button', { name: /warrior/i }).length).toBeGreaterThan(0);
+      },
+      { timeout: 1000 }
+    );
 
     const results = screen.getAllByRole('button', { name: /warrior/i });
     await user.click(results[0]);

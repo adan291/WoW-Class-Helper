@@ -1,42 +1,48 @@
-
 import type { WowClass, Dungeon } from './types.ts';
 
-export const EXPANSIONS = ["All", "The War Within", "Dragonflight", "Shadowlands", "Battle for Azeroth", "Cataclysm"];
+export const EXPANSIONS = [
+  'All',
+  'The War Within',
+  'Dragonflight',
+  'Shadowlands',
+  'Battle for Azeroth',
+  'Cataclysm',
+];
 
 export const DUNGEONS: Dungeon[] = [
   // The War Within
-  { name: "Ara-Kara, City of Echoes", expansion: "The War Within" },
-  { name: "City of Threads", expansion: "The War Within" },
-  { name: "The Stonevault", expansion: "The War Within" },
-  { name: "The Dawnbreaker", expansion: "The War Within" },
-  { name: "Priory of the Sacred Flame", expansion: "The War Within" },
-  { name: "Darkflame Cleft", expansion: "The War Within" },
-  { name: "Cinderbrew Meadery", expansion: "The War Within" },
-  { name: "Rookery", expansion: "The War Within" },
+  { name: 'Ara-Kara, City of Echoes', expansion: 'The War Within' },
+  { name: 'City of Threads', expansion: 'The War Within' },
+  { name: 'The Stonevault', expansion: 'The War Within' },
+  { name: 'The Dawnbreaker', expansion: 'The War Within' },
+  { name: 'Priory of the Sacred Flame', expansion: 'The War Within' },
+  { name: 'Darkflame Cleft', expansion: 'The War Within' },
+  { name: 'Cinderbrew Meadery', expansion: 'The War Within' },
+  { name: 'Rookery', expansion: 'The War Within' },
 
   // Dragonflight
-  { name: "Algeth'ar Academy", expansion: "Dragonflight" },
-  { name: "Ruby Life Pools", expansion: "Dragonflight" },
-  { name: "The Azure Vault", expansion: "Dragonflight" },
-  { name: "The Nokhud Offensive", expansion: "Dragonflight" },
-  { name: "Brackenhide Hollow", expansion: "Dragonflight" },
-  { name: "Halls of Infusion", expansion: "Dragonflight" },
-  { name: "Neltharus", expansion: "Dragonflight" },
-  { name: "Uldaman: Legacy of Tyr", expansion: "Dragonflight" },
+  { name: "Algeth'ar Academy", expansion: 'Dragonflight' },
+  { name: 'Ruby Life Pools', expansion: 'Dragonflight' },
+  { name: 'The Azure Vault', expansion: 'Dragonflight' },
+  { name: 'The Nokhud Offensive', expansion: 'Dragonflight' },
+  { name: 'Brackenhide Hollow', expansion: 'Dragonflight' },
+  { name: 'Halls of Infusion', expansion: 'Dragonflight' },
+  { name: 'Neltharus', expansion: 'Dragonflight' },
+  { name: 'Uldaman: Legacy of Tyr', expansion: 'Dragonflight' },
 
   // Shadowlands
-  { name: "Mists of Tirna Scithe", expansion: "Shadowlands" },
-  { name: "The Necrotic Wake", expansion: "Shadowlands" },
-  { name: "De Other Side", expansion: "Shadowlands" },
-  { name: "Halls of Atonement", expansion: "Shadowlands" },
-  { name: "Plaguefall", expansion: "Shadowlands" },
-  { name: "Sanguine Depths", expansion: "Shadowlands" },
-  { name: "Spires of Ascension", expansion: "Shadowlands" },
-  { name: "Theater of Pain", expansion: "Shadowlands" },
+  { name: 'Mists of Tirna Scithe', expansion: 'Shadowlands' },
+  { name: 'The Necrotic Wake', expansion: 'Shadowlands' },
+  { name: 'De Other Side', expansion: 'Shadowlands' },
+  { name: 'Halls of Atonement', expansion: 'Shadowlands' },
+  { name: 'Plaguefall', expansion: 'Shadowlands' },
+  { name: 'Sanguine Depths', expansion: 'Shadowlands' },
+  { name: 'Spires of Ascension', expansion: 'Shadowlands' },
+  { name: 'Theater of Pain', expansion: 'Shadowlands' },
 
   // Legacy
-  { name: "Siege of Boralus", expansion: "Battle for Azeroth" },
-  { name: "Grim Batol", expansion: "Cataclysm" }
+  { name: 'Siege of Boralus', expansion: 'Battle for Azeroth' },
+  { name: 'Grim Batol', expansion: 'Cataclysm' },
 ];
 
 export const WOW_CLASSES: WowClass[] = [

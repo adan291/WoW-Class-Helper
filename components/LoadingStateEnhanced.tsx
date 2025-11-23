@@ -36,14 +36,10 @@ export const LoadingStateEnhanced: React.FC<LoadingStateEnhancedProps> = ({
       </p>
 
       {retryCount > 0 && retryTimer > 0 && (
-        <p className="text-sm text-gray-400">
-          Next attempt in {retryTimer}s
-        </p>
+        <p className="text-sm text-gray-400">Next attempt in {retryTimer}s</p>
       )}
     </div>
   );
 };
 
 export default React.memo(LoadingStateEnhanced);
-
-

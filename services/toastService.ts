@@ -35,7 +35,7 @@ class ToastService {
    * Notify all listeners of toast changes
    */
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener([...this.toasts]));
+    this.listeners.forEach((listener) => listener([...this.toasts]));
   }
 
   /**
@@ -99,7 +99,7 @@ class ToastService {
    * Dismiss a specific toast
    */
   dismiss(id: string): void {
-    this.toasts = this.toasts.filter(toast => toast.id !== id);
+    this.toasts = this.toasts.filter((toast) => toast.id !== id);
     this.notifyListeners();
   }
 

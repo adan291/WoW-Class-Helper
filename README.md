@@ -31,18 +31,21 @@ Think of it as your **"personal WoW expert assistant"** that generates verified 
 ## 🎯 Core Features
 
 ### 🏛️ Class Mastery System
+
 - **13 WoW Classes** with authentic theming and enhanced visual cards
 - **Specialization Selection** with role indicators (Tank/Healer/DPS)
 - **5 Guide Types**: Overview, Builds, Rotations, Addons, Dungeons
 - **Persistent Favorites** with glowing star indicators
 
 ### 🤖 AI-Powered Intelligence
+
 - **Gemini 2.5 Flash** integration for content generation
 - **Source Attribution** - every guide cites verified sources
 - **Smart Caching** - 1-hour TTL with pattern-based invalidation
 - **Custom Source Injection** for administrators
 
 ### 🎨 Visual Excellence
+
 - **WoW Theming**: Official class colors and fantasy effects
 - **Glow Effects**: Class-colored borders and animations
 - **Smooth Animations**: Lift effects, shimmer, and transitions
@@ -50,6 +53,7 @@ Think of it as your **"personal WoW expert assistant"** that generates verified 
 - **Hero Sections**: Large class icons with animated backgrounds
 
 ### 📱 Modern UX
+
 - **Responsive Grid**: Adaptive layouts for all screen sizes
 - **Touch Optimized**: 44px minimum touch targets
 - **Accessibility**: Screen reader support and reduced motion
@@ -60,7 +64,8 @@ Think of it as your **"personal WoW expert assistant"** that generates verified 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js** 18+ 
+
+- **Node.js** 18+
 - **npm** 9+
 - **Gemini API Key** from [Google AI Studio](https://aistudio.google.com/app/apikey)
 
@@ -97,6 +102,7 @@ npm run dev
 ## 🛠️ Technology Stack
 
 ### Core Technologies
+
 ```
 Frontend:     React 19 + TypeScript (Strict Mode)
 Build Tool:   Vite 6.4+
@@ -107,6 +113,7 @@ Storage:      localStorage with validation
 ```
 
 ### Architecture Highlights
+
 - **Component Composition**: 25+ modular components
 - **Custom Hooks**: Shared logic extraction (3 hooks)
 - **Service Layer**: Business logic separation (4 services)
@@ -118,6 +125,7 @@ Storage:      localStorage with validation
 ## 📊 Quality Metrics
 
 ### 🧪 Testing Excellence
+
 ```
 Total Tests:        178 (100% passing)
 Test Files:         9
@@ -131,6 +139,7 @@ Test Categories:
 ```
 
 ### ⚡ Performance Targets
+
 ```
 Initial Load:       < 3 seconds    ✅
 Tab Switching:      < 1 second     ✅
@@ -141,6 +150,7 @@ Cache Retrieval:    < 1ms          ✅
 ```
 
 ### 🎯 Code Quality
+
 ```
 Compilation Errors: 0
 TypeScript Errors:  0
@@ -154,12 +164,14 @@ Mobile Support:     Fully Optimized ✅
 ## 🎨 Visual Enhancements
 
 ### Animation Framework
+
 - ✅ 20+ CSS animations (glow, shimmer, pulse, lift)
 - ✅ Smooth transitions (200-300ms)
 - ✅ Class-specific color effects
 - ✅ Reduced motion support
 
 ### Enhanced Components
+
 - ✅ Class cards with glow effects
 - ✅ Spec cards with role indicators
 - ✅ Tab navigation with active states
@@ -223,15 +235,15 @@ npm run test -- --coverage
 
 ### Test Categories
 
-| Category | Tests | Coverage |
-|----------|-------|----------|
-| Validation | 41 | 100% |
-| Properties | 44 | 100% |
-| Performance | 15 | 100% |
-| Cache | 17 | 100% |
-| Components | 27 | 100% |
-| Services | 34 | 100% |
-| **Total** | **178** | **100%** |
+| Category    | Tests   | Coverage |
+| ----------- | ------- | -------- |
+| Validation  | 41      | 100%     |
+| Properties  | 44      | 100%     |
+| Performance | 15      | 100%     |
+| Cache       | 17      | 100%     |
+| Components  | 27      | 100%     |
+| Services    | 34      | 100%     |
+| **Total**   | **178** | **100%** |
 
 ---
 
@@ -258,15 +270,18 @@ npm run lint         # Lint code (if configured)
 ## 👥 User Roles
 
 ### User Role
+
 - Access all guides
 - Save favorite classes
 - View all content
 
 ### Master Role
+
 - Same as User
 - Prepared for future enhancements
 
 ### Admin Role
+
 - All User features
 - Expandable admin panel
 - Custom source URL injection
@@ -302,18 +317,21 @@ GEMINI_API_KEY=your_api_key_here
 ## 📚 Documentation
 
 ### Quick References
+
 - **[Quick Start Guide](./QUICK_START.md)** - Get up and running in 5 minutes
 - **[Implementation Details](./IMPLEMENTATION_COMPLETE.md)** - Technical deep dive
 - **[Developer Guide](./.kiro/IMPLEMENTATION_GUIDE.md)** - Development standards
 - **[Project Summary](./PROJECT_FINAL_SUMMARY.md)** - Complete project overview
 
 ### Specifications
+
 - **[Requirements](./.kiro/specs/requirements-improved.md)** - Acceptance criteria
 - **[Design](./.kiro/specs/design-improved.md)** - Architecture and design
 - **[Tasks](./.kiro/specs/tasks-improved.md)** - Implementation tasks
 - **[Visual Enhancement](./.kiro/specs/visual-enhancement.md)** - UI/UX specifications
 
 ### Status Reports
+
 - **[Final Status](./FINAL_STATUS.md)** - Project completion status
 - **[Cleanup Summary](./PROJECT_CLEANUP_FINAL.md)** - Cleanup operations
 
@@ -321,16 +339,16 @@ GEMINI_API_KEY=your_api_key_here
 
 ## 🎯 Acceptance Criteria Status
 
-| AC | Feature | Status | Tests |
-|----|---------|--------|-------|
-| AC1 | Class & Specialization Discovery | ✅ 100% | 15 |
-| AC2 | Specialization Selection & Routing | ✅ 100% | 12 |
-| AC3 | Guide Generation & Verification | ✅ 100% | 18 |
-| AC4 | Dungeon-Specific Strategies | ✅ 100% | 14 |
-| AC5 | User Roles & Admin Capabilities | ✅ 100% | 16 |
-| AC6 | Content Rendering & Formatting | ✅ 100% | 19 |
-| AC7 | Error Handling & Recovery | ✅ 100% | 41 |
-| AC8 | Responsive Design & Performance | ✅ 100% | 47 |
+| AC  | Feature                            | Status  | Tests |
+| --- | ---------------------------------- | ------- | ----- |
+| AC1 | Class & Specialization Discovery   | ✅ 100% | 15    |
+| AC2 | Specialization Selection & Routing | ✅ 100% | 12    |
+| AC3 | Guide Generation & Verification    | ✅ 100% | 18    |
+| AC4 | Dungeon-Specific Strategies        | ✅ 100% | 14    |
+| AC5 | User Roles & Admin Capabilities    | ✅ 100% | 16    |
+| AC6 | Content Rendering & Formatting     | ✅ 100% | 19    |
+| AC7 | Error Handling & Recovery          | ✅ 100% | 41    |
+| AC8 | Responsive Design & Performance    | ✅ 100% | 47    |
 
 **Overall**: ✅ **100% Complete**
 
@@ -358,17 +376,20 @@ All 12 correctness properties validated:
 ## 🎨 Design System
 
 ### Color Palette
+
 - **Dark Theme**: Gray-900 base with class-specific accents
 - **Class Colors**: Official WoW class colors
 - **Accent Colors**: Glowing effects with class colors
 - **Contrast**: WCAG 2.1 AA compliant (≥4.5:1)
 
 ### Typography
+
 - **Hierarchy**: Tailwind defaults with custom sizing
 - **Font**: System fonts for optimal performance
 - **Spacing**: 4px base unit (Tailwind scale)
 
 ### Animations
+
 - **Duration**: 200-300ms smooth transitions
 - **Effects**: Glow, shimmer, pulse, lift
 - **Accessibility**: Respects `prefers-reduced-motion`
@@ -378,6 +399,7 @@ All 12 correctness properties validated:
 ## ♿ Accessibility
 
 ### WCAG 2.1 AA Compliance
+
 - ✅ Semantic HTML structure
 - ✅ ARIA labels for icon buttons
 - ✅ Keyboard navigation support
@@ -387,6 +409,7 @@ All 12 correctness properties validated:
 - ✅ Reduced motion support
 
 ### Testing
+
 - Tested with keyboard navigation
 - Tested with screen readers
 - Tested with color contrast tools
@@ -399,23 +422,27 @@ All 12 correctness properties validated:
 ### Development Workflow
 
 1. **Fork the repository**
+
    ```bash
    git clone <your-fork-url>
    cd wow-class-helper
    ```
 
 2. **Create feature branch**
+
    ```bash
    git checkout -b feature/amazing-feature
    ```
 
 3. **Make changes and test**
+
    ```bash
    npm run test
    npm run dev
    ```
 
 4. **Commit with conventional commits**
+
    ```bash
    git commit -m 'feat: add amazing feature'
    ```
@@ -438,6 +465,7 @@ All 12 correctness properties validated:
 ## 📈 Performance Optimization
 
 ### Techniques Used
+
 - **React.memo**: Prevent unnecessary re-renders
 - **useCallback**: Stable event handlers
 - **useMemo**: Expensive computations
@@ -446,6 +474,7 @@ All 12 correctness properties validated:
 - **Debouncing**: Search input
 
 ### Monitoring
+
 - Performance metrics tracked
 - API usage monitored
 - Error rates logged
@@ -456,6 +485,7 @@ All 12 correctness properties validated:
 ## 🐛 Troubleshooting
 
 ### API Key Issues
+
 ```
 Error: GEMINI_API_KEY is not defined
 → Check .env.local file exists
@@ -464,6 +494,7 @@ Error: GEMINI_API_KEY is not defined
 ```
 
 ### Build Issues
+
 ```
 Error: Module not found
 → Run: npm install
@@ -472,6 +503,7 @@ Error: Module not found
 ```
 
 ### Test Failures
+
 ```
 Tests failing after changes
 → Run: npm run test

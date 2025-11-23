@@ -8,7 +8,7 @@ export const validateClass = (wowClass: WowClass | null): wowClass is WowClass =
   if (!wowClass) return false;
   if (typeof wowClass !== 'object') return false;
   if (!wowClass.id || !wowClass.name) return false;
-  return WOW_CLASSES.some(c => c.id === wowClass.id && c.name === wowClass.name);
+  return WOW_CLASSES.some((c) => c.id === wowClass.id && c.name === wowClass.name);
 };
 
 /**
@@ -22,7 +22,7 @@ export const validateSpecialization = (
   if (typeof spec !== 'object') return false;
   if (!spec.id || !spec.name) return false;
   if (!validateClass(wowClass)) return false;
-  return wowClass.specs.some(s => s.id === spec.id && s.name === spec.name);
+  return wowClass.specs.some((s) => s.id === spec.id && s.name === spec.name);
 };
 
 /**
@@ -32,7 +32,7 @@ export const validateDungeon = (dungeon: Dungeon | null): dungeon is Dungeon => 
   if (!dungeon) return false;
   if (typeof dungeon !== 'object') return false;
   if (!dungeon.name || !dungeon.expansion) return false;
-  return DUNGEONS.some(d => d.name === dungeon.name && d.expansion === dungeon.expansion);
+  return DUNGEONS.some((d) => d.name === dungeon.name && d.expansion === dungeon.expansion);
 };
 
 /**
@@ -47,7 +47,9 @@ export const validateApiResponse = (response: unknown): response is string => {
 /**
  * Validates custom source URLs format
  */
-export const validateSourceUrls = (urls: string): { valid: boolean; urls: string[]; errors: string[] } => {
+export const validateSourceUrls = (
+  urls: string
+): { valid: boolean; urls: string[]; errors: string[] } => {
   const errors: string[] = [];
   const validUrls: string[] = [];
 
@@ -55,7 +57,7 @@ export const validateSourceUrls = (urls: string): { valid: boolean; urls: string
     return { valid: true, urls: [], errors: [] };
   }
 
-  const urlList = urls.split('\n').filter(url => url.trim() !== '');
+  const urlList = urls.split('\n').filter((url) => url.trim() !== '');
 
   if (urlList.length > 10) {
     errors.push('Maximum 10 URLs allowed');
@@ -64,7 +66,7 @@ export const validateSourceUrls = (urls: string): { valid: boolean; urls: string
 
   urlList.forEach((url, index) => {
     const trimmedUrl = url.trim();
-    
+
     // Check URL length
     if (trimmedUrl.length > 2048) {
       errors.push(`Line ${index + 1}: URL is too long (max 2048 characters)`);
@@ -282,7 +284,7 @@ export const validateArray = (
 /**
  * Validates that all items in an array pass a validator
  */
-export const validateArrayOf = <T,>(
+export const validateArrayOf = <T>(
   value: unknown,
   validator: (item: unknown) => item is T,
   minLength = 0,

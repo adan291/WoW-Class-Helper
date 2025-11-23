@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const MageIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -8,7 +7,12 @@ export const MageIcon = (props: React.SVGProps<SVGSVGElement>) => (
     {/* Top orb */}
     <circle cx="32" cy="12" r="5" fill="#0099ff" stroke="#0066cc" strokeWidth="1" />
     {/* Magic sparkles around orb */}
-    <path d="M32 4 L34 8 M32 4 L30 8 M40 12 L36 12 M24 12 L28 12" stroke="#0099ff" strokeWidth="1.5" strokeLinecap="round" />
+    <path
+      d="M32 4 L34 8 M32 4 L30 8 M40 12 L36 12 M24 12 L28 12"
+      stroke="#0099ff"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
     {/* Bottom handle */}
     <circle cx="32" cy="58" r="3" fill="#d4af37" stroke="#b8941f" strokeWidth="0.5" />
     {/* Magic aura */}

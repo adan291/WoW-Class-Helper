@@ -28,8 +28,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const stored = localStorage.getItem('wow_class_helper_user');
     if (stored) {
       try {
-        return JSON.parse(stored);
-      } catch {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object' && 'id' in parsed) {
+          return parsed as User;
+        }
+        return null;
+      } catch (e) {
+        console.error('Failed to parse user from local storage', e);
         return null;
       }
     }

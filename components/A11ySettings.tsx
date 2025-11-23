@@ -15,10 +15,7 @@ interface A11ySettingsProps {
   onPreferencesChange?: (preferences: A11yPreferences) => void;
 }
 
-export const A11ySettings: React.FC<A11ySettingsProps> = ({
-  preferences,
-  onPreferencesChange,
-}) => {
+export const A11ySettings: React.FC<A11ySettingsProps> = ({ preferences, onPreferencesChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localPreferences, setLocalPreferences] = useState(preferences);
 
@@ -83,9 +80,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
               <input
                 type="checkbox"
                 checked={localPreferences.screenReaderMode}
-                onChange={(e) =>
-                  handlePreferenceChange('screenReaderMode', e.target.checked)
-                }
+                onChange={(e) => handlePreferenceChange('screenReaderMode', e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-300">Enable screen reader mode</span>
@@ -99,9 +94,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
               <input
                 type="checkbox"
                 checked={localPreferences.focusIndicator}
-                onChange={(e) =>
-                  handlePreferenceChange('focusIndicator', e.target.checked)
-                }
+                onChange={(e) => handlePreferenceChange('focusIndicator', e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-300">Show focus indicator</span>
@@ -115,9 +108,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
               <input
                 type="checkbox"
                 checked={localPreferences.keyboardNavigation}
-                onChange={(e) =>
-                  handlePreferenceChange('keyboardNavigation', e.target.checked)
-                }
+                onChange={(e) => handlePreferenceChange('keyboardNavigation', e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-300">Enable keyboard shortcuts</span>
@@ -150,10 +141,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
             <select
               value={localPreferences.fontSize}
               onChange={(e) =>
-                handlePreferenceChange(
-                  'fontSize',
-                  e.target.value as A11yPreferences['fontSize']
-                )
+                handlePreferenceChange('fontSize', e.target.value as A11yPreferences['fontSize'])
               }
               className="w-full rounded border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
             >
@@ -171,9 +159,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
               <input
                 type="checkbox"
                 checked={localPreferences.highContrast}
-                onChange={(e) =>
-                  handlePreferenceChange('highContrast', e.target.checked)
-                }
+                onChange={(e) => handlePreferenceChange('highContrast', e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-300">Increase color contrast</span>
@@ -187,9 +173,7 @@ export const A11ySettings: React.FC<A11ySettingsProps> = ({
               <input
                 type="checkbox"
                 checked={localPreferences.reduceMotion}
-                onChange={(e) =>
-                  handlePreferenceChange('reduceMotion', e.target.checked)
-                }
+                onChange={(e) => handlePreferenceChange('reduceMotion', e.target.checked)}
                 className="rounded"
               />
               <span className="text-sm text-gray-300">Minimize animations</span>

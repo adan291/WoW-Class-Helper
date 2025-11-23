@@ -35,14 +35,19 @@ interface ClassIconRendererProps {
   classId: string;
 }
 
-export const ClassIconRenderer = ({ classId, ...props }: ClassIconRendererProps & React.SVGProps<SVGSVGElement>) => {
+export const ClassIconRenderer = ({
+  classId,
+  ...props
+}: ClassIconRendererProps & React.SVGProps<SVGSVGElement>) => {
   const IconComponent = iconMap[classId];
   if (!IconComponent) {
     // Return a default placeholder or null if a classId has no matching icon
     return (
       <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <rect width="64" height="64" fill="currentColor" opacity="0.2"/>
-        <text x="32" y="38" fontSize="24" textAnchor="middle" fill="currentColor">?</text>
+        <rect width="64" height="64" fill="currentColor" opacity="0.2" />
+        <text x="32" y="38" fontSize="24" textAnchor="middle" fill="currentColor">
+          ?
+        </text>
       </svg>
     );
   }

@@ -15,36 +15,31 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
   // Filter results based on search query
   const filteredResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    
+
     const query = searchQuery.toLowerCase();
     return WOW_CLASSES.filter(
       (wowClass) =>
         wowClass.name.toLowerCase().includes(query) ||
-        wowClass.specs.some((spec) =>
-          spec.name.toLowerCase().includes(query)
-        )
+        wowClass.specs.some((spec) => spec.name.toLowerCase().includes(query))
     );
   }, [searchQuery]);
 
   // Handle search input with debouncing
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchQuery(value);
-      setSelectedIndex(-1);
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setSelectedIndex(-1);
 
-      // Clear existing timer
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
 
-      // Set new timer for debounced search
-      debounceTimer.current = setTimeout(() => {
-        setIsOpen(value.trim().length > 0);
-      }, 300);
-    },
-    []
-  );
+    // Set new timer for debounced search
+    debounceTimer.current = setTimeout(() => {
+      setIsOpen(value.trim().length > 0);
+    }, 300);
+  }, []);
 
   // Handle result selection
   const handleSelectResult = useCallback(
@@ -72,15 +67,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev < filteredResults.length - 1 ? prev + 1 : 0
-          );
+          setSelectedIndex((prev) => (prev < filteredResults.length - 1 ? prev + 1 : 0));
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredResults.length - 1
-          );
+          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredResults.length - 1));
           break;
         case 'Enter':
           e.preventDefault();
@@ -111,10 +102,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
   }, []);
 
   return (
-    <div
-      data-search-container
-      className="relative w-full max-w-md"
-    >
+    <div data-search-container className="relative w-full max-w-md">
       <div className="relative">
         <input
           type="text"
@@ -165,10 +153,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelectResult }) => {
                         {wowClass.name.charAt(0)}
                       </div>
                       <div className="flex-1">
-                        <div
-                          className="font-semibold"
-                          style={{ color: wowClass.color }}
-                        >
+                        <div className="font-semibold" style={{ color: wowClass.color }}>
                           {wowClass.name}
                         </div>
                         <div className="text-xs text-gray-400">

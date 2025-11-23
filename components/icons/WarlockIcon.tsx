@@ -1,10 +1,18 @@
-
 import React from 'react';
 
 export const WarlockIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}>
     {/* Grimoire/Book */}
-    <rect x="16" y="10" width="32" height="40" fill="#2a0052" stroke="#bb33ff" strokeWidth="1.5" rx="2" />
+    <rect
+      x="16"
+      y="10"
+      width="32"
+      height="40"
+      fill="#2a0052"
+      stroke="#bb33ff"
+      strokeWidth="1.5"
+      rx="2"
+    />
     {/* Book spine */}
     <line x1="32" y1="10" x2="32" y2="50" stroke="#bb33ff" strokeWidth="1.2" />
     {/* Pages */}

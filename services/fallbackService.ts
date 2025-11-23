@@ -34,7 +34,7 @@ class FallbackService {
    * Notify all listeners of state changes
    */
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener({ ...this.state }));
+    this.listeners.forEach((listener) => listener({ ...this.state }));
   }
 
   /**
