@@ -10,6 +10,8 @@ import { AppProviders } from './contexts/AppProviders.tsx';
 import { useAuth } from './contexts/AuthContext.tsx';
 import { useI18n, Language } from './contexts/I18nContext.tsx';
 import { mockDataPreloader } from './services/mockDataPreloader.ts';
+import { ReloadPrompt } from './components/ReloadPrompt.tsx';
+import { SkipLink } from './components/SkipLink.tsx';
 import './styles/animations.css';
 
 const AppContent = () => {
@@ -34,18 +36,20 @@ const AppContent = () => {
 
   return (
     <ErrorBoundary>
+      <SkipLink />
       <FallbackStatusBar />
+      <ReloadPrompt />
       <div
-        className="min-h-screen bg-gray-900 text-gray-200 bg-cover bg-center bg-fixed"
+        className="min-h-screen bg-gray-950 text-gray-200 bg-cover bg-center bg-fixed"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1920&auto=format&fit=crop')",
         }}
       >
-        <div className="min-h-screen bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+        <div className="min-h-screen bg-[#020617]/90 backdrop-blur-sm">
           <header
-            className="py-4 px-6 flex items-center justify-between border-b-2 shadow-lg bg-gray-900 bg-opacity-50 smooth-transition"
-            style={{ borderColor: '#FFD700' }}
+            className="py-4 px-6 flex items-center justify-between border-b border-white/10 shadow-2xl glass-effect sticky top-0 z-50 transition-all duration-300"
+            style={{ borderColor: 'rgba(255, 215, 0, 0.2)' }}
           >
             <div className="flex items-center gap-4 group">
               <div className="relative">
@@ -95,13 +99,13 @@ const AppContent = () => {
                 }}
                 aria-label="Select User Role"
               >
-                <option value="user">👤 User Mode</option>
-                <option value="master">👑 Master Mode</option>
-                <option value="admin">⚙️ Admin Mode</option>
+                <option value="user">👤 {t('role.user')}</option>
+                <option value="master">👑 {t('role.master')}</option>
+                <option value="admin">⚙️ {t('role.admin')}</option>
               </select>
             </div>
           </header>
-          <main className="p-4 md:p-8">
+          <main id="main-content" className="p-4 md:p-8" tabIndex={-1}>
             {selectedClass ? (
               <ClassHub wowClass={selectedClass} onGoBack={handleGoBack} userRole={userRole} />
             ) : (

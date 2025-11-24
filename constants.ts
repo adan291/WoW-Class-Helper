@@ -50,6 +50,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'warrior',
     name: 'Warrior',
     color: '#C79C6E',
+    armorType: 'Plate',
+    difficulty: 'Easy',
     specs: [
       { id: 'arms', name: 'Arms', role: 'Damage' },
       { id: 'fury', name: 'Fury', role: 'Damage' },
@@ -60,6 +62,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'paladin',
     name: 'Paladin',
     color: '#F58CBA',
+    armorType: 'Plate',
+    difficulty: 'Moderate',
     specs: [
       { id: 'holy_paladin', name: 'Holy', role: 'Healer' },
       { id: 'protection_paladin', name: 'Protection', role: 'Tank' },
@@ -70,6 +74,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'hunter',
     name: 'Hunter',
     color: '#ABD473',
+    armorType: 'Mail',
+    difficulty: 'Easy',
     specs: [
       { id: 'beast_mastery', name: 'Beast Mastery', role: 'Damage' },
       { id: 'marksmanship', name: 'Marksmanship', role: 'Damage' },
@@ -80,6 +86,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'rogue',
     name: 'Rogue',
     color: '#FFF569',
+    armorType: 'Leather',
+    difficulty: 'Hard',
     specs: [
       { id: 'assassination', name: 'Assassination', role: 'Damage' },
       { id: 'outlaw', name: 'Outlaw', role: 'Damage' },
@@ -90,6 +98,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'priest',
     name: 'Priest',
     color: '#FFFFFF',
+    armorType: 'Cloth',
+    difficulty: 'Moderate',
     specs: [
       { id: 'discipline', name: 'Discipline', role: 'Healer' },
       { id: 'holy_priest', name: 'Holy', role: 'Healer' },
@@ -100,6 +110,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'shaman',
     name: 'Shaman',
     color: '#0070DE',
+    armorType: 'Mail',
+    difficulty: 'Moderate',
     specs: [
       { id: 'elemental', name: 'Elemental', role: 'Damage' },
       { id: 'enhancement', name: 'Enhancement', role: 'Damage' },
@@ -110,6 +122,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'mage',
     name: 'Mage',
     color: '#3FC7EB',
+    armorType: 'Cloth',
+    difficulty: 'Moderate',
     specs: [
       { id: 'arcane', name: 'Arcane', role: 'Damage' },
       { id: 'fire', name: 'Fire', role: 'Damage' },
@@ -120,6 +134,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'warlock',
     name: 'Warlock',
     color: '#8787ED',
+    armorType: 'Cloth',
+    difficulty: 'Moderate',
     specs: [
       { id: 'affliction', name: 'Affliction', role: 'Damage' },
       { id: 'demonology', name: 'Demonology', role: 'Damage' },
@@ -130,6 +146,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'monk',
     name: 'Monk',
     color: '#00FF96',
+    armorType: 'Leather',
+    difficulty: 'Hard',
     specs: [
       { id: 'brewmaster', name: 'Brewmaster', role: 'Tank' },
       { id: 'mistweaver', name: 'Mistweaver', role: 'Healer' },
@@ -140,6 +158,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'druid',
     name: 'Druid',
     color: '#FF7D0A',
+    armorType: 'Leather',
+    difficulty: 'Moderate',
     specs: [
       { id: 'balance', name: 'Balance', role: 'Damage' },
       { id: 'feral', name: 'Feral', role: 'Damage' },
@@ -151,6 +171,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'demon_hunter',
     name: 'Demon Hunter',
     color: '#A330C9',
+    armorType: 'Leather',
+    difficulty: 'Easy',
     specs: [
       { id: 'havoc', name: 'Havoc', role: 'Damage' },
       { id: 'vengeance', name: 'Vengeance', role: 'Tank' },
@@ -160,6 +182,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'death_knight',
     name: 'Death Knight',
     color: '#C41F3B',
+    armorType: 'Plate',
+    difficulty: 'Moderate',
     specs: [
       { id: 'blood', name: 'Blood', role: 'Tank' },
       { id: 'frost_dk', name: 'Frost', role: 'Damage' },
@@ -170,6 +194,8 @@ export const WOW_CLASSES: WowClass[] = [
     id: 'evoker',
     name: 'Evoker',
     color: '#33937F',
+    armorType: 'Mail',
+    difficulty: 'Hard',
     specs: [
       { id: 'devastation', name: 'Devastation', role: 'Damage' },
       { id: 'preservation', name: 'Preservation', role: 'Healer' },

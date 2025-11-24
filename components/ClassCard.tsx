@@ -18,15 +18,23 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105"
+      className="relative group cursor-pointer lift-on-hover h-full"
     >
       <div
-        className="p-4 rounded-lg border-2 transition-all duration-300 h-full flex flex-col items-center justify-center text-center hover:shadow-lg"
+        className="p-5 rounded-xl border border-white/10 transition-all duration-300 h-full flex flex-col items-center justify-center text-center hover:shadow-2xl hover:border-opacity-50 relative overflow-hidden"
         style={{
-          borderColor: wowClass.color,
-          backgroundColor: `${wowClass.color}15`,
+          backgroundColor: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(8px)',
+          borderColor: `${wowClass.color}40`,
         }}
       >
+        {/* Glow effect on hover */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: `radial-gradient(circle at center, ${wowClass.color}20 0%, transparent 70%)`,
+          }}
+        />
         {/* Favorite Button */}
         <button
           onClick={onToggleFavorite}
@@ -65,7 +73,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-gray-400 line-clamp-2">{wowClass.description}</p>
+        <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{wowClass.description}</p>
       </div>
     </div>
   );

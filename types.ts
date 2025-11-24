@@ -10,6 +10,8 @@ export interface WowClass {
   color: string;
   specs: Specialization[];
   role?: 'tank' | 'healer' | 'dps';
+  armorType: 'Cloth' | 'Leather' | 'Mail' | 'Plate';
+  difficulty: 'Easy' | 'Moderate' | 'Hard';
   icon?: string;
   description?: string;
   videoTutorials?: { title: string; url: string; thumbnail?: string }[];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { WowClass, Specialization, UserRole, Dungeon } from '../types.ts';
 import { DUNGEONS, EXPANSIONS } from '../constants.ts';
 import * as geminiService from '../services/geminiService.ts';
@@ -18,7 +18,10 @@ interface ClassHubProps {
 
 type TabId = 'overview' | 'specs' | 'rotations' | 'addons' | 'dungeons' | 'videos';
 
+import { useI18n } from '../contexts/I18nContext.tsx';
+
 const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [activeSpec, setActiveSpec] = useState<Specialization>(wowClass.specs[0]);
   const [selectedDungeon, setSelectedDungeon] = useState<Dungeon | null>(null);
@@ -31,6 +34,12 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
     if (DUNGEONS.length > 0) {
       setSelectedDungeon(DUNGEONS[0]);
     }
+  }, []);
+
+  const headerRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    headerRef.current?.focus();
   }, []);
 
   // Load guide content when tab or spec changes
@@ -71,7 +80,7 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to load guide:', errorMsg);
-      setGuideContent('Failed to load guide content. Please try again.');
+      setGuideContent(t('hub.failedToLoad'));
     } finally {
       setIsLoading(false);
     }
@@ -79,14 +88,14 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
 
   const tabDefinitions = useMemo(
     () => [
-      { id: 'overview' as TabId, label: 'Overview' },
-      { id: 'specs' as TabId, label: 'Specs' },
-      { id: 'rotations' as TabId, label: 'Rotations' },
-      { id: 'addons' as TabId, label: 'Addons' },
-      { id: 'dungeons' as TabId, label: 'Dungeons' },
-      { id: 'videos' as TabId, label: 'Videos' },
+      { id: 'overview' as TabId, label: t('tab.overview') },
+      { id: 'specs' as TabId, label: t('tab.specs') },
+      { id: 'rotations' as TabId, label: t('tab.rotations') },
+      { id: 'addons' as TabId, label: t('tab.addons') },
+      { id: 'dungeons' as TabId, label: t('tab.dungeons') },
+      { id: 'videos' as TabId, label: t('tab.videos') },
     ],
-    []
+    [t]
   );
 
   return (
@@ -101,11 +110,16 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
             onClick={onGoBack}
             className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
           >
-            ← Back
+            ← {t('common.back')}
           </button>
           <div className="flex items-center gap-3">
             <ClassIconRenderer classId={wowClass.id} className="w-10 h-10" />
-            <h1 className="text-3xl font-bold" style={{ color: wowClass.color }}>
+            <h1
+              ref={headerRef}
+              tabIndex={-1}
+              className="text-3xl font-bold focus:outline-none"
+              style={{ color: wowClass.color }}
+            >
               {wowClass.name}
             </h1>
           </div>
@@ -113,20 +127,24 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
       </div>
 
       {/* Main Content */}
-      <div className="bg-gray-900/80 backdrop-blur-md rounded-lg shadow-2xl border border-gray-700 overflow-hidden">
+      <div className="glass-effect-strong rounded-xl overflow-hidden shadow-2xl">
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-700 bg-gray-800/50">
+        <div className="flex border-b border-white/10 bg-black/20 backdrop-blur-md">
           {tabDefinitions.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition ${
-                activeTab === tab.id
-                  ? 'bg-gray-700 text-white border-b-2'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-              style={activeTab === tab.id ? { borderBottomColor: wowClass.color } : undefined}
+              className={`flex-1 px-4 py-4 text-sm font-bold tracking-wide transition-all duration-300 relative overflow-hidden ${activeTab === tab.id
+                  ? 'text-white bg-white/5'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                }`}
             >
+              {activeTab === tab.id && (
+                <span
+                  className="absolute bottom-0 left-0 w-full h-0.5 shadow-[0_0_10px_currentColor]"
+                  style={{ backgroundColor: wowClass.color, color: wowClass.color }}
+                />
+              )}
               {tab.label}
             </button>
           ))}
@@ -139,11 +157,10 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
               <button
                 key={spec.id}
                 onClick={() => setActiveSpec(spec)}
-                className={`px-4 py-2 rounded-lg transition ${
-                  activeSpec.id === spec.id
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                className={`px-4 py-2 rounded-lg transition ${activeSpec.id === spec.id
+                  ? 'bg-yellow-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
               >
                 {spec.name}
               </button>
@@ -176,21 +193,21 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
           activeTab === 'specs' ||
           activeTab === 'rotations' ||
           activeTab === 'addons') && (
-          <div className="bg-gray-800/50 border-b border-gray-700 p-4">
-            <select
-              value={guideExpansion}
-              onChange={(e) => setGuideExpansion(e.target.value)}
-              className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
-            >
-              <option value="all">All Expansions</option>
-              {EXPANSIONS.map((exp) => (
-                <option key={exp} value={exp}>
-                  {exp}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+            <div className="bg-gray-800/50 border-b border-gray-700 p-4">
+              <select
+                value={guideExpansion}
+                onChange={(e) => setGuideExpansion(e.target.value)}
+                className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
+              >
+                <option value="all">{t('hub.allExpansions')}</option>
+                {EXPANSIONS.map((exp) => (
+                  <option key={exp} value={exp}>
+                    {exp}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
         {/* Guide Content */}
         <div className="p-6">
@@ -199,7 +216,7 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
           ) : isLoading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
-              <p className="mt-4 text-gray-400">Loading guide...</p>
+              <p className="mt-4 text-gray-400">{t('hub.loadingGuide')}</p>
             </div>
           ) : (
             <GuideSection content={guideContent} />

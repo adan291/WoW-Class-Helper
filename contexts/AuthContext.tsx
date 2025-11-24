@@ -1,20 +1,22 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase.ts';
 import type { UserRole } from '../types.ts';
+import type { Session } from '@supabase/supabase-js';
 
 interface User {
   id: string;
-  name: string;
-  role: UserRole;
   email?: string;
+  role: UserRole;
 }
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
   userRole: UserRole;
-  setUserRole: (role: UserRole) => void;
-  login: (user: User) => void;
-  logout: () => void;
+  setUserRole: (role: UserRole) => void; // Kept for compatibility, but ideally should be managed via DB
+  login: () => void; // Triggered via Supabase UI or custom form
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,65 +26,65 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('wow_class_helper_user');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed && typeof parsed === 'object' && 'id' in parsed) {
-          return parsed as User;
-        }
-        return null;
-      } catch (e) {
-        console.error('Failed to parse user from local storage', e);
-        return null;
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userRole, setUserRoleState] = useState<UserRole>('user');
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          role: 'user', // Default role, will fetch from DB later
+        });
       }
-    }
-    return null;
-  });
+    });
 
-  const [userRole, setUserRoleState] = useState<UserRole>(() => {
-    const stored = localStorage.getItem('wow_class_helper_role');
-    if (stored === 'user' || stored === 'master' || stored === 'admin') {
-      return stored;
-    }
-    return 'user';
-  });
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          role: 'user', // Default role
+        });
+      } else {
+        setUser(null);
+      }
+    });
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('wow_class_helper_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('wow_class_helper_user');
-    }
-  }, [user]);
+    return () => subscription.unsubscribe();
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem('wow_class_helper_role', userRole);
-  }, [userRole]);
-
-  const login = (newUser: User) => {
-    setUser(newUser);
-    setUserRoleState(newUser.role);
+  const login = () => {
+    // Placeholder: In real app, this might redirect to login page or open modal
+    console.log('Login requested');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
+    setSession(null);
     setUserRoleState('user');
   };
 
   const setUserRole = (role: UserRole) => {
     setUserRoleState(role);
-    if (user) {
-      setUser({ ...user, role });
-    }
+    // In a real app, this would update the user's profile in the DB
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: user !== null,
+        session,
+        isAuthenticated: !!session,
         userRole,
         setUserRole,
         login,
