@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.ts';
-import { useI18n } from '../../contexts/I18nContext.tsx';
+
+type OAuthProvider = 'google' | 'discord';
 
 export const RegisterForm: React.FC = () => {
-  const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,32 +43,13 @@ export const RegisterForm: React.FC = () => {
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleOAuthSignup = async (provider: OAuthProvider) => {
     setLoading(true);
     setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      setLoading(false);
-    }
-  };
-
-  const handleDiscordSignup = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'discord',
+        provider,
         options: {
           redirectTo: `${window.location.origin}/`,
         },
@@ -148,7 +129,7 @@ export const RegisterForm: React.FC = () => {
 
       <button
         type="button"
-        onClick={handleGoogleSignup}
+        onClick={() => handleOAuthSignup('google')}
         disabled={loading}
         className="w-full py-2 px-4 bg-white hover:bg-gray-100 text-gray-900 font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mb-2"
       >

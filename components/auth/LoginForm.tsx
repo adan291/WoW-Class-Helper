@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.ts';
-import { useI18n } from '../../contexts/I18nContext.tsx';
+
+type OAuthProvider = 'google' | 'discord';
 
 export const LoginForm: React.FC = () => {
-  const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,32 +28,13 @@ export const LoginForm: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleOAuthLogin = async (provider: OAuthProvider) => {
     setLoading(true);
     setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      setLoading(false);
-    }
-  };
-
-  const handleDiscordLogin = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'discord',
+        provider,
         options: {
           redirectTo: `${window.location.origin}/`,
         },
@@ -108,7 +89,7 @@ export const LoginForm: React.FC = () => {
 
       <button
         type="button"
-        onClick={handleGoogleLogin}
+        onClick={() => handleOAuthLogin('google')}
         disabled={loading}
         className="w-full py-2 px-4 bg-white hover:bg-gray-100 text-gray-900 font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
@@ -135,7 +116,7 @@ export const LoginForm: React.FC = () => {
 
       <button
         type="button"
-        onClick={handleDiscordLogin}
+        onClick={() => handleOAuthLogin('discord')}
         disabled={loading}
         className="w-full py-2 px-4 bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
