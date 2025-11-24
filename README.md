@@ -59,6 +59,16 @@ Think of it as your **"personal WoW expert assistant"** that generates verified 
 - **Accessibility**: Screen reader support and reduced motion
 - **Performance**: React.memo optimization throughout
 
+### 🔐 Enterprise Features (Phase 6)
+
+- **User Authentication**: Secure login/register with email verification
+- **Database Integration**: Cloud-based data persistence with Supabase
+- **User Profiles**: View saved guides, favorites, and activity history
+- **Admin Dashboard**: User management, content moderation, analytics
+- **Role-Based Access Control**: User, Master, and Admin roles with permissions
+- **Audit Logging**: Complete security trail for compliance
+- **GDPR Compliance**: Data export and account deletion support
+
 ---
 
 ## 🚀 Quick Start
@@ -68,6 +78,7 @@ Think of it as your **"personal WoW expert assistant"** that generates verified 
 - **Node.js** 18+
 - **npm** 9+
 - **Gemini API Key** from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **Supabase Account** (free tier) from [supabase.com](https://supabase.com)
 
 ### Installation
 
@@ -80,12 +91,18 @@ cd wow-class-helper
 npm install
 
 # 3. Configure environment
-echo "GEMINI_API_KEY=your_api_key_here" > .env.local
+# Create .env.local with:
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# 4. Start development
+# 4. Setup Supabase database
+# See PHASE6_SETUP.md for detailed instructions
+
+# 5. Start development
 npm run dev
 
-# 5. Open browser
+# 6. Open browser
 # http://localhost:5173
 ```
 
@@ -272,20 +289,26 @@ npm run lint         # Lint code (if configured)
 ### User Role
 
 - Access all guides
-- Save favorite classes
-- View all content
+- Save guides to cloud database
+- Sync favorites across devices
+- View personal profile and activity
+- Export personal data (GDPR)
 
 ### Master Role
 
-- Same as User
-- Prepared for future enhancements
+- All User features
+- Access to advanced features
+- Priority support (future)
 
 ### Admin Role
 
-- All User features
-- Expandable admin panel
+- All Master features
+- Access admin dashboard
+- Manage users (view, ban, change roles)
+- Moderate content (view, delete guides)
+- View analytics and audit logs
 - Custom source URL injection
-- Override AI knowledge with verified sources
+- Full system access
 
 ---
 
@@ -295,20 +318,34 @@ npm run lint         # Lint code (if configured)
 
 ```bash
 # .env.local
-GEMINI_API_KEY=your_api_key_here
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### Getting Your API Key
+### Getting Your API Keys
+
+**Gemini API Key:**
 
 1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
 2. Click "Create API Key"
 3. Copy the key
 4. Paste into `.env.local`
 
+**Supabase Keys:**
+
+1. Create account at [supabase.com](https://supabase.com)
+2. Create new project
+3. Go to Settings → API
+4. Copy Project URL and anon/public key
+5. Paste into `.env.local`
+
+For detailed Supabase setup, see **[PHASE6_SETUP.md](./PHASE6_SETUP.md)**
+
 ### Important Security Notes
 
 - ⚠️ **Never commit `.env.local`** to version control
-- ⚠️ **Never share your API key** publicly
+- ⚠️ **Never share your API keys** publicly
 - ⚠️ **Rotate keys regularly** for security
 - ✅ Use environment variables for all sensitive data
 
@@ -563,9 +600,9 @@ Then open [http://localhost:5173](http://localhost:5173) and start exploring!
 
 ---
 
-**Status**: ✅ Production Ready  
-**Quality**: ⭐⭐⭐⭐⭐ Excellent  
-**Tests**: 178/178 Passing  
+**Status**: ✅ Production Ready
+**Quality**: ⭐⭐⭐⭐⭐ Excellent
+**Tests**: 178/178 Passing
 **Last Updated**: November 19, 2025
 
 🚀 **Ready to deploy!** 🎮✨

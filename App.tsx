@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import type { WowClass, UserRole } from './types.ts';
+import { Link } from 'react-router-dom';
+import type { WowClass } from './types.ts';
 import ClassSelection from './components/ClassSelection.tsx';
 import ClassHub from './components/ClassHub.tsx';
 import { WowIcon } from './components/icons/WowIcon.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { ToastContainer } from './components/ToastContainer.tsx';
 import { FallbackStatusBar } from './components/FallbackStatusBar.tsx';
-import { AppProviders } from './contexts/AppProviders.tsx';
-import { useAuth } from './contexts/AuthContext.tsx';
-import { useI18n, Language } from './contexts/I18nContext.tsx';
+import { useAuth } from './hooks/useAuth.ts';
+import { useI18n, type Language } from './contexts/I18nContext.tsx';
 import { mockDataPreloader } from './services/mockDataPreloader.ts';
 import { ReloadPrompt } from './components/ReloadPrompt.tsx';
 import { SkipLink } from './components/SkipLink.tsx';
+import { CanAccess } from './components/CanAccess.tsx';
 import './styles/animations.css';
 
-const AppContent = () => {
+const App = () => {
   const [selectedClass, setSelectedClass] = useState<WowClass | null>(null);
-  const { userRole, setUserRole } = useAuth();
+  const { userRole, setUserRole, isAuthenticated } = useAuth();
   const { language, setLanguage, t } = useI18n();
 
   // Preload mock data on app startup
@@ -51,7 +52,7 @@ const AppContent = () => {
             className="py-4 px-6 flex items-center justify-between border-b border-white/10 shadow-2xl glass-effect sticky top-0 z-50 transition-all duration-300"
             style={{ borderColor: 'rgba(255, 215, 0, 0.2)' }}
           >
-            <div className="flex items-center gap-4 group">
+            <Link to="/" className="flex items-center gap-4 group cursor-pointer">
               <div className="relative">
                 <div
                   className="absolute inset-0 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -73,7 +74,7 @@ const AppContent = () => {
                   {t('app.description')}
                 </p>
               </div>
-            </div>
+            </Link>
             <div className="relative flex items-center gap-3">
               <select
                 value={language}
@@ -90,19 +91,46 @@ const AppContent = () => {
                 <option value="zh">🇨🇳 ZH</option>
               </select>
 
-              <select
-                value={userRole}
-                onChange={(e) => setUserRole(e.target.value as UserRole)}
-                className="bg-gray-800 border-2 border-gray-600 text-white text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 appearance-none smooth-transition hover:border-yellow-500"
-                style={{
-                  boxShadow: userRole === 'admin' ? '0 0 15px #FFD70060' : 'none'
-                }}
-                aria-label="Select User Role"
-              >
-                <option value="user">👤 {t('role.user')}</option>
-                <option value="master">👑 {t('role.master')}</option>
-                <option value="admin">⚙️ {t('role.admin')}</option>
-              </select>
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors border border-gray-600"
+                  >
+                    👤 Profile
+                  </Link>
+                  <CanAccess permission="view_admin_dashboard">
+                    <Link
+                      to="/admin"
+                      className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+                    >
+                      ⚙️ Admin
+                    </Link>
+                  </CanAccess>
+                </>
+              ) : (
+                <>
+                  <select
+                    value={userRole}
+                    onChange={(e) => setUserRole(e.target.value as 'user' | 'master' | 'admin')}
+                    className="bg-gray-800 border-2 border-gray-600 text-white text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 appearance-none smooth-transition hover:border-yellow-500"
+                    style={{
+                      boxShadow: userRole === 'admin' ? '0 0 15px #FFD70060' : 'none',
+                    }}
+                    aria-label="Select User Role"
+                  >
+                    <option value="user">👤 {t('role.user')}</option>
+                    <option value="master">👑 {t('role.master')}</option>
+                    <option value="admin">⚙️ {t('role.admin')}</option>
+                  </select>
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+                  >
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </header>
           <main id="main-content" className="p-4 md:p-8" tabIndex={-1}>
@@ -116,14 +144,6 @@ const AppContent = () => {
       </div>
       <ToastContainer />
     </ErrorBoundary>
-  );
-};
-
-const App = () => {
-  return (
-    <AppProviders>
-      <AppContent />
-    </AppProviders>
   );
 };
 

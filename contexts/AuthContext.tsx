@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase.ts';
 import type { UserRole } from '../types.ts';
 import type { Session } from '@supabase/supabase-js';
+import { profileService } from '../services/databaseService.ts';
+import { auditService } from '../services/auditService.ts';
 
 interface User {
   id: string;
@@ -9,17 +11,17 @@ interface User {
   role: UserRole;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAuthenticated: boolean;
   userRole: UserRole;
-  setUserRole: (role: UserRole) => void; // Kept for compatibility, but ideally should be managed via DB
-  login: () => void; // Triggered via Supabase UI or custom form
+  setUserRole: (role: UserRole) => void;
+  login: () => void;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -30,44 +32,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRoleState] = useState<UserRole>('user');
 
+  const loadUserProfile = React.useCallback(async (userId: string, email?: string) => {
+    let profile = await profileService.getProfile(userId);
+
+    // Create profile if it doesn't exist
+    if (!profile && email) {
+      profile = await profileService.createProfile(userId, email);
+    }
+
+    if (profile) {
+      setUser({
+        id: profile.id,
+        email: profile.email,
+        role: profile.role,
+      });
+      setUserRoleState(profile.role);
+    } else {
+      // Fallback if profile creation fails
+      setUser({
+        id: userId,
+        email,
+        role: 'user',
+      });
+      setUserRoleState('user');
+    }
+  }, []);
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          role: 'user', // Default role, will fetch from DB later
-        });
+        loadUserProfile(session.user.id, session.user.email);
       }
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          role: 'user', // Default role
-        });
+        await loadUserProfile(session.user.id, session.user.email);
+        if (event === 'SIGNED_IN') {
+          await auditService.log(session.user.id, 'login', 'auth');
+        }
       } else {
         setUser(null);
+        setUserRoleState('user');
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [loadUserProfile]);
 
   const login = () => {
-    // Placeholder: In real app, this might redirect to login page or open modal
     console.log('Login requested');
   };
 
   const logout = async () => {
+    if (user) {
+      await auditService.log(user.id, 'logout', 'auth');
+    }
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
@@ -76,7 +102,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const setUserRole = (role: UserRole) => {
     setUserRoleState(role);
-    // In a real app, this would update the user's profile in the DB
+    if (user) {
+      setUser({ ...user, role });
+    }
   };
 
   return (
@@ -96,10 +124,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-};
+// Hook moved to hooks/useAuth.ts to fix Fast Refresh warning
