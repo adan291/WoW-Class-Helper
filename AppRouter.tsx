@@ -26,9 +26,28 @@ const GuildManagerApp = lazy(() => import('./modules/guild-manager/GuildManagerA
 // Loading component for lazy loaded modules
 const ModuleLoader = () => (
   <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-    <div className="text-center">
-      <div className="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-      <p className="text-yellow-500 font-medium">Loading module...</p>
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative w-12 h-12">
+        <div className="absolute inset-0 rounded-full border-2 border-gray-700" />
+        <div
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-yellow-500 animate-spin"
+          style={{ animationDuration: '0.8s' }}
+        />
+      </div>
+      <div className="flex items-center gap-1 text-yellow-500 font-medium">
+        <span>Loading</span>
+        <span className="flex gap-0.5">
+          <span className="animate-bounce" style={{ animationDelay: '0ms' }}>
+            .
+          </span>
+          <span className="animate-bounce" style={{ animationDelay: '150ms' }}>
+            .
+          </span>
+          <span className="animate-bounce" style={{ animationDelay: '300ms' }}>
+            .
+          </span>
+        </span>
+      </div>
     </div>
   </div>
 );
