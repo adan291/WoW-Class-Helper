@@ -69,6 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await loadUserProfile(session.user.id, session.user.email);
         if (event === 'SIGNED_IN') {
           await auditService.log(session.user.id, 'login', 'auth');
+          // Clean up OAuth hash from URL and redirect to home
+          if (window.location.hash.includes('access_token')) {
+            window.history.replaceState(null, '', '/');
+          }
         }
       } else {
         setUser(null);
