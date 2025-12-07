@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth.ts';
 import { profileService, guideService, favoriteService } from '../services/databaseService.ts';
 import { auditService, type AuditLog } from '../services/auditService.ts';
 import { WowIcon } from '../components/icons/WowIcon.tsx';
-import { LoadingSpinner } from '../components/LoadingSpinner.tsx';
+import { LoadingOverlayEnhanced } from '../components/LoadingOverlayEnhanced.tsx';
 
 interface UserGuide {
   id: string;
@@ -204,108 +204,115 @@ export const UserProfilePage: React.FC = () => {
           </div>
 
           {/* Content */}
-          {loading ? (
-            <LoadingSpinner size="lg" variant="default" message="Loading profile..." />
-          ) : (
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg border border-yellow-500/20 p-6">
-              {activeTab === 'guides' && (
-                <div className="space-y-4">
-                  {guides.length === 0 ? (
-                    <div className="text-center py-12">
-                      <span className="text-4xl mb-4 block">📝</span>
-                      <p className="text-gray-300 text-lg">No guides saved yet</p>
-                      <p className="text-gray-400 text-sm mt-2">
-                        Your saved guides will appear here
-                      </p>
-                    </div>
-                  ) : (
-                    guides.map((guide) => (
-                      <div
-                        key={guide.id}
-                        className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="text-lg font-bold text-yellow-400">
-                              {guide.class_id} - {guide.spec_id}
-                            </h3>
-                            <p className="text-sm text-gray-300">
-                              {new Date(guide.created_at).toLocaleString()}
-                            </p>
+          <div className="relative min-h-[300px]">
+            <LoadingOverlayEnhanced
+              isVisible={loading}
+              message="Loading profile..."
+              subMessage="Fetching your data"
+              variant="gold"
+              fullScreen={false}
+            />
+            {!loading && (
+              <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg border border-yellow-500/20 p-6">
+                {activeTab === 'guides' && (
+                  <div className="space-y-4">
+                    {guides.length === 0 ? (
+                      <div className="text-center py-12">
+                        <span className="text-4xl mb-4 block">📝</span>
+                        <p className="text-gray-300 text-lg">No guides saved yet</p>
+                        <p className="text-gray-400 text-sm mt-2">
+                          Your saved guides will appear here
+                        </p>
+                      </div>
+                    ) : (
+                      guides.map((guide) => (
+                        <div
+                          key={guide.id}
+                          className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h3 className="text-lg font-bold text-yellow-400">
+                                {guide.class_id} - {guide.spec_id}
+                              </h3>
+                              <p className="text-sm text-gray-300">
+                                {new Date(guide.created_at).toLocaleString()}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleDeleteGuide(guide.id)}
+                              className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all duration-200 hover:scale-105"
+                            >
+                              Delete
+                            </button>
                           </div>
-                          <button
-                            onClick={() => handleDeleteGuide(guide.id)}
-                            className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all duration-200 hover:scale-105"
-                          >
-                            Delete
-                          </button>
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+                      ))
+                    )}
+                  </div>
+                )}
 
-              {activeTab === 'favorites' && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {favorites.length === 0 ? (
-                    <div className="text-center py-12 col-span-full">
-                      <span className="text-4xl mb-4 block">⭐</span>
-                      <p className="text-gray-300 text-lg">No favorites yet</p>
-                      <p className="text-gray-400 text-sm mt-2">
-                        Star your favorite classes to see them here
-                      </p>
-                    </div>
-                  ) : (
-                    favorites.map((fav) => (
-                      <div
-                        key={fav.id}
-                        className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="text-yellow-400 font-bold">{fav.class_id}</span>
-                          <button
-                            onClick={() => handleRemoveFavorite(fav.class_id)}
-                            className="text-red-400 hover:text-red-300 hover:scale-110 transition-all"
-                          >
-                            ✕
-                          </button>
+                {activeTab === 'favorites' && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {favorites.length === 0 ? (
+                      <div className="text-center py-12 col-span-full">
+                        <span className="text-4xl mb-4 block">⭐</span>
+                        <p className="text-gray-300 text-lg">No favorites yet</p>
+                        <p className="text-gray-400 text-sm mt-2">
+                          Star your favorite classes to see them here
+                        </p>
+                      </div>
+                    ) : (
+                      favorites.map((fav) => (
+                        <div
+                          key={fav.id}
+                          className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-yellow-400 font-bold">{fav.class_id}</span>
+                            <button
+                              onClick={() => handleRemoveFavorite(fav.class_id)}
+                              className="text-red-400 hover:text-red-300 hover:scale-110 transition-all"
+                            >
+                              ✕
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+                      ))
+                    )}
+                  </div>
+                )}
 
-              {activeTab === 'activity' && (
-                <div className="space-y-2">
-                  {auditLogs.length === 0 ? (
-                    <div className="text-center py-12">
-                      <span className="text-4xl mb-4 block">📊</span>
-                      <p className="text-gray-300 text-lg">No activity yet</p>
-                      <p className="text-gray-400 text-sm mt-2">
-                        Your recent activity will appear here
-                      </p>
-                    </div>
-                  ) : (
-                    auditLogs.map((log) => (
-                      <div
-                        key={log.id}
-                        className="bg-gray-800/80 rounded-lg p-3 flex justify-between items-center border border-gray-700"
-                      >
-                        <span className="text-gray-200 font-medium capitalize">
-                          {log.action.replace('_', ' ')}
-                        </span>
-                        <span className="text-gray-400 text-sm">
-                          {new Date(log.timestamp).toLocaleString()}
-                        </span>
+                {activeTab === 'activity' && (
+                  <div className="space-y-2">
+                    {auditLogs.length === 0 ? (
+                      <div className="text-center py-12">
+                        <span className="text-4xl mb-4 block">📊</span>
+                        <p className="text-gray-300 text-lg">No activity yet</p>
+                        <p className="text-gray-400 text-sm mt-2">
+                          Your recent activity will appear here
+                        </p>
                       </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+                    ) : (
+                      auditLogs.map((log) => (
+                        <div
+                          key={log.id}
+                          className="bg-gray-800/80 rounded-lg p-3 flex justify-between items-center border border-gray-700"
+                        >
+                          <span className="text-gray-200 font-medium capitalize">
+                            {log.action.replace('_', ' ')}
+                          </span>
+                          <span className="text-gray-400 text-sm">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </div>

@@ -30,9 +30,9 @@ export const VideoTutorials: React.FC<VideoTutorialsProps> = ({ wowClass }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {videos.map((video) => (
+        {videos.map((video, index) => (
           <a
-            key={video.url}
+            key={`${video.url}-${index}`}
             href={video.url}
             target="_blank"
             rel="noopener noreferrer"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
-import { LoadingSpinner } from '../../components/LoadingSpinner.tsx';
+import { LoadingOverlayEnhanced } from '../../components/LoadingOverlayEnhanced.tsx';
 
 interface Guide {
   id: string;
@@ -45,9 +45,15 @@ export const AdminContent: React.FC = () => {
     <div>
       <h1 className="text-3xl font-bold text-yellow-400 mb-6">Content Moderation</h1>
 
-      {loading ? (
-        <LoadingSpinner size="lg" variant="default" message="Loading content..." />
-      ) : (
+      <div className="relative min-h-[400px]">
+        <LoadingOverlayEnhanced
+          isVisible={loading}
+          message="Loading content..."
+          subMessage="Fetching guides"
+          variant="gold"
+          fullScreen={false}
+        />
+      {!loading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Guides List */}
           <div className="bg-gray-900 rounded-lg border border-gray-800 p-6">
@@ -108,6 +114,7 @@ export const AdminContent: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

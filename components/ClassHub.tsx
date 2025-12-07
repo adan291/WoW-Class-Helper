@@ -8,7 +8,7 @@ import { validateAndPrepareGuideRequest } from '../services/classOrchestratorSer
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 import { VideoTutorials } from './VideoTutorials.tsx';
-import { LoadingSpinner } from './LoadingSpinner.tsx';
+import { LoadingOverlayEnhanced } from './LoadingOverlayEnhanced.tsx';
 import '../styles/animations.css';
 
 interface ClassHubProps {
@@ -213,17 +213,20 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
         )}
 
         {/* Guide Content */}
-        <div className="p-6">
+        <div className="p-6 relative min-h-[400px]">
           {activeTab === 'videos' ? (
             <VideoTutorials wowClass={wowClass} />
-          ) : isLoading ? (
-            <LoadingSpinner
-              size="lg"
-              variant="default"
-              message={t('hub.loadingGuide')}
-            />
           ) : (
-            <GuideSection content={guideContent} />
+            <>
+              <LoadingOverlayEnhanced
+                isVisible={isLoading}
+                message={t('hub.loadingGuide')}
+                subMessage="Generating AI-powered guide content..."
+                variant="gold"
+                fullScreen={false}
+              />
+              {!isLoading && <GuideSection content={guideContent} />}
+            </>
           )}
         </div>
       </div>

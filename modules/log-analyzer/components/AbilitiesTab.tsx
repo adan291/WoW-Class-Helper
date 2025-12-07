@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LogSummary, Role, SpellAIAnalysis } from '../types';
 import { classifySpellsByRole } from '../services/geminiService';
-import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { LoadingOverlayEnhanced } from '../../../components/LoadingOverlayEnhanced';
 
 interface Props {
   data: LogSummary;
@@ -316,59 +316,59 @@ const AbilitiesTab: React.FC<Props> = ({ data }) => {
         )}
       </div>
 
-      {loading && viewMode === 'incoming' ? (
-        <div className="flex-1 flex items-center justify-center">
-          <LoadingSpinner
-            size="xl"
-            variant="default"
-            message="Analyzing Combat Log"
-            subMessage="Categorizing enemy abilities by role..."
-          />
-        </div>
-      ) : (
-        <div className="flex-1 h-full pb-4">
-          {viewMode === 'incoming' ? (
-            <div
-              className={`grid gap-4 h-full ${roleFilter === 'All' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'}`}
-            >
-              {(roleFilter === 'All' || roleFilter === Role.TANK) && (
-                <RoleSection
-                  role={Role.TANK}
-                  title="Tank Busters"
-                  colorClass="text-blue-400"
-                  expanded={roleFilter === Role.TANK}
-                />
-              )}
-              {(roleFilter === 'All' || roleFilter === Role.MELEE) && (
-                <RoleSection
-                  role={Role.MELEE}
-                  title="Melee Mechanics"
-                  colorClass="text-red-400"
-                  expanded={roleFilter === Role.MELEE}
-                />
-              )}
-              {(roleFilter === 'All' || roleFilter === Role.RANGED) && (
-                <RoleSection
-                  role={Role.RANGED}
-                  title="Ranged/Caster"
-                  colorClass="text-purple-400"
-                  expanded={roleFilter === Role.RANGED}
-                />
-              )}
-              {(roleFilter === 'All' || roleFilter === Role.HEALER) && (
-                <RoleSection
-                  role={Role.HEALER}
-                  title="Healer Checks"
-                  colorClass="text-green-400"
-                  expanded={roleFilter === Role.HEALER}
-                />
-              )}
-            </div>
-          ) : (
-            <OutgoingSection />
-          )}
-        </div>
-      )}
+      <div className="flex-1 relative min-h-[400px]">
+        <LoadingOverlayEnhanced
+          isVisible={loading && viewMode === 'incoming'}
+          message="Analyzing Combat Log"
+          subMessage="Categorizing enemy abilities by role..."
+          variant="fire"
+          fullScreen={false}
+        />
+        {!(loading && viewMode === 'incoming') && (
+          <div className="flex-1 h-full pb-4">
+            {viewMode === 'incoming' ? (
+              <div
+                className={`grid gap-4 h-full ${roleFilter === 'All' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'}`}
+              >
+                {(roleFilter === 'All' || roleFilter === Role.TANK) && (
+                  <RoleSection
+                    role={Role.TANK}
+                    title="Tank Busters"
+                    colorClass="text-blue-400"
+                    expanded={roleFilter === Role.TANK}
+                  />
+                )}
+                {(roleFilter === 'All' || roleFilter === Role.MELEE) && (
+                  <RoleSection
+                    role={Role.MELEE}
+                    title="Melee Mechanics"
+                    colorClass="text-red-400"
+                    expanded={roleFilter === Role.MELEE}
+                  />
+                )}
+                {(roleFilter === 'All' || roleFilter === Role.RANGED) && (
+                  <RoleSection
+                    role={Role.RANGED}
+                    title="Ranged/Caster"
+                    colorClass="text-purple-400"
+                    expanded={roleFilter === Role.RANGED}
+                  />
+                )}
+                {(roleFilter === 'All' || roleFilter === Role.HEALER) && (
+                  <RoleSection
+                    role={Role.HEALER}
+                    title="Healer Checks"
+                    colorClass="text-green-400"
+                    expanded={roleFilter === Role.HEALER}
+                  />
+                )}
+              </div>
+            ) : (
+              <OutgoingSection />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

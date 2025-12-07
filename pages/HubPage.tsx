@@ -36,6 +36,16 @@ const TOOLS: ToolCard[] = [
     color: '#F97316',
     features: ['Combat Log Parsing', 'AI Strategy', 'Timeline View', 'Practice Mode'],
   },
+  {
+    id: 'guild-manager',
+    title: 'Guild Manager',
+    description:
+      'Manage guild applications, roster, calendar events, and analyze player performance with AI.',
+    icon: '🏰',
+    path: '/guild-manager',
+    color: '#8B5CF6',
+    features: ['Applications', 'Roster', 'Calendar', 'Performance Analyzer'],
+  },
 ];
 
 export const HubPage: React.FC = () => {
@@ -114,7 +124,7 @@ export const HubPage: React.FC = () => {
           </div>
 
           {/* Tool Cards Grid */}
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {TOOLS.map((tool) => (
               <Link
                 key={tool.id}

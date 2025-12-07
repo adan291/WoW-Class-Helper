@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { LogSummary } from '../types';
 import { generateStrategy } from '../services/geminiService';
-import { LoadingOverlay } from '../../../components/LoadingSpinner';
+import { LoadingOverlayEnhanced } from '../../../components/LoadingOverlayEnhanced';
 
 interface Props {
   data: LogSummary;
@@ -96,14 +96,14 @@ const StrategyTab: React.FC<Props> = ({ data }) => {
       </div>
 
       <div className="flex-1 bg-gray-900 border border-gray-700 rounded-xl p-8 overflow-y-auto relative min-h-[400px]">
-        {loading ? (
-          <LoadingOverlay
-            size="xl"
-            variant="arcane"
-            message="Analyzing combat patterns..."
-            subMessage="Identifying phases and mechanics"
-          />
-        ) : (
+        <LoadingOverlayEnhanced
+          isVisible={loading}
+          message="Analyzing combat patterns..."
+          subMessage="Identifying phases and mechanics"
+          variant="arcane"
+          fullScreen={false}
+        />
+        {!loading && (
           <div
             className={`max-w-4xl mx-auto transition-opacity duration-300 ${isRegenerating ? 'opacity-30 blur-[1px]' : 'opacity-100'}`}
           >
@@ -123,9 +123,13 @@ const StrategyTab: React.FC<Props> = ({ data }) => {
           </div>
         )}
 
-        {isRegenerating && !loading && (
-          <LoadingOverlay size="md" variant="arcane" message="Refining Strategy..." />
-        )}
+        <LoadingOverlayEnhanced
+          isVisible={isRegenerating && !loading}
+          message="Refining Strategy..."
+          subMessage="Optimizing recommendations"
+          variant="arcane"
+          fullScreen={false}
+        />
       </div>
     </div>
   );

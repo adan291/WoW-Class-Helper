@@ -8,6 +8,7 @@ import MiniGameTab from './components/MiniGameTab';
 import { LogSummary } from './types';
 import { useAuth } from '../../hooks/useAuth';
 import { CanAccess } from '../../components/CanAccess';
+import '../../styles/animations.css';
 
 enum Tab {
   UPLOAD = 'Upload',

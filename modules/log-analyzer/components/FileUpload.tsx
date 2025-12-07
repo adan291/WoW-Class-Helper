@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { LogSummary } from '../types';
 import { parseLogFile, generateMockLog } from '../services/logParser';
-import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { LoadingOverlayEnhanced } from '../../../components/LoadingOverlayEnhanced';
 
 interface FileUploadProps {
   onDataLoaded: (data: LogSummary) => void;
@@ -54,8 +54,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
         </p>
 
         <div
-          className="border-2 border-dashed border-gray-700 hover:border-yellow-500 transition-colors rounded-lg p-12 cursor-pointer bg-gray-800"
-          onClick={() => fileInputRef.current?.click()}
+          className="relative border-2 border-dashed border-gray-700 hover:border-yellow-500 transition-colors rounded-lg p-12 cursor-pointer bg-gray-800 min-h-[200px]"
+          onClick={() => !loading && fileInputRef.current?.click()}
         >
           <input
             type="file"
@@ -64,9 +64,14 @@ const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
             className="hidden"
             accept=".txt,.log"
           />
-          {loading ? (
-            <LoadingSpinner size="md" variant="default" message="Parsing arcane sigils..." />
-          ) : (
+          <LoadingOverlayEnhanced
+            isVisible={loading}
+            message="Parsing arcane sigils..."
+            subMessage="Decoding combat events"
+            variant="arcane"
+            fullScreen={false}
+          />
+          {!loading && (
             <div className="flex flex-col items-center">
               <svg
                 className="w-16 h-16 text-gray-500 mb-4"

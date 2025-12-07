@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { adminService, type AdminUser } from '../../services/adminService.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
 import type { UserRole } from '../../types.ts';
-import { LoadingSpinner } from '../../components/LoadingSpinner.tsx';
+import { LoadingOverlayEnhanced } from '../../components/LoadingOverlayEnhanced.tsx';
 
 export const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -126,102 +126,109 @@ export const AdminUsers: React.FC = () => {
         </button>
       </div>
 
-      {loading ? (
-        <div role="status" aria-live="polite">
-          <LoadingSpinner size="lg" variant="default" message="Loading users..." />
-        </div>
-      ) : users.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No users found</div>
-      ) : (
-        <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
-          <table className="w-full" role="table" aria-label="User management table">
-            <thead className="bg-gray-800">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Email
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Role
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Created
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-800">
-              {users.map((u) => {
-                const isActionLoading = actionLoading === u.id;
-                return (
-                  <tr key={u.id} className="hover:bg-gray-800/50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{u.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={u.role}
-                        onChange={(e) => handleRoleChange(u.id, e.target.value as UserRole)}
-                        disabled={isActionLoading}
-                        className="bg-gray-700 border border-gray-600 text-white text-sm rounded px-2 py-1 disabled:opacity-50"
-                        aria-label={`Change role for ${u.email}`}
-                      >
-                        <option value="user">User</option>
-                        <option value="master">Master</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded ${
-                          u.banned ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'
-                        }`}
-                        aria-label={u.banned ? 'User is banned' : 'User is active'}
-                      >
-                        {u.banned ? 'Banned' : 'Active'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {new Date(u.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button
-                        onClick={() => handleBanToggle(u.id, u.banned)}
-                        disabled={isActionLoading}
-                        className={`px-3 py-1 rounded font-medium transition-colors disabled:opacity-50 ${
-                          u.banned
-                            ? 'bg-green-600 hover:bg-green-700 text-white'
-                            : 'bg-red-600 hover:bg-red-700 text-white'
-                        }`}
-                        aria-label={u.banned ? `Unban ${u.email}` : `Ban ${u.email}`}
-                      >
-                        {isActionLoading ? '...' : u.banned ? 'Unban' : 'Ban'}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="relative min-h-[200px]">
+        <LoadingOverlayEnhanced
+          isVisible={loading}
+          message="Loading users..."
+          subMessage="Fetching user data"
+          variant="gold"
+          fullScreen={false}
+        />
+        {!loading && users.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">No users found</div>
+        ) : (
+          <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+            <table className="w-full" role="table" aria-label="User management table">
+              <thead className="bg-gray-800">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                  >
+                    Email
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                  >
+                    Role
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                  >
+                    Created
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {users.map((u) => {
+                  const isActionLoading = actionLoading === u.id;
+                  return (
+                    <tr key={u.id} className="hover:bg-gray-800/50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {u.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <select
+                          value={u.role}
+                          onChange={(e) => handleRoleChange(u.id, e.target.value as UserRole)}
+                          disabled={isActionLoading}
+                          className="bg-gray-700 border border-gray-600 text-white text-sm rounded px-2 py-1 disabled:opacity-50"
+                          aria-label={`Change role for ${u.email}`}
+                        >
+                          <option value="user">User</option>
+                          <option value="master">Master</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded ${
+                            u.banned ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'
+                          }`}
+                          aria-label={u.banned ? 'User is banned' : 'User is active'}
+                        >
+                          {u.banned ? 'Banned' : 'Active'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        {new Date(u.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <button
+                          onClick={() => handleBanToggle(u.id, u.banned)}
+                          disabled={isActionLoading}
+                          className={`px-3 py-1 rounded font-medium transition-colors disabled:opacity-50 ${
+                            u.banned
+                              ? 'bg-green-600 hover:bg-green-700 text-white'
+                              : 'bg-red-600 hover:bg-red-700 text-white'
+                          }`}
+                          aria-label={u.banned ? `Unban ${u.email}` : `Ban ${u.email}`}
+                        >
+                          {isActionLoading ? '...' : u.banned ? 'Unban' : 'Ban'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -20,6 +20,7 @@ import { SkipLink } from './components/SkipLink';
 // Lazy load modules for better performance
 const ClassHelperApp = lazy(() => import('./modules/class-helper/ClassHelperApp'));
 const LogAnalyzerApp = lazy(() => import('./modules/log-analyzer/LogAnalyzerApp'));
+const GuildManagerApp = lazy(() => import('./modules/guild-manager/GuildManagerApp'));
 
 // Loading component for lazy loaded modules
 const ModuleLoader = () => (
@@ -73,6 +74,16 @@ export const AppRouter: React.FC = () => {
                 element={
                   <ProtectedRoute requireAuth={false}>
                     <LogAnalyzerApp />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Guild Manager Module (Ethernal) */}
+              <Route
+                path="/guild-manager/*"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <GuildManagerApp />
                   </ProtectedRoute>
                 }
               />
