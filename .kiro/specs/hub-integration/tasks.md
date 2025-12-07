@@ -19,8 +19,8 @@
 ## Phase 2: Configure Routing
 
 - [x] 2. Add Guild Manager route to AppRouter
-  - [x] 2.1 Add lazy import for Ethernal App
-    - Import from './Ethernal/App' with React.lazy
+  - [x] 2.1 Add lazy import for Guild Manager App
+    - Import from './modules/guild-manager/GuildManagerApp' with React.lazy
     - _Requirements: 2.2, 3.2_
   - [x] 2.2 Add /guild-manager route
     - Create Route with path="/guild-manager"
@@ -31,10 +31,10 @@
     - **Property 3: Tool Card Navigation Accuracy**
     - **Validates: Requirements 1.4, 2.1**
 
-## Phase 3: Add Hub Navigation to Ethernal
+## Phase 3: Add Hub Navigation to Guild Manager
 
-- [x] 3. Update Ethernal App with Hub link
-  - [x] 3.1 Add Hub link to Ethernal header
+- [x] 3. Update Guild Manager App with Hub link
+  - [x] 3.1 Add Hub link to Guild Manager header
     - Add Link component to "/" in the header navigation
     - Style consistently with existing navigation
     - _Requirements: 4.1, 4.2_

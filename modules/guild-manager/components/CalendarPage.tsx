@@ -108,17 +108,13 @@ export default function CalendarPage() {
   }, [year, month, daysInMonth, firstDayOfMonth]);
 
   const monthEvents = useMemo(() => {
-    return (
-      context?.events.filter((e) => {
-        const d = new Date(e.date);
-        return (
-          d.getMonth() === month &&
-          d.getFullYear() === year &&
-          e.guildId === context.authenticatedUser?.guildId
-        );
-      }) || []
-    );
-  }, [context?.events, month, year, context?.authenticatedUser]);
+    if (!context) return [];
+    const guildId = context.authenticatedUser?.guildId;
+    return context.events.filter((e) => {
+      const d = new Date(e.date);
+      return d.getMonth() === month && d.getFullYear() === year && e.guildId === guildId;
+    });
+  }, [context, month, year]);
 
   const canEdit =
     context?.authenticatedUser?.role === UserRole.ADMIN ||

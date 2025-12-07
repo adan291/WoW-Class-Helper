@@ -168,6 +168,11 @@ export default function ApplyPage() {
   ]);
 
   const validate = useCallback(() => {
+    return Object.keys(formErrors).length === 0;
+  }, [formErrors]);
+
+  // Validation runs on form data change via useMemo pattern
+  const validationErrors = React.useMemo(() => {
     const errors: Record<string, string> = {};
     if (!formData.guildId) errors.guildId = t('validation_guild');
     if (!formData.playerName) errors.playerName = t('validation_playerName');
@@ -183,13 +188,13 @@ export default function ApplyPage() {
       if (!formData.customAnswers[q.id]?.trim())
         errors[`custom_${q.id}`] = t('validation_custom_required');
     });
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   }, [formData, t, customQuestions]);
 
+  // Sync validation errors to state when they change
   useEffect(() => {
-    validate();
-  }, [formData, validate]);
+    setFormErrors(validationErrors);
+  }, [validationErrors]);
 
   const handleBlur = (
     e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -197,11 +202,15 @@ export default function ApplyPage() {
     setTouched((prev) => ({ ...prev, [e.target.id]: true }));
   };
 
+  const markTouched = (fieldId: string) => {
+    setTouched((prev) => ({ ...prev, [fieldId]: true }));
+  };
+
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedClass = WOW_CLASSES.find((c) => c.name === e.target.value);
     setFormData({ ...formData, wowClass: e.target.value, wowSpec: '' });
     setSpecs(selectedClass ? selectedClass.specs : []);
-    handleBlur(e);
+    markTouched(e.target.id);
   };
 
   const handleMultiSelectChange = (
@@ -224,7 +233,7 @@ export default function ApplyPage() {
     setCustomQuestions(selectedGuild?.customQuestions || []);
     setRaidOptions(selectedGuild?.raidExperiences || DEFAULT_RAID_EXPERIENCES);
     setAvailabilityOptions(selectedGuild?.availabilitySlots || DEFAULT_AVAILABILITY_SLOTS);
-    handleBlur(e);
+    markTouched(e.target.id);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
