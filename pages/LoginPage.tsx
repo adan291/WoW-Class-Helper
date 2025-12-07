@@ -28,7 +28,7 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-md">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-gray-300 hover:text-yellow-400 transition-colors mb-6 font-medium"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -43,7 +43,7 @@ export const LoginPage: React.FC = () => {
           <div className="text-center mb-8">
             <Link to="/" className="inline-block">
               <div className="flex justify-center mb-4 group cursor-pointer">
-                <WowIcon className="h-16 w-16 text-yellow-400 transition-transform duration-300 group-hover:scale-110" />
+                <WowIcon className="h-16 w-16 text-yellow-400 transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_10px_rgba(255,215,0,0.4)]" />
               </div>
             </Link>
             <Link to="/">
@@ -51,49 +51,49 @@ export const LoginPage: React.FC = () => {
                 className="text-4xl font-black tracking-wider uppercase cursor-pointer hover:text-yellow-300 transition-colors"
                 style={{
                   color: '#FFD700',
-                  textShadow: '0 0 10px #FFD70040, 0 2px 4px rgba(0,0,0,0.5)',
+                  textShadow: '0 0 15px #FFD70050, 0 2px 4px rgba(0,0,0,0.5)',
                 }}
               >
-                WoW AI Class Helper
+                WoW AI Hub
               </h1>
             </Link>
-            <p className="text-gray-400 mt-2">Your ultimate WoW companion</p>
+            <p className="text-gray-300 mt-2 font-medium">Your ultimate WoW companion</p>
           </div>
 
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-2xl border border-yellow-500/20 overflow-hidden">
+          <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-yellow-500/30 overflow-hidden">
             <div className="flex border-b border-gray-700">
               <button
                 onClick={() => setActiveTab('login')}
-                className={`flex-1 py-3 px-4 font-semibold transition-colors ${
+                className={`flex-1 py-4 px-4 font-bold text-lg transition-all duration-200 ${
                   activeTab === 'login'
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-750'
+                    ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
                 }`}
               >
                 Sign In
               </button>
               <button
                 onClick={() => setActiveTab('register')}
-                className={`flex-1 py-3 px-4 font-semibold transition-colors ${
+                className={`flex-1 py-4 px-4 font-bold text-lg transition-all duration-200 ${
                   activeTab === 'register'
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-750'
+                    ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
                 }`}
               >
                 Sign Up
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-8">
               {activeTab === 'login' && <LoginForm />}
               {activeTab === 'register' && <RegisterForm />}
               {activeTab === 'reset' && <PasswordResetForm />}
 
               {activeTab === 'login' && (
-                <div className="mt-4 text-center">
+                <div className="mt-6 text-center">
                   <button
                     onClick={() => setActiveTab('reset')}
-                    className="text-sm text-yellow-500 hover:text-yellow-400 transition-colors"
+                    className="text-sm text-yellow-400 hover:text-yellow-300 transition-colors font-medium underline underline-offset-2"
                   >
                     Forgot password?
                   </button>
@@ -101,12 +101,12 @@ export const LoginPage: React.FC = () => {
               )}
 
               {activeTab === 'reset' && (
-                <div className="mt-4 text-center">
+                <div className="mt-6 text-center">
                   <button
                     onClick={() => setActiveTab('login')}
-                    className="text-sm text-yellow-500 hover:text-yellow-400 transition-colors"
+                    className="text-sm text-yellow-400 hover:text-yellow-300 transition-colors font-medium underline underline-offset-2"
                   >
-                    Back to login
+                    ← Back to login
                   </button>
                 </div>
               )}

@@ -173,30 +173,30 @@ export const UserProfilePage: React.FC = () => {
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setActiveTab('guides')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 ${
                 activeTab === 'guides'
-                  ? 'bg-yellow-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black shadow-[0_4px_14px_rgba(255,215,0,0.3)]'
+                  : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white border border-gray-600'
               }`}
             >
               📝 My Guides ({guides.length})
             </button>
             <button
               onClick={() => setActiveTab('favorites')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 ${
                 activeTab === 'favorites'
-                  ? 'bg-yellow-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black shadow-[0_4px_14px_rgba(255,215,0,0.3)]'
+                  : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white border border-gray-600'
               }`}
             >
               ⭐ Favorites ({favorites.length})
             </button>
             <button
               onClick={() => setActiveTab('activity')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 ${
                 activeTab === 'activity'
-                  ? 'bg-yellow-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black shadow-[0_4px_14px_rgba(255,215,0,0.3)]'
+                  : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white border border-gray-600'
               }`}
             >
               📊 Activity
@@ -211,22 +211,31 @@ export const UserProfilePage: React.FC = () => {
               {activeTab === 'guides' && (
                 <div className="space-y-4">
                   {guides.length === 0 ? (
-                    <p className="text-gray-400 text-center py-8">No guides saved yet</p>
+                    <div className="text-center py-12">
+                      <span className="text-4xl mb-4 block">📝</span>
+                      <p className="text-gray-300 text-lg">No guides saved yet</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Your saved guides will appear here
+                      </p>
+                    </div>
                   ) : (
                     guides.map((guide) => (
-                      <div key={guide.id} className="bg-gray-800 rounded-lg p-4">
+                      <div
+                        key={guide.id}
+                        className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="text-lg font-bold text-white">
+                            <h3 className="text-lg font-bold text-yellow-400">
                               {guide.class_id} - {guide.spec_id}
                             </h3>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm text-gray-300">
                               {new Date(guide.created_at).toLocaleString()}
                             </p>
                           </div>
                           <button
                             onClick={() => handleDeleteGuide(guide.id)}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                            className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all duration-200 hover:scale-105"
                           >
                             Delete
                           </button>
@@ -240,15 +249,24 @@ export const UserProfilePage: React.FC = () => {
               {activeTab === 'favorites' && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {favorites.length === 0 ? (
-                    <p className="text-gray-400 text-center py-8 col-span-full">No favorites yet</p>
+                    <div className="text-center py-12 col-span-full">
+                      <span className="text-4xl mb-4 block">⭐</span>
+                      <p className="text-gray-300 text-lg">No favorites yet</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Star your favorite classes to see them here
+                      </p>
+                    </div>
                   ) : (
                     favorites.map((fav) => (
-                      <div key={fav.id} className="bg-gray-800 rounded-lg p-4">
+                      <div
+                        key={fav.id}
+                        className="bg-gray-800/80 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors"
+                      >
                         <div className="flex justify-between items-center">
-                          <span className="text-white font-semibold">{fav.class_id}</span>
+                          <span className="text-yellow-400 font-bold">{fav.class_id}</span>
                           <button
                             onClick={() => handleRemoveFavorite(fav.class_id)}
-                            className="text-red-500 hover:text-red-400"
+                            className="text-red-400 hover:text-red-300 hover:scale-110 transition-all"
                           >
                             ✕
                           </button>
@@ -262,11 +280,22 @@ export const UserProfilePage: React.FC = () => {
               {activeTab === 'activity' && (
                 <div className="space-y-2">
                   {auditLogs.length === 0 ? (
-                    <p className="text-gray-400 text-center py-8">No activity yet</p>
+                    <div className="text-center py-12">
+                      <span className="text-4xl mb-4 block">📊</span>
+                      <p className="text-gray-300 text-lg">No activity yet</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Your recent activity will appear here
+                      </p>
+                    </div>
                   ) : (
                     auditLogs.map((log) => (
-                      <div key={log.id} className="bg-gray-800 rounded-lg p-3 flex justify-between">
-                        <span className="text-white">{log.action.replace('_', ' ')}</span>
+                      <div
+                        key={log.id}
+                        className="bg-gray-800/80 rounded-lg p-3 flex justify-between items-center border border-gray-700"
+                      >
+                        <span className="text-gray-200 font-medium capitalize">
+                          {log.action.replace('_', ' ')}
+                        </span>
                         <span className="text-gray-400 text-sm">
                           {new Date(log.timestamp).toLocaleString()}
                         </span>
