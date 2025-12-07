@@ -9,7 +9,9 @@ import {
 } from '../types';
 
 const getAI = () => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Log Analyzer usa su propia API key, con fallback a la general
+  const apiKey =
+    import.meta.env.VITE_GEMINI_API_KEY_LOG_ANALYZER || import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) return null;
   return new GoogleGenAI({ apiKey });
 };

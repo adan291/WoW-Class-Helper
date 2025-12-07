@@ -26,9 +26,11 @@ export async function analyzeLog(
   logData: string,
   language: 'en' | 'es'
 ): Promise<AnalysisResult> {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Guild Manager usa su propia API key, con fallback a la general
+  const apiKey =
+    import.meta.env.VITE_GEMINI_API_KEY_GUILD_MANAGER || import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY not configured');
+    throw new Error('VITE_GEMINI_API_KEY_GUILD_MANAGER not configured');
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -61,7 +63,10 @@ export async function analyzeLog(
               properties: {
                 averageDps: { type: Type.INTEGER, description: 'Average DPS' },
                 peakDps: { type: Type.INTEGER, description: 'Peak DPS' },
-                primaryAbilityUptimePercent: { type: Type.INTEGER, description: 'Uptime percentage' },
+                primaryAbilityUptimePercent: {
+                  type: Type.INTEGER,
+                  description: 'Uptime percentage',
+                },
                 primaryAbilityName: { type: Type.STRING, description: 'Key ability name' },
               },
             },

@@ -3,7 +3,9 @@ import type { GeminiReadyContext } from './classOrchestratorService.ts';
 import { validateSourceUrls, validateApiResponse } from './validationService.ts';
 import { toastService } from './toastService.ts';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+// Class Helper usa su propia API key, con fallback a la general
+const apiKey =
+  import.meta.env.VITE_GEMINI_API_KEY_CLASS_HELPER || import.meta.env.VITE_GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey });
 
 const MAX_RETRIES = 3;
