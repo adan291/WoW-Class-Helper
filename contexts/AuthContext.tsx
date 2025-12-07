@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await auditService.log(session.user.id, 'login', 'auth');
           // Clean up OAuth hash from URL and redirect to home
           if (window.location.hash.includes('access_token')) {
-            window.history.replaceState(null, '', '/');
+            window.location.replace('/');
           }
         }
       } else {

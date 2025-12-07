@@ -16,6 +16,7 @@ import { ToastContainer } from './components/ToastContainer';
 import { FallbackStatusBar } from './components/FallbackStatusBar';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { SkipLink } from './components/SkipLink';
+import { FloatingNav } from './components/FloatingNav';
 
 // Lazy load modules for better performance
 const ClassHelperApp = lazy(() => import('./modules/class-helper/ClassHelperApp'));
@@ -118,6 +119,7 @@ export const AppRouter: React.FC = () => {
             </Routes>
           </Suspense>
 
+          <FloatingNav />
           <ToastContainer />
         </ErrorBoundary>
       </AppProviders>
