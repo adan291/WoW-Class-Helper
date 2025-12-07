@@ -1,5 +1,22 @@
-
 import React from 'react';
+
 export const DruidIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}><path d="M32 3a29 29 0 1 0 0 58 29 29 0 0 0 0-58zm0 54a25 25 0 1 1 0-50 25 25 0 0 1 0 50z" fill="currentColor"/><path d="M42 22a10 10 0 0 0-20 0v20a10 10 0 1 0 20 0V22z" fill="currentColor"/></svg>
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}>
+    {/* Tree trunk */}
+    <rect x="28" y="28" width="8" height="28" fill="#8b4513" stroke="#5c2d0f" strokeWidth="0.5" />
+    {/* Tree foliage - top */}
+    <circle cx="32" cy="18" r="10" fill="#228b22" stroke="#1a6b1a" strokeWidth="1" />
+    {/* Tree foliage - sides */}
+    <circle cx="20" cy="26" r="8" fill="#228b22" stroke="#1a6b1a" strokeWidth="1" opacity="0.8" />
+    <circle cx="44" cy="26" r="8" fill="#228b22" stroke="#1a6b1a" strokeWidth="1" opacity="0.8" />
+    {/* Roots */}
+    <path
+      d="M26 56 Q20 60 18 62 M32 56 L32 62 M38 56 Q44 60 46 62"
+      stroke="#8b4513"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    {/* Nature aura */}
+    <circle cx="32" cy="32" r="14" fill="none" stroke="#228b22" strokeWidth="1" opacity="0.6" />
+  </svg>
 );

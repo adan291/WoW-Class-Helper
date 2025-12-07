@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Code Quality Analyzer",
+  "description": "Analyzes modified source code files for potential improvements including code smells, design patterns, and best practices. Generates suggestions for improving code quality while maintaining existing functionality, focusing on readability, maintainability, and performance optimizations.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.tsx",
+      "**/*.ts",
+      "!node_modules/**",
+      "!dist/**"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the modified source code file for code quality improvements. Review for:\n\n1. **Code Smells**: Identify any code smells such as duplicate code, long functions, complex conditionals, or unclear naming\n2. **Design Patterns**: Suggest appropriate design patterns that could improve the code structure\n3. **Best Practices**: Check adherence to TypeScript, React, and project standards from project-standards.md\n4. **Readability**: Suggest improvements for code clarity and understandability\n5. **Maintainability**: Identify areas that could be refactored for easier maintenance\n6. **Performance**: Suggest performance optimizations including memoization, lazy loading, or efficient re-renders\n\nProvide specific, actionable suggestions with code examples where applicable. Maintain the existing functionality while improving quality. Format your response with clear sections for each category and prioritize suggestions by impact."
+  }
+}

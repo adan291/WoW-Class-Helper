@@ -1,0 +1,14 @@
+export { WarriorIcon } from './WarriorIcon';
+export { MageIcon } from './MageIcon';
+export { WarlockIcon } from './WarlockIcon';
+export { PaladinIcon } from './PaladinIcon';
+export { DeathKnightIcon } from './DeathKnightIcon';
+export { HunterIcon } from './HunterIcon';
+export { RogueIcon } from './RogueIcon';
+export { PriestIcon } from './PriestIcon';
+export { DruidIcon } from './DruidIcon';
+export { ShamanIcon } from './ShamanIcon';
+export { MonkIcon } from './MonkIcon';
+export { DemonHunterIcon } from './DemonHunterIcon';
+export { EvokerIcon } from './EvokerIcon';
+export { WowIcon } from './WowIcon';
