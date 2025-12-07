@@ -115,7 +115,10 @@ export async function analyzeLog(
       },
     });
 
-    const jsonText = response.text.trim();
+    const jsonText = response.text?.trim() || '';
+    if (!jsonText) {
+      throw new Error('Empty response from API');
+    }
     return JSON.parse(jsonText) as AnalysisResult;
   } catch (error) {
     console.error('Error calling Gemini API:', error);

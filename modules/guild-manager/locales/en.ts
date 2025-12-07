@@ -32,7 +32,8 @@ export const en = {
   apply_submit: 'Submit Application',
   apply_submit_edit: 'Update Application',
   apply_portal_header: 'Portal Opened',
-  apply_portal_text: 'Your application has been sent through the Twisting Nether. We will review it soon!',
+  apply_portal_text:
+    'Your application has been sent through the Twisting Nether. We will review it soon!',
   apply_custom_questions_header: 'Guild Specific Questions',
   apply_update_success: 'Application updated successfully!',
   validation_guild: 'You must select a guild.',
@@ -91,7 +92,8 @@ export const en = {
   guild_view_roster: 'View Roster',
   guild_view_perks: 'Guild Perks',
   guild_no_guild_header: 'You are Guildless',
-  guild_no_guild_text: 'The world of Azeroth is dangerous alone. Find a community to conquer the challenges ahead.',
+  guild_no_guild_text:
+    'The world of Azeroth is dangerous alone. Find a community to conquer the challenges ahead.',
   guild_apply_now: 'Apply for a Guild',
   guild_announcements_title: 'Guild Announcements',
   guild_discord_connect: 'Connect Discord',

@@ -18,14 +18,18 @@ const variantStyles = {
 };
 
 // Animated dot component with state-based animation
-const AnimatedDot: React.FC<{ color: string; glow: string; delay: number }> = ({ color, glow, delay }) => {
+const AnimatedDot: React.FC<{ color: string; glow: string; delay: number }> = ({
+  color,
+  glow,
+  delay,
+}) => {
   const [scale, setScale] = useState(0.5);
   const [opacity, setOpacity] = useState(0.3);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setScale(prev => prev === 0.5 ? 1.2 : 0.5);
-      setOpacity(prev => prev === 0.3 ? 1 : 0.3);
+      setScale((prev) => (prev === 0.5 ? 1.2 : 0.5));
+      setOpacity((prev) => (prev === 0.3 ? 1 : 0.3));
     }, 400);
 
     const timeout = setTimeout(() => {
@@ -55,14 +59,16 @@ const AnimatedDot: React.FC<{ color: string; glow: string; delay: number }> = ({
 };
 
 // Rotating element with state-based animation
-const RotatingRing: React.FC<{ children: React.ReactNode; duration: number; reverse?: boolean }> = ({
-  children, duration, reverse = false
-}) => {
+const RotatingRing: React.FC<{
+  children: React.ReactNode;
+  duration: number;
+  reverse?: boolean;
+}> = ({ children, duration, reverse = false }) => {
   const [rotation, setRotation] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setRotation(prev => (prev + (reverse ? -6 : 6)) % 360);
+      setRotation((prev) => (prev + (reverse ? -6 : 6)) % 360);
     }, duration / 60);
 
     return () => clearInterval(interval);
@@ -93,8 +99,8 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
   useEffect(() => {
     if (!isVisible) return;
     const interval = setInterval(() => {
-      setPulseScale(prev => prev === 1 ? 1.15 : 1);
-      setGlowOpacity(prev => prev === 0.5 ? 0.9 : 0.5);
+      setPulseScale((prev) => (prev === 1 ? 1.15 : 1));
+      setGlowOpacity((prev) => (prev === 0.5 ? 0.9 : 0.5));
     }, 800);
     return () => clearInterval(interval);
   }, [isVisible]);
@@ -103,7 +109,7 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
   useEffect(() => {
     if (!isVisible) return;
     const interval = setInterval(() => {
-      setBounceY(prev => prev === 0 ? -10 : 0);
+      setBounceY((prev) => (prev === 0 ? -10 : 0));
     }, 600);
     return () => clearInterval(interval);
   }, [isVisible]);
@@ -125,12 +131,12 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
           opacity = 0.8;
         }
 
-        setWaveScale(prev => {
+        setWaveScale((prev) => {
           const newArr = [...prev];
           newArr[index] = scale;
           return newArr;
         });
-        setWaveOpacity(prev => {
+        setWaveOpacity((prev) => {
           const newArr = [...prev];
           newArr[index] = Math.max(0, opacity);
           return newArr;
@@ -195,8 +201,16 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
       ))}
 
       {/* Main content */}
-      <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '32px' }}>
-
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '32px',
+        }}
+      >
         {/* Spinner container */}
         <div style={{ position: 'relative' }}>
           {/* Pulsing glow */}
@@ -223,9 +237,18 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
                     <stop offset="100%" stopColor={styles.secondary} />
                   </linearGradient>
                 </defs>
-                <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" />
                 <circle
-                  cx="50" cy="50" r="44"
+                  cx="50"
+                  cy="50"
+                  r="44"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth="3"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="44"
                   fill="none"
                   stroke={`url(#grad-${variant})`}
                   strokeWidth="5"
@@ -241,7 +264,9 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
               <RotatingRing duration={3000} reverse>
                 <svg width="100" height="100" viewBox="0 0 100 100">
                   <circle
-                    cx="50" cy="50" r="28"
+                    cx="50"
+                    cy="50"
+                    r="28"
                     fill="none"
                     stroke={styles.primary}
                     strokeWidth="2"
@@ -322,7 +347,15 @@ export const LoadingOverlayEnhanced: React.FC<LoadingOverlayEnhancedProps> = ({
           </div>
 
           {subMessage && (
-            <p style={{ color: '#e5e7eb', fontSize: '0.9rem', maxWidth: '300px', margin: '20px auto 0', lineHeight: '1.6' }}>
+            <p
+              style={{
+                color: '#e5e7eb',
+                fontSize: '0.9rem',
+                maxWidth: '300px',
+                margin: '20px auto 0',
+                lineHeight: '1.6',
+              }}
+            >
               {subMessage}
             </p>
           )}

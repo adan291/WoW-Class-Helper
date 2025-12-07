@@ -175,18 +175,6 @@ export const HubPage: React.FC = () => {
                       </span>
                     ))}
                   </div>
-
-                  {/* Arrow */}
-                  <div className="absolute bottom-8 right-8 text-gray-600 group-hover:text-yellow-400 transition-colors">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
-                  </div>
                 </div>
               </Link>
             ))}

@@ -104,6 +104,14 @@ const NotesModal: React.FC<{ member: GuildMember; onClose: () => void }> = ({
   );
 };
 
+// Rank order constant - defined outside component to avoid recreation
+const RANK_ORDER: { [key in GuildMember['rank']]: number } = {
+  'Guild Master': 0,
+  Officer: 1,
+  Raider: 2,
+  Member: 3,
+};
+
 export default function RosterPage() {
   const { t } = useLanguage();
   const context = useContext(AppContext);
@@ -113,13 +121,6 @@ export default function RosterPage() {
     direction: 'asc' | 'desc';
   }>({ key: 'rank', direction: 'asc' });
   const [notesModalMember, setNotesModalMember] = useState<GuildMember | null>(null);
-
-  const rankOrder: { [key in GuildMember['rank']]: number } = {
-    'Guild Master': 0,
-    Officer: 1,
-    Raider: 2,
-    Member: 3,
-  };
 
   const filteredAndSortedRoster = useMemo(() => {
     let members = [...(context?.roster || [])];
@@ -132,8 +133,8 @@ export default function RosterPage() {
       let aValue: string | number;
       let bValue: string | number;
       if (sortConfig.key === 'rank') {
-        aValue = rankOrder[a.rank];
-        bValue = rankOrder[b.rank];
+        aValue = RANK_ORDER[a.rank];
+        bValue = RANK_ORDER[b.rank];
       } else {
         aValue = a[sortConfig.key] as string;
         bValue = b[sortConfig.key] as string;

@@ -73,23 +73,19 @@ const generateContentWithGemini = async (
     if (sourceUrls && sourceUrls.trim() !== '') {
       const validation = validateSourceUrls(sourceUrls);
 
-      if (
-        validation &&
-        typeof validation === 'object' &&
-        'valid' in validation &&
-        !validation.valid
-      ) {
-        const errorMsg = (validation as any).errors?.join('\n') || 'Invalid URLs';
+      const urlValidation = validation as {
+        valid?: boolean;
+        errors?: string[];
+        urls?: string[];
+      } | null;
+
+      if (urlValidation && !urlValidation.valid) {
+        const errorMsg = urlValidation.errors?.join('\n') || 'Invalid URLs';
         throw new Error(`Invalid source URLs:\n${errorMsg}`);
       }
 
-      if (
-        validation &&
-        typeof validation === 'object' &&
-        'urls' in validation &&
-        (validation as any).urls?.length > 0
-      ) {
-        const urls = (validation as any).urls.map((url: string) => `- ${url}`).join('\n');
+      if (urlValidation?.urls && urlValidation.urls.length > 0) {
+        const urls = urlValidation.urls.map((url: string) => `- ${url}`).join('\n');
         finalPrompt = `IMPORTANT: Your primary task is to act as an expert World of Warcraft guide writer. You MUST use the information from the following web pages to construct your answer. If the information from these sources conflicts with your base knowledge, you MUST prioritize the information from the provided URLs. At the end of your response, you MUST cite the URLs you used under a "Sources:" heading.\n\nProvided URLs:\n${urls}\n\n---\n\nOriginal Request:\n${prompt}`;
       }
     }
@@ -113,14 +109,8 @@ const generateContentWithGemini = async (
     const text = content.text || '';
 
     // Validate response
-    const validation = validateApiResponse(text);
-    if (
-      validation &&
-      typeof validation === 'object' &&
-      'valid' in validation &&
-      !(validation as any).valid
-    ) {
-      console.warn('API response validation warnings:', (validation as any).warnings);
+    if (!validateApiResponse(text)) {
+      console.warn('API response validation failed');
     }
 
     return text;

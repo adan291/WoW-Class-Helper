@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useMemo } from 'react';
 import {
   Application,
   ApplicationStatus,
@@ -37,8 +37,18 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 // --- MOCK DATA ---
 const MOCK_ANNOUNCEMENTS: GuildAnnouncement[] = [
-  { id: 'a1', author: 'Sylvanas', content: 'Raid times for next week are shifted to 8 PM Server Time due to holidays.', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
-  { id: 'a2', author: 'Grommash', content: 'Mythic+ keys push tonight! Check Discord for groups.', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) },
+  {
+    id: 'a1',
+    author: 'Sylvanas',
+    content: 'Raid times for next week are shifted to 8 PM Server Time due to holidays.',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+  },
+  {
+    id: 'a2',
+    author: 'Grommash',
+    content: 'Mythic+ keys push tonight! Check Discord for groups.',
+    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+  },
 ];
 
 const MOCK_GUILDS: Guild[] = [
@@ -62,36 +72,139 @@ const MOCK_GUILDS: Guild[] = [
     announcements: MOCK_ANNOUNCEMENTS,
   },
   { id: 'g2', name: 'Crimson Vanguard', description: 'PvP focused guild.', customQuestions: [] },
-  { id: 'g3', name: 'Azure Concord', officerEmail: 'contact@azureconcord.org', customQuestions: [] },
+  {
+    id: 'g3',
+    name: 'Azure Concord',
+    officerEmail: 'contact@azureconcord.org',
+    customQuestions: [],
+  },
 ];
 
-
 const MOCK_EVENTS: GuildEvent[] = [
-  { id: 'e1', title: 'Main Raid - Farm', date: new Date(), type: 'Raid', description: 'Clearing heroic for alts/vault.', guildId: 'g1' },
-  { id: 'e2', title: 'Mythic Progression', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), type: 'Raid', description: 'Working on Tindral.', guildId: 'g1' },
-  { id: 'e3', title: 'RBGs Night', date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), type: 'PvP', description: 'Rating push.', guildId: 'g1' },
+  {
+    id: 'e1',
+    title: 'Main Raid - Farm',
+    date: new Date(),
+    type: 'Raid',
+    description: 'Clearing heroic for alts/vault.',
+    guildId: 'g1',
+  },
+  {
+    id: 'e2',
+    title: 'Mythic Progression',
+    date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    type: 'Raid',
+    description: 'Working on Tindral.',
+    guildId: 'g1',
+  },
+  {
+    id: 'e3',
+    title: 'RBGs Night',
+    date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+    type: 'PvP',
+    description: 'Rating push.',
+    guildId: 'g1',
+  },
 ];
 
 const MOCK_USERS_DB: AuthUser[] = [
-  { name: 'Sylvanas', email: 'sylvanas.w@horde.com', picture: 'https://i.pravatar.cc/150?u=sylvanas', role: UserRole.ADMIN, guildId: 'g1', guildName: 'Eternal Oath', discordId: 'Sylvanas#1234' },
-  { name: 'Grommash', email: 'grommash@horde.com', picture: 'https://i.pravatar.cc/150?u=grommash', role: UserRole.OFFICER, guildId: 'g1', guildName: 'Eternal Oath' },
-  { name: 'Anduin', email: 'anduin@alliance.com', picture: 'https://i.pravatar.cc/150?u=anduin', role: UserRole.MEMBER, guildId: 'g1', guildName: 'Eternal Oath' },
-  { name: 'New Player', email: 'newplayer@wow.com', picture: 'https://i.pravatar.cc/150?u=newplayer', role: UserRole.USER, guildId: null, guildName: '' },
+  {
+    name: 'Sylvanas',
+    email: 'sylvanas.w@horde.com',
+    picture: 'https://i.pravatar.cc/150?u=sylvanas',
+    role: UserRole.ADMIN,
+    guildId: 'g1',
+    guildName: 'Eternal Oath',
+    discordId: 'Sylvanas#1234',
+  },
+  {
+    name: 'Grommash',
+    email: 'grommash@horde.com',
+    picture: 'https://i.pravatar.cc/150?u=grommash',
+    role: UserRole.OFFICER,
+    guildId: 'g1',
+    guildName: 'Eternal Oath',
+  },
+  {
+    name: 'Anduin',
+    email: 'anduin@alliance.com',
+    picture: 'https://i.pravatar.cc/150?u=anduin',
+    role: UserRole.MEMBER,
+    guildId: 'g1',
+    guildName: 'Eternal Oath',
+  },
+  {
+    name: 'New Player',
+    email: 'newplayer@wow.com',
+    picture: 'https://i.pravatar.cc/150?u=newplayer',
+    role: UserRole.USER,
+    guildId: null,
+    guildName: '',
+  },
 ];
 
 const MOCK_ROSTER: GuildMember[] = [
-  { id: 'r1', name: 'Sylvanas', wowClass: 'Hunter', role: Role.DPS, rank: 'Guild Master', notes: 'Exceptional leadership and raid awareness.' },
+  {
+    id: 'r1',
+    name: 'Sylvanas',
+    wowClass: 'Hunter',
+    role: Role.DPS,
+    rank: 'Guild Master',
+    notes: 'Exceptional leadership and raid awareness.',
+  },
   { id: 'r2', name: 'Grommash', wowClass: 'Warrior', role: Role.DPS, rank: 'Officer', notes: '' },
-  { id: 'r3', name: 'Thrall', wowClass: 'Shaman', role: Role.DPS, rank: 'Officer', notes: 'Great at mechanics.' },
-  { id: 'r4', name: 'Anduin', wowClass: 'Priest', role: Role.HEALER, rank: 'Raider', notes: 'Excellent healing output.' },
+  {
+    id: 'r3',
+    name: 'Thrall',
+    wowClass: 'Shaman',
+    role: Role.DPS,
+    rank: 'Officer',
+    notes: 'Great at mechanics.',
+  },
+  {
+    id: 'r4',
+    name: 'Anduin',
+    wowClass: 'Priest',
+    role: Role.HEALER,
+    rank: 'Raider',
+    notes: 'Excellent healing output.',
+  },
   { id: 'r5', name: 'Bolvar', wowClass: 'Paladin', role: Role.TANK, rank: 'Raider', notes: '' },
   { id: 'r6', name: 'Varian', wowClass: 'Warrior', role: Role.TANK, rank: 'Raider', notes: '' },
-  { id: 'r7', name: 'Malfurion', wowClass: 'Druid', role: Role.HEALER, rank: 'Raider', notes: 'Always brings consumables.' },
+  {
+    id: 'r7',
+    name: 'Malfurion',
+    wowClass: 'Druid',
+    role: Role.HEALER,
+    rank: 'Raider',
+    notes: 'Always brings consumables.',
+  },
   { id: 'r8', name: 'Tyrande', wowClass: 'Hunter', role: Role.DPS, rank: 'Raider', notes: '' },
-  { id: 'r9', name: 'Illidan', wowClass: 'Demon Hunter', role: Role.DPS, rank: 'Member', notes: 'Attendance is spotty.' },
-  { id: 'r10', name: 'Arthas', wowClass: 'Death Knight', role: Role.TANK, rank: 'Member', notes: '' },
+  {
+    id: 'r9',
+    name: 'Illidan',
+    wowClass: 'Demon Hunter',
+    role: Role.DPS,
+    rank: 'Member',
+    notes: 'Attendance is spotty.',
+  },
+  {
+    id: 'r10',
+    name: 'Arthas',
+    wowClass: 'Death Knight',
+    role: Role.TANK,
+    rank: 'Member',
+    notes: '',
+  },
   { id: 'r11', name: 'Jaina', wowClass: 'Mage', role: Role.DPS, rank: 'Member', notes: '' },
-  { id: 'r12', name: 'Khadgar', wowClass: 'Mage', role: Role.DPS, rank: 'Member', notes: 'Loves dad jokes.' },
+  {
+    id: 'r12',
+    name: 'Khadgar',
+    wowClass: 'Mage',
+    role: Role.DPS,
+    rank: 'Member',
+    notes: 'Loves dad jokes.',
+  },
 ];
 
 const initialApplications: Application[] = [
@@ -111,7 +224,10 @@ const initialApplications: Application[] = [
     isNew: false,
     guildId: 'g1',
     guildName: 'Eternal Oath',
-    customAnswers: { q1: 'Cleared all of Shadowlands on mythic difficulty.', q2: 'Yes, fiber optic and a Blue Yeti.' },
+    customAnswers: {
+      q1: 'Cleared all of Shadowlands on mythic difficulty.',
+      q2: 'Yes, fiber optic and a Blue Yeti.',
+    },
   },
   {
     id: '2',
@@ -119,7 +235,10 @@ const initialApplications: Application[] = [
     wowClass: 'Mage',
     wowSpec: 'Frost',
     itemLevel: 490,
-    raidExperience: ["Amirdrassil, the Dream's Hope (Mythic)", 'Aberrus, the Shadowed Crucible (Mythic)'],
+    raidExperience: [
+      "Amirdrassil, the Dream's Hope (Mythic)",
+      'Aberrus, the Shadowed Crucible (Mythic)',
+    ],
     logsUrl: 'https://www.warcraftlogs.com/character/us/proudmoore/jaina',
     availability: ['Wednesday Evening', 'Sunday Evening'],
     role: Role.DPS,
@@ -133,21 +252,19 @@ const initialApplications: Application[] = [
   },
 ];
 
-
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [guilds, setGuilds] = useState<Guild[]>(MOCK_GUILDS);
   const [authenticatedUser, setAuthenticatedUser] = useState<AuthUser | null>(null);
-  const [notifications, setNotifications] = useState<Application[]>([]);
   const [roster, setRoster] = useState<GuildMember[]>(MOCK_ROSTER);
   const [events, setEvents] = useState<GuildEvent[]>(MOCK_EVENTS);
 
-  useEffect(() => {
+  // Compute notifications from applications - no need for separate state
+  const notifications = useMemo(() => {
     if (authenticatedUser && authenticatedUser.guildId) {
-      setNotifications(applications.filter((app) => app.isNew && app.guildId === authenticatedUser.guildId));
-    } else {
-      setNotifications([]);
+      return applications.filter((app) => app.isNew && app.guildId === authenticatedUser.guildId);
     }
+    return [];
   }, [applications, authenticatedUser]);
 
   const addApplication = (app: Omit<Application, 'id' | 'status' | 'submissionDate' | 'isNew'>) => {
@@ -194,7 +311,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const markNotificationsAsRead = () => {
     if (!authenticatedUser) return;
     setApplications((prev) =>
-      prev.map((app) => (app.isNew && app.guildId === authenticatedUser.guildId ? { ...app, isNew: false } : app))
+      prev.map((app) =>
+        app.isNew && app.guildId === authenticatedUser.guildId ? { ...app, isNew: false } : app
+      )
     );
   };
 
@@ -203,7 +322,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const updateMemberNotes = (memberId: string, notes: string) => {
-    setRoster((prev) => prev.map((member) => (member.id === memberId ? { ...member, notes } : member)));
+    setRoster((prev) =>
+      prev.map((member) => (member.id === memberId ? { ...member, notes } : member))
+    );
   };
 
   const addEvent = (event: Omit<GuildEvent, 'id'>) => {
@@ -219,7 +340,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!authenticatedUser) return;
     setTimeout(() => {
       setAuthenticatedUser((prev) =>
-        prev ? { ...prev, discordId: `${prev.name}#${Math.floor(1000 + Math.random() * 9000)}` } : null
+        prev
+          ? { ...prev, discordId: `${prev.name}#${Math.floor(1000 + Math.random() * 9000)}` }
+          : null
       );
     }, 1000);
   };
