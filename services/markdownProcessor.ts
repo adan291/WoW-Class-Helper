@@ -66,14 +66,15 @@ export const processInlineMarkdown = (text: string): string => {
 
             <!-- Tooltip Body -->
             <div class="p-4">
-                ${cooldown !== 'N/A'
-        ? `
+                ${
+                  cooldown !== 'N/A'
+                    ? `
                 <div class="flex items-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
                     Cooldown: <span class="text-white ml-1">${cooldown}</span>
                 </div>`
-        : ''
-      }
+                    : ''
+                }
                 
                 <p class="text-sm text-gray-300 leading-relaxed">
                     ${description}

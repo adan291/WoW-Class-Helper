@@ -30,11 +30,7 @@ export interface Favorite {
 // Profile operations
 export const profileService = {
   async getProfile(userId: string): Promise<Profile | null> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
 
     if (error) {
       console.error('Error fetching profile:', error);
@@ -58,10 +54,7 @@ export const profileService = {
   },
 
   async updateRole(userId: string, role: UserRole): Promise<boolean> {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role })
-      .eq('id', userId);
+    const { error } = await supabase.from('profiles').update({ role }).eq('id', userId);
 
     if (error) {
       console.error('Error updating role:', error);
@@ -120,10 +113,7 @@ export const guideService = {
 // Favorite operations
 export const favoriteService = {
   async getFavorites(userId: string): Promise<Favorite[]> {
-    const { data, error } = await supabase
-      .from('favorites')
-      .select('*')
-      .eq('user_id', userId);
+    const { data, error } = await supabase.from('favorites').select('*').eq('user_id', userId);
 
     if (error) {
       console.error('Error fetching favorites:', error);

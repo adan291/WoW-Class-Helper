@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth.ts';
 import { profileService, guideService, favoriteService } from '../services/databaseService.ts';
 import { auditService, type AuditLog } from '../services/auditService.ts';
 import { WowIcon } from '../components/icons/WowIcon.tsx';
+import { LoadingSpinner } from '../components/LoadingSpinner.tsx';
 
 interface UserGuide {
   id: string;
@@ -204,9 +205,7 @@ export const UserProfilePage: React.FC = () => {
 
           {/* Content */}
           {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-            </div>
+            <LoadingSpinner size="lg" variant="default" message="Loading profile..." />
           ) : (
             <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg border border-yellow-500/20 p-6">
               {activeTab === 'guides' && (

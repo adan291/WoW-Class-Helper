@@ -2,15 +2,14 @@
 /// <reference types="vite-plugin-pwa/client" />
 
 declare module 'virtual:pwa-register/react' {
-    import type { Dispatch, SetStateAction } from 'react';
-    import type { RegisterSWOptions } from 'vite-plugin-pwa/types';
+  import type { Dispatch, SetStateAction } from 'react';
+  import type { RegisterSWOptions } from 'vite-plugin-pwa/types';
 
-    export interface RegisterSWHook {
-        offlineReady: [boolean, Dispatch<SetStateAction<boolean>>];
-        needRefresh: [boolean, Dispatch<SetStateAction<boolean>>];
-        updateServiceWorker: (reloadPage?: boolean) => Promise<void>;
-    }
+  export interface RegisterSWHook {
+    offlineReady: [boolean, Dispatch<SetStateAction<boolean>>];
+    needRefresh: [boolean, Dispatch<SetStateAction<boolean>>];
+    updateServiceWorker: (reloadPage?: boolean) => Promise<void>;
+  }
 
-    export function useRegisterSW(options?: RegisterSWOptions): RegisterSWHook;
+  export function useRegisterSW(options?: RegisterSWOptions): RegisterSWHook;
 }
-

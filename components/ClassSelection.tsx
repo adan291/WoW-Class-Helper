@@ -14,8 +14,12 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
   const { t } = useI18n();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'All' | 'Tank' | 'Healer' | 'Damage'>('All');
-  const [armorFilter, setArmorFilter] = useState<'All' | 'Cloth' | 'Leather' | 'Mail' | 'Plate'>('All');
-  const [difficultyFilter, setDifficultyFilter] = useState<'All' | 'Easy' | 'Moderate' | 'Hard'>('All');
+  const [armorFilter, setArmorFilter] = useState<'All' | 'Cloth' | 'Leather' | 'Mail' | 'Plate'>(
+    'All'
+  );
+  const [difficultyFilter, setDifficultyFilter] = useState<'All' | 'Easy' | 'Moderate' | 'Hard'>(
+    'All'
+  );
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -50,7 +54,8 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
       const matchesRole =
         roleFilter === 'All' || wowClass.specs.some((spec) => spec.role === roleFilter);
       const matchesArmor = armorFilter === 'All' || wowClass.armorType === armorFilter;
-      const matchesDifficulty = difficultyFilter === 'All' || wowClass.difficulty === difficultyFilter;
+      const matchesDifficulty =
+        difficultyFilter === 'All' || wowClass.difficulty === difficultyFilter;
 
       return matchesSearch && matchesRole && matchesArmor && matchesDifficulty;
     }).sort((a, b) => {
@@ -121,10 +126,11 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
                 onClick={() => setRoleFilter(role)}
                 aria-label={`Filter by role: ${role}`}
                 aria-pressed={roleFilter === role}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${roleFilter === role
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  roleFilter === role
                     ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.4)] scale-105'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-700'
-                  }`}
+                }`}
               >
                 {t(`role.${role.toLowerCase()}`)}
               </button>
@@ -134,10 +140,11 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             aria-expanded={showAdvancedFilters}
             aria-controls="advanced-filters-section"
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${showAdvancedFilters
-              ? 'bg-gray-700 border-yellow-500 text-yellow-500'
-              : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
-              }`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${
+              showAdvancedFilters
+                ? 'bg-gray-700 border-yellow-500 text-yellow-500'
+                : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+            }`}
           >
             {t('filter.moreFilters')} {showAdvancedFilters ? '▲' : '▼'}
           </button>
@@ -160,10 +167,11 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
                     onClick={() => setArmorFilter(armor)}
                     aria-pressed={armorFilter === armor}
                     aria-label={`Filter by armor: ${armor}`}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${armorFilter === armor
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                      armorFilter === armor
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   >
                     {armor === 'All' ? t('role.all') : t(`armor.${armor.toLowerCase()}`)}
                   </button>
@@ -181,10 +189,11 @@ const ClassSelection = ({ onSelectClass }: ClassSelectionProps) => {
                     onClick={() => setDifficultyFilter(diff)}
                     aria-pressed={difficultyFilter === diff}
                     aria-label={`Filter by difficulty: ${diff}`}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${difficultyFilter === diff
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                      difficultyFilter === diff
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   >
                     {diff === 'All' ? t('role.all') : t(`difficulty.${diff.toLowerCase()}`)}
                   </button>

@@ -1,9 +1,18 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase.ts';
 import type { UserRole } from '../types.ts';
 import type { Session } from '@supabase/supabase-js';
 import { profileService } from '../services/databaseService.ts';
 import { auditService } from '../services/auditService.ts';
+import { AuthContext } from './authContextValue.ts';
+
+// Re-export types for convenience
+export type { AuthContextType } from './authContextValue.ts';
+export { AuthContext } from './authContextValue.ts';
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
 
 interface User {
   id: string;
@@ -11,28 +20,12 @@ interface User {
   role: UserRole;
 }
 
-export interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  isAuthenticated: boolean;
-  userRole: UserRole;
-  setUserRole: (role: UserRole) => void;
-  login: () => void;
-  logout: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRoleState] = useState<UserRole>('user');
 
-  const loadUserProfile = React.useCallback(async (userId: string, email?: string) => {
+  const loadUserProfile = useCallback(async (userId: string, email?: string) => {
     let profile = await profileService.getProfile(userId);
 
     // Create profile if it doesn't exist
@@ -123,5 +116,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-// Hook moved to hooks/useAuth.ts to fix Fast Refresh warning

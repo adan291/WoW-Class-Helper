@@ -8,6 +8,7 @@ import { validateAndPrepareGuideRequest } from '../services/classOrchestratorSer
 import GuideSection from './GuideSection.tsx';
 import { ClassIconRenderer } from './ClassIconRenderer.tsx';
 import { VideoTutorials } from './VideoTutorials.tsx';
+import { LoadingSpinner } from './LoadingSpinner.tsx';
 import '../styles/animations.css';
 
 interface ClassHubProps {
@@ -134,10 +135,11 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-4 text-sm font-bold tracking-wide transition-all duration-300 relative overflow-hidden ${activeTab === tab.id
+              className={`flex-1 px-4 py-4 text-sm font-bold tracking-wide transition-all duration-300 relative overflow-hidden ${
+                activeTab === tab.id
                   ? 'text-white bg-white/5'
                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                }`}
+              }`}
             >
               {activeTab === tab.id && (
                 <span
@@ -157,10 +159,11 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
               <button
                 key={spec.id}
                 onClick={() => setActiveSpec(spec)}
-                className={`px-4 py-2 rounded-lg transition ${activeSpec.id === spec.id
-                  ? 'bg-yellow-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                className={`px-4 py-2 rounded-lg transition ${
+                  activeSpec.id === spec.id
+                    ? 'bg-yellow-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
               >
                 {spec.name}
               </button>
@@ -193,31 +196,32 @@ const ClassHub: React.FC<ClassHubProps> = ({ wowClass, onGoBack }) => {
           activeTab === 'specs' ||
           activeTab === 'rotations' ||
           activeTab === 'addons') && (
-            <div className="bg-gray-800/50 border-b border-gray-700 p-4">
-              <select
-                value={guideExpansion}
-                onChange={(e) => setGuideExpansion(e.target.value)}
-                className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
-              >
-                <option value="all">{t('hub.allExpansions')}</option>
-                {EXPANSIONS.map((exp) => (
-                  <option key={exp} value={exp}>
-                    {exp}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="bg-gray-800/50 border-b border-gray-700 p-4">
+            <select
+              value={guideExpansion}
+              onChange={(e) => setGuideExpansion(e.target.value)}
+              className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg"
+            >
+              <option value="all">{t('hub.allExpansions')}</option>
+              {EXPANSIONS.map((exp) => (
+                <option key={exp} value={exp}>
+                  {exp}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Guide Content */}
         <div className="p-6">
           {activeTab === 'videos' ? (
             <VideoTutorials wowClass={wowClass} />
           ) : isLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
-              <p className="mt-4 text-gray-400">{t('hub.loadingGuide')}</p>
-            </div>
+            <LoadingSpinner
+              size="lg"
+              variant="default"
+              message={t('hub.loadingGuide')}
+            />
           ) : (
             <GuideSection content={guideContent} />
           )}

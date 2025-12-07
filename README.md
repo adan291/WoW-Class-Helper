@@ -1,4 +1,4 @@
-# 🎮 WoW AI Class Helper
+# 🎮 WoW AI Hub
 
 [![Tests](https://img.shields.io/badge/tests-178%20passing-brightgreen)](https://github.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
@@ -6,7 +6,17 @@
 [![Mobile](https://img.shields.io/badge/mobile-optimized-purple)](https://github.com)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-success)](https://github.com)
 
-An **AI-powered web application** that helps World of Warcraft players master their classes through personalized, on-demand guides with stunning WoW theming and modern effects.
+A **modular AI-powered platform** for World of Warcraft players featuring multiple tools:
+
+## 🛠️ Available Tools
+
+### ⚔️ Class Helper (`/class-helper`)
+
+AI-powered class guides, talent builds, and rotation tips for all WoW classes and specs.
+
+### 📊 Log Analyzer (`/log-analyzer`) - NEW!
+
+Upload combat logs to analyze boss mechanics, generate AI strategies, and practice encounters with an interactive mini-game.
 
 <div align="center">
   <img width="1200" height="475" alt="WoW AI Class Helper" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
@@ -205,29 +215,39 @@ Mobile Support:     Fully Optimized ✅
 ## 📁 Project Structure
 
 ```
-wow-class-helper/
-├── components/                 # React components (25+)
-│   ├── *Enhanced.tsx          # Enhanced visual components
-│   ├── icons/                 # SVG icon components
-│   └── *.tsx                  # Core components
-├── hooks/                      # Custom hooks (3)
-│   ├── useGuideContent.ts      # Guide content management
-│   └── useIsMobile.ts          # Mobile detection
-├── services/                   # Business logic (4)
-│   ├── geminiService.ts        # AI integration
-│   ├── cacheService.ts         # Caching system
-│   ├── validationService.ts    # Data validation
-│   └── markdownProcessor.ts    # Markdown rendering
+wow-ai-hub/
+├── modules/                    # Feature modules (lazy loaded)
+│   ├── class-helper/           # Class Helper module
+│   │   └── ClassHelperApp.tsx  # Main component
+│   └── log-analyzer/           # Log Analyzer module
+│       ├── LogAnalyzerApp.tsx  # Main component
+│       ├── components/         # Module-specific components
+│       │   ├── FileUpload.tsx
+│       │   ├── AbilitiesTab.tsx
+│       │   ├── TimelineTab.tsx
+│       │   ├── StrategyTab.tsx
+│       │   └── MiniGameTab.tsx
+│       ├── services/           # Module-specific services
+│       │   ├── geminiService.ts
+│       │   └── logParser.ts
+│       └── types.ts            # Module types
+├── components/                 # Shared components (25+)
+│   ├── auth/                   # Authentication components
+│   ├── icons/                  # SVG icon components
+│   └── *.tsx                   # Core components
+├── pages/                      # Route pages
+│   ├── HubPage.tsx             # Main landing page
+│   ├── LoginPage.tsx           # Authentication
+│   ├── admin/                  # Admin dashboard
+│   └── *.tsx                   # Other pages
+├── hooks/                      # Custom hooks
+├── services/                   # Shared services
+├── contexts/                   # React contexts
 ├── styles/                     # Styling
-│   └── animations.css          # Animation framework
-├── .kiro/                      # Specs and documentation
-│   └── specs/                  # Feature specifications
-├── .env.local                  # Environment variables
-├── App.tsx                     # Main application
+├── AppRouter.tsx               # Route configuration
 ├── constants.ts                # WoW data constants
-├── types.ts                    # TypeScript definitions
-├── package.json                # Dependencies
-└── vite.config.ts              # Build configuration
+├── types.ts                    # Shared TypeScript definitions
+└── .env.local                  # Environment variables
 ```
 
 ---

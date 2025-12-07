@@ -12,33 +12,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'WoW AI Class Helper',
-        short_name: 'WoW Helper',
-        description: 'AI-powered World of Warcraft class guides',
-        theme_color: '#111827',
-        background_color: '#111827',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-        ],
-      },
+      includeAssets: ['favicon.svg', 'apple-touch-icon.svg', 'manifest.json'],
+      manifest: false, // Use static manifest.json from public folder
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         runtimeCaching: [

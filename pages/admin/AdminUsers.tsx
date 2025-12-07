@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { adminService, type AdminUser } from '../../services/adminService.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
 import type { UserRole } from '../../types.ts';
+import { LoadingSpinner } from '../../components/LoadingSpinner.tsx';
 
 export const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -126,9 +127,8 @@ export const AdminUsers: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12" role="status" aria-live="polite">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-          <span className="sr-only">Loading users...</span>
+        <div role="status" aria-live="polite">
+          <LoadingSpinner size="lg" variant="default" message="Loading users..." />
         </div>
       ) : users.length === 0 ? (
         <div className="text-center py-12 text-gray-400">No users found</div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService.ts';
 import { auditService, type AuditLog } from '../../services/auditService.ts';
+import { LoadingSpinner } from '../../components/LoadingSpinner.tsx';
 
 interface Analytics {
   totalUsers: number;
@@ -84,9 +85,7 @@ export const AdminAnalytics: React.FC = () => {
       <h1 className="text-3xl font-bold text-yellow-400 mb-6">Analytics Dashboard</h1>
 
       {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-        </div>
+        <LoadingSpinner size="lg" variant="default" message="Loading analytics..." />
       ) : (
         <>
           {/* Stats Grid */}

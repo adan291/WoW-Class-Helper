@@ -429,3 +429,235 @@
     opacity: 0.5;
   }
 }
+
+
+/* ============================================
+   ENHANCED LOADING ANIMATIONS
+   ============================================ */
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Fade in animation */
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+.btn-wow {
+  @apply px-6 py-3 font-bold rounded-lg transition-all duration-200;
+  @apply transform hover:scale-105 active:scale-95;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
+}
+
+.btn-wow-primary {
+  @apply btn-wow bg-gradient-to-r from-yellow-600 to-yellow-500 text-black;
+  @apply hover:from-yellow-500 hover:to-yellow-400;
+  @apply focus:ring-yellow-500;
+  box-shadow: 0 4px 14px rgba(255, 215, 0, 0.3);
+}
+
+.btn-wow-primary:hover {
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.btn-wow-secondary {
+  @apply btn-wow bg-gray-800 text-white border border-gray-600;
+  @apply hover:bg-gray-700 hover:border-gray-500;
+  @apply focus:ring-gray-500;
+}
+
+.btn-wow-danger {
+  @apply btn-wow bg-gradient-to-r from-red-700 to-red-600 text-white;
+  @apply hover:from-red-600 hover:to-red-500;
+  @apply focus:ring-red-500;
+}
+
+.btn-wow-ghost {
+  @apply btn-wow bg-transparent text-gray-300 border border-gray-700;
+  @apply hover:bg-gray-800 hover:text-white hover:border-gray-600;
+  @apply focus:ring-gray-600;
+}
+
+/* ============================================
+   CARD STYLES
+   ============================================ */
+
+.card-wow {
+  @apply bg-gray-900/80 border border-gray-700 rounded-xl;
+  @apply transition-all duration-300;
+  @apply hover:border-yellow-500/50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-wow:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.card-wow-interactive {
+  @apply card-wow cursor-pointer;
+  @apply hover:scale-[1.02] hover:bg-gray-800/80;
+}
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+
+.input-wow {
+  @apply w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg;
+  @apply text-white placeholder-gray-500;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20;
+}
+
+.input-wow:hover:not(:focus) {
+  @apply border-gray-600;
+}
+
+/* ============================================
+   TAB STYLES
+   ============================================ */
+
+.tab-wow {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  @apply text-gray-400 hover:text-white hover:bg-gray-800;
+}
+
+.tab-wow-active {
+  @apply tab-wow bg-yellow-500 text-black font-bold;
+  @apply hover:bg-yellow-400 hover:text-black;
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* ============================================
+   BADGE STYLES
+   ============================================ */
+
+.badge-wow {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-wow-gold {
+  @apply badge-wow bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+}
+
+.badge-wow-blue {
+  @apply badge-wow bg-blue-500/20 text-blue-400 border border-blue-500/30;
+}
+
+.badge-wow-green {
+  @apply badge-wow bg-green-500/20 text-green-400 border border-green-500/30;
+}
+
+.badge-wow-red {
+  @apply badge-wow bg-red-500/20 text-red-400 border border-red-500/30;
+}
+
+.badge-wow-purple {
+  @apply badge-wow bg-purple-500/20 text-purple-400 border border-purple-500/30;
+}
+
+/* ============================================
+   TOOLTIP STYLES
+   ============================================ */
+
+.tooltip-wow {
+  @apply absolute z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg;
+  @apply border border-gray-700 shadow-xl;
+  @apply opacity-0 invisible transition-all duration-200;
+  @apply pointer-events-none;
+}
+
+.tooltip-wow-visible {
+  @apply opacity-100 visible;
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+.scrollbar-wow {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.scrollbar-wow::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-wow::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.scrollbar-wow::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.scrollbar-wow::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* ============================================
+   TEXT GLOW EFFECTS
+   ============================================ */
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5), 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+/* ============================================
+   DIVIDER STYLES
+   ============================================ */
+
+.divider-wow {
+  @apply relative h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent;
+}
+
+.divider-wow-gold {
+  @apply relative h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent;
+}

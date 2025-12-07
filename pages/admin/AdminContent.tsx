@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
+import { LoadingSpinner } from '../../components/LoadingSpinner.tsx';
 
 interface Guide {
   id: string;
@@ -45,9 +46,7 @@ export const AdminContent: React.FC = () => {
       <h1 className="text-3xl font-bold text-yellow-400 mb-6">Content Moderation</h1>
 
       {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-        </div>
+        <LoadingSpinner size="lg" variant="default" message="Loading content..." />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Guides List */}
@@ -104,9 +103,7 @@ export const AdminContent: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                Select a guide to preview
-              </div>
+              <div className="text-center py-12 text-gray-500">Select a guide to preview</div>
             )}
           </div>
         </div>

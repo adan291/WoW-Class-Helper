@@ -16,10 +16,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   onToggleFavorite,
 }) => {
   return (
-    <div
-      onClick={onClick}
-      className="relative group cursor-pointer lift-on-hover h-full"
-    >
+    <div onClick={onClick} className="relative group cursor-pointer lift-on-hover h-full">
       <div
         className="p-5 rounded-xl border border-white/10 transition-all duration-300 h-full flex flex-col items-center justify-center text-center hover:shadow-2xl hover:border-opacity-50 relative overflow-hidden"
         style={{
